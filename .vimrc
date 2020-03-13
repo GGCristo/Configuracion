@@ -63,8 +63,8 @@ nnoremap ,cpp :-1read $HOME/.vim/.skeleton.cpp<CR>3j
 
 " Mapping
 nnoremap <F2> :TlistToggle<cr>
-nnoremap <F3> :cclose<cr>
-nnoremap <F4> :w <bar> !cd ../build; make<cr><cr>:cw<cr>
+nnoremap <silent><F3> :cclose<cr>
+nnoremap <silent><F4> :w <bar> !cd ../build; make<cr><cr>:cw<cr>
 nnoremap <F6> :Termdebug %:r<CR><c-w>2j<c-w>L
 nnoremap <F12> :!cd ..; ctags -R 
 nnoremap <leader>; m"A;<Esc>`<space>"
