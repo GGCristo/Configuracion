@@ -40,6 +40,9 @@ set expandtab       " Expand TABs to spaces
 " Omni-completion
 filetype plugin on
 
+highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+set cursorline
+
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
 let g:netrw_browse_split=4 " open in prior window
