@@ -223,3 +223,6 @@ alias gh='cd "$(git rev-parse --show-toplevel)"'
 # Show untracked files
 alias gu='git ls-files . --exclude-standard --others'
 
+alias gbrow="hub browse"
+# Thefuck
+eval $(thefuck --alias --enable-experimental-instant-mode)
