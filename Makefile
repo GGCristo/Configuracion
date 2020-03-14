@@ -14,8 +14,9 @@ debug:
 
 clean:
 	rm ../bin/* *.o
-	g++ -c $< -o $@
+
 $(BIN).o: ../src/$(BIN).cpp
 	g++ -c $< -o $@
+
 %.o: ../src/%.cpp ../include/%.h
 	g++ -c $< -o $@
