@@ -65,10 +65,10 @@ nnoremap ,kk :-1read $HOME/.vim/.skeleton.cout<CR>=<Space>4wei
 nnoremap ,cpp :-1read $HOME/.vim/.skeleton.cpp<CR>3j
 
 " Mapping
-nnoremap <F2> :TlistToggle<cr>
+nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :cclose<cr>
 nnoremap <silent><F4> :w <bar> !cd ../build; make<cr><cr>:cw<cr>
-nnoremap <F6> :Termdebug %:r<CR><c-w>2j<c-w>L
+nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
 nnoremap <F12> :!cd ..; ctags -R 
 nnoremap <leader>; m"A;<Esc>`<space>"
 nnoremap <C-_> <C-I>
@@ -106,7 +106,6 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 
 let g:ale_lint_delay = 1000
-
 " Put these lines at the very end of your vimrc file.
 
 " Load all plugins now.
@@ -184,7 +183,7 @@ endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
-
+hi CocHighlightText ctermfg=231 guifg=#ffffff ctermbg=60 guibg=#df5f87
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
