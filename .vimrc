@@ -69,13 +69,16 @@ nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :cclose<cr>
 nnoremap <silent><F4> :w <bar> !cd ../build; make<cr><cr>:cw<cr>
 nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
-nnoremap <F12> :!cd ..; ctags -R 
-nnoremap <leader>; m"A;<Esc>`<space>"
+nnoremap <F12> :!cd ..; ctags -R
+nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
+nnoremap <silent><C-P> :FZF<CR>
+nnoremap <silent><C-N> :Lines<CR>
+imap jj <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
@@ -85,6 +88,7 @@ inoremap ' ''<left>
 inoremap ( ()<left>
 inoremap [ []<left>
 inoremap { {}<left>
+inoremap < <><left>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 
@@ -256,3 +260,5 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
 let g:airline#extensions#tabline#formatter = 'unique_tail'
+" FZF
+set rtp+=~/.fzf

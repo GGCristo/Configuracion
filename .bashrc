@@ -124,7 +124,7 @@ export NVM_DIR="/home/cristo/.nvm"
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+#export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 
 # bash-git-prompt
@@ -133,6 +133,7 @@ source ~/.bash-git-prompt/gitprompt.sh
 GIT_PROMPT_THEME=Custom
 
 #colorls
+alias update='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
 alias lc='colorls -lA --sd'
 
 #alias for git
