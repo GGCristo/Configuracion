@@ -1,5 +1,5 @@
 # dotfiles
-Archivos personales de configuracion
+Archivos personales de configuracion\
 Herramientas general:\
 -FZF\
 -Catch2\
@@ -12,6 +12,7 @@ Vim Plugins:\
 -ALE\
 -coc.nvim + ccls\
 -Taglist\
+-fzf.vim\
 -obsession.vim\
 -fugitive.vim\
 -vim-airline\
