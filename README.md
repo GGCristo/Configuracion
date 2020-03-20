@@ -9,6 +9,7 @@ Herramientas general:\
 -bat\
 -bash-git-prompt\
 Vim Plugins:\
+-Vim-plug\
 -ALE\
 -coc.nvim + ccls\
 -Taglist\
