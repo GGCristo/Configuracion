@@ -4,7 +4,6 @@ set noswapfile
 set nobackup
 set autoindent
 set complete=.,w,b,u,t,i,kspell
-colorscheme gruvbox
 set background=dark
 " Basic ##############
 filetype plugin indent on
@@ -27,8 +26,25 @@ set incsearch
 set showbreak=↪\
 set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set switchbuf+=usetab,newtab
+
+" Plugins taglist instalado manualmente
+call plug#begin('~/.vim/plugged')
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'MaskRay/ccls', { 'dir': '~/ccls' }
+  
+  Plug 'junegunn/fzf.vim'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'tpope/vim-obsession'
+  Plug 'tpope/vim-fugitive'
+  Plug 'vim-airline/vim-airline'
+  Plug 'gruvbox-community/gruvbox'
+call plug#end()
+
 " Persist undo history between file editing sessions.
 
+colorscheme gruvbox
+set t_Co=256
+set laststatus=2
 set undofile
 set undolevels=5000
 set undodir=~/.vim/undodir
@@ -268,6 +284,8 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
 let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline_theme="dark"
+
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
