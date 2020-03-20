@@ -10,18 +10,25 @@ set background=dark
 filetype plugin indent on
 packadd termdebug
 syntax on
+set encoding=utf-8
 set mouse=a
 set number
 set relativenumber
 set clipboard+=unnamedplus
 set hidden
+set scrolloff=5
 set autoread
+au CursorHold * checktime
 set path=$PWD/**,/usr/local/lib/*,/usr/local/include
 set wildmenu
 set backspace=indent,eol,start
 set list
 set incsearch
+set showbreak=↪\
+set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+set switchbuf+=usetab,newtab
 " Persist undo history between file editing sessions.
+
 set undofile
 set undolevels=5000
 set undodir=~/.vim/undodir
@@ -66,8 +73,9 @@ nnoremap ,cpp :-1read $HOME/.vim/.skeleton.cpp<CR>3j
 
 " Mapping
 nnoremap <silent><F2> :TlistToggle<cr>
-nnoremap <silent><F3> :cclose<cr>
-nnoremap <silent><F4> :w <bar> !cd ../build; make<cr><cr>:cw<cr>
+nnoremap <silent><F3> :copen<cr>
+nnoremap <silent><S-F3> :cclose<cr>
+nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
 nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
 nnoremap <F12> :!cd ..; ctags -R
 nnoremap ,,  mtA;<Esc>`t
@@ -76,8 +84,8 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-nnoremap <silent><C-P> :FZF<CR>
-nnoremap <silent><C-N> :Lines<CR>
+nnoremap <silent><C-P> :FZF ..<CR>
+nnoremap <silent><C-N> :Lines <CR>
 imap jj <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Down>
@@ -262,3 +270,5 @@ let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', ''''
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 " FZF
 set rtp+=~/.fzf
+let g:fzf_buffers_jump = 1
+
