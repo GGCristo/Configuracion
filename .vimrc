@@ -82,10 +82,10 @@ set tags=./tags;/ "This will look in the current directory for "tags", and work 
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
 " Snippets
-nnoremap ,dxt :-1read $HOME/.vim/.skeleton.doxygen_beginning<CR>jA
-nnoremap ,dx :-1read $HOME/.vim/.skeleton.doxygen<CR>jA
-nnoremap ,kk :-1read $HOME/.vim/.skeleton.cout<CR>=<Space>4wei
-nnoremap ,cpp :-1read $HOME/.vim/.skeleton.cpp<CR>3j
+nnoremap ,dxt :-1read $HOME/.vim/.skeletons/.skeleton.doxygen_beginning<CR>jA
+nnoremap ,dx :-1read $HOME/.vim/.skeletons/.skeleton.doxygen<CR>jA
+nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
+nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 " Mapping
 nnoremap <silent><F2> :TlistToggle<cr>
