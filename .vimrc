@@ -37,6 +37,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'vim-airline/vim-airline'
+  Plug 'mhinz/vim-startify'
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
@@ -65,7 +66,6 @@ filetype plugin on
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
 set cursorline
-
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
 let g:netrw_browse_split=4 " open in prior window
@@ -92,7 +92,9 @@ nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><S-F3> :cclose<cr>
 nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
+nnoremap <silent><F5> :Lex<cr>
 nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
+nnoremap <F10> :Obsession ~/.vim/session/
 nnoremap <F12> :!cd ..; ctags -R
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
