@@ -8,6 +8,7 @@ Herramientas general:\
 -colorls\
 -bat\
 -bash-git-prompt\
+\
 Vim Plugins:\
 -Vim-plug\
 -ALE\
@@ -17,4 +18,6 @@ Vim Plugins:\
 -obsession.vim\
 -fugitive.vim\
 -vim-airline\
+-vim-startify\
+-vimspector (experimental)
 -Theme: Gruvbox
