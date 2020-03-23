@@ -1,3 +1,5 @@
 *.o
+.vimspector.json
+.vscode/
 bin/
 .DS_Store
