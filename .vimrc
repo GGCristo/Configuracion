@@ -39,6 +39,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
   Plug 'gruvbox-community/gruvbox'
+  Plug 'puremourning/vimspector'
 call plug#end()
 
 " Persist undo history between file editing sessions.
@@ -64,8 +65,9 @@ set expandtab       " Expand TABs to spaces
 " Omni-completion
 filetype plugin on
 
-highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+highlight CursorLine cterm=NONE ctermbg=NONE  ctermfg=NONE guibg=NONE guifg=NONE
 set cursorline
+
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
 let g:netrw_browse_split=4 " open in prior window
@@ -88,14 +90,25 @@ nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
 nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 " Mapping
+" F5 para empezar para debugear/continuar
+" S-F5 para parar de debugear
+" C-S-F5 para restaurar el debuger con la misma configuración
+" F6 Para pausar el debugger
+  "nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
+" F9
+" S-F9
+"F10 Step Over
+"F11 Step Into
+"S-F11 Step out of current function scope
 nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><S-F3> :cclose<cr>
 nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
-nnoremap <silent><F5> :Lex<cr>
-nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
-nnoremap <F10> :Obsession ~/.vim/session/
-nnoremap <F12> :!cd ..; ctags -R
+nnoremap <F7> :!cd ..; ctags -R
+nnoremap <F8> :Obsession ~/.vim/session/
+nnoremap <silent><F12> :Lex<cr>
+
+nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <C-H> <C-W>h
@@ -291,4 +304,6 @@ let g:airline_theme="dark"
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
-
+"Vimspector
+let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+packadd! vimspector
