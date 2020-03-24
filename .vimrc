@@ -39,7 +39,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
   Plug 'gruvbox-community/gruvbox'
-  Plug 'puremourning/vimspector'
+  Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
 call plug#end()
 
 " Persist undo history between file editing sessions.
@@ -90,6 +90,7 @@ nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
 nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 " Mapping
+let mapleader= " "
 " F5 para empezar para debugear/continuar
 " S-F5 para parar de debugear
 " C-S-F5 para restaurar el debuger con la misma configuración
@@ -111,6 +112,8 @@ nnoremap <silent><F12> :Lex<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
+nnoremap <silent><C-S> :update<cr>
+nnoremap <silent><C-Q> :wa<cr>
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -192,7 +195,7 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-@> coc#refresh()
+inoremap <silent><expr> <NUL> coc#refresh()
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.

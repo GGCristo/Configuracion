@@ -232,3 +232,4 @@ alias gu='git ls-files . --exclude-standard --others'
 alias gbrow="hub browse"
 # Thefuck
 eval $(thefuck --alias)
+stty -ixon
