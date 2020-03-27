@@ -3,6 +3,7 @@ set nocompatible
 set noswapfile
 set nobackup
 set autoindent
+set balloonevalterm
 set complete=.,w,b,u,t,i,kspell
 set background=dark
 " Basic ##############
@@ -38,8 +39,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
-  Plug 'gruvbox-community/gruvbox'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
+  Plug 'airblade/vim-gitgutter'
+  Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
 " Persist undo history between file editing sessions.
@@ -112,8 +114,8 @@ nnoremap <silent><F12> :Lex<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
-nnoremap <silent><C-S> :update<cr>
-nnoremap <silent><C-Q> :wa<cr>
+nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado'<cr>
+nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -160,7 +162,6 @@ packloadall
 " Load all of the helptags now, after plugins have been loaded.
 " All messages and errors will be ignored.
 " " TextEdit might fail if hidden is not set.
-set hidden
 
 " Some servers have issues with backup files, see #649.
 set nobackup
@@ -307,6 +308,14 @@ let g:airline_theme="dark"
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
+
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
+
+"Gitgutter
+let g:gitgutter_preview_win_floating = 1
+let g:gitgutter_sign_priority = 8
+highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
+highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
+highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red

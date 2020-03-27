@@ -22,6 +22,6 @@
             }
         }
     },
-    "coc.preferences.diagnostic.displayByAle":true,
+    "diagnostic.enable":false,
     "tsserver.trace.server": "verbose"
 }
