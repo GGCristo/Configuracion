@@ -132,8 +132,9 @@ GIT_PROMPT_ONLY_IN_REPO=1
 source ~/.bash-git-prompt/gitprompt.sh
 GIT_PROMPT_THEME=Custom
 
-#colorls
 alias update='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
+
+#colorls
 alias lc='colorls -lA --sd'
 
 #alias for git

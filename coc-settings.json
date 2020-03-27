@@ -23,5 +23,6 @@
         }
     },
     "diagnostic.enable":false,
+    "coc.preferences.jumpCommand": "drop",
     "tsserver.trace.server": "verbose"
 }

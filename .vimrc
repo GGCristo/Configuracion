@@ -28,6 +28,7 @@ set showbreak=↪\
 set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set switchbuf+=usetab,newtab
 
+
 " Plugins taglist instalado manualmente
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -41,8 +42,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
+
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
+
 
 " Persist undo history between file editing sessions.
 
@@ -91,6 +94,8 @@ nnoremap ,dx :-1read $HOME/.vim/.skeletons/.skeleton.doxygen<CR>jA
 nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
 nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
+autocmd BufEnter * let dir = finddir('src/..',';')
+autocmd BufEnter * let dir = fnamemodify(dir, ':t')
 " Mapping
 let mapleader= " "
 " F5 para empezar para debugear/continuar
@@ -106,9 +111,10 @@ let mapleader= " "
 nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><S-F3> :cclose<cr>
-nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
+nnoremap <silent><F4> :wa<bar>cd build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
+nnoremap <silent><leader><F4> :make -C build run<cr>
 nnoremap <F7> :!cd ..; ctags -R
-nnoremap <F8> :Obsession ~/.vim/session/
+nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(dir) . '<cr>:echo "Se guardó la sesion" <cr>'
 nnoremap <silent><F12> :Lex<cr>
 
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -120,9 +126,11 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-nnoremap <silent><C-P> :FZF ..<CR>
+nnoremap <silent><C-P> :FZF<CR>
 nnoremap <silent><C-N> :Lines <CR>
-imap jj <Esc>
+nnoremap <silent>+ :Gwrite<cr>
+nnoremap <silent>- :Gread <CR>
+imap jk <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
