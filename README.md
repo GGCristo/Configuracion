@@ -19,5 +19,6 @@ Vim Plugins:\
 -fugitive.vim\
 -vim-airline\
 -vim-startify\
+-vim-gitgutter\
 -vimspector (experimental)
 -Theme: Gruvbox
