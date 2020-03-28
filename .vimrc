@@ -14,6 +14,7 @@ set encoding=utf-8
 set mouse=a
 set number
 set relativenumber
+set autochdir
 set clipboard+=unnamedplus
 set hidden
 set scrolloff=5
@@ -95,7 +96,7 @@ nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
 nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 autocmd BufEnter * let dir = finddir('src/..',';')
-autocmd BufEnter * let dir = fnamemodify(dir, ':t')
+autocmd BufEnter * let root_project = fnamemodify(dir, ':t')
 " Mapping
 let mapleader= " "
 " F5 para empezar para debugear/continuar
@@ -111,10 +112,11 @@ let mapleader= " "
 nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><S-F3> :cclose<cr>
-nnoremap <silent><F4> :wa<bar>cd build<bar>make<cr><cr>:cw<cr>:cd -<cr>:echo '😁Compiló😁'<cr>
-nnoremap <silent><leader><F4> :make -C build run<cr>
+nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><leader><F4> :make -C ../build run<cr>
+nnoremap <silent><S-F4> :make -C ../build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <F7> :!cd ..; ctags -R
-nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(dir) . '<cr>:echo "Se guardó la sesion" <cr>'
+nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
 nnoremap <silent><F12> :Lex<cr>
 
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -126,8 +128,8 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-nnoremap <silent><C-P> :FZF<CR>
-nnoremap <silent><C-N> :Lines <CR>
+nnoremap <silent><C-P> :FZF ..<CR>
+nnoremap <silent><C-N> :Lines<CR>
 nnoremap <silent>+ :Gwrite<cr>
 nnoremap <silent>- :Gread <CR>
 imap jk <Esc>
@@ -327,3 +329,39 @@ let g:gitgutter_sign_priority = 8
 highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
 highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
 highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
+
+" Startify
+
+function! s:filter_header(lines) abort
+    let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
+    let centered_lines = map(copy(a:lines),
+        \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
+    return centered_lines
+endfunction
+
+let g:startify_custom_header = s:filter_header([
+ \'  ##############..... ##############  ',
+ \'  ##############......##############  ',
+ \'    ##########..........##########    ',
+ \'    ##########........##########      ',
+ \'    ##########.......##########       ',
+ \'    ##########.....##########..       ',
+ \'    ##########....##########.....     ',
+ \'  ..##########..##########.........   ',
+ \'....##########.#########............. ',
+ \'  ..################JJJ............   ',
+ \'    ################.............     ',
+ \'    ##############.JJJ.JJJJJJJJJJ     ',
+ \'    ############...JJ...JJ..JJ  JJ    ',
+ \'    ##########....JJ...JJ..JJ  JJ     ',
+ \'    ########......JJJ..JJJ JJJ JJJ    ',
+ \'    ######    .........               ',
+ \'                .....                 ',
+ \'                  .      ',
+ \])
+
+let g:startify_fortune_use_unicode = 1
+
+hi StartifyFooter        guifg=#5f5f00 guibg=orange gui=NONE
+let g:startify_custom_footer = startify#fortune#boxed()
+   ""\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
