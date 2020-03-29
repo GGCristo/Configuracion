@@ -9,6 +9,10 @@ CFLAGS = -g -Wall
 all: $(OBJS)
 	g++ $? -o ../bin/$(BIN)
 
+.PHONY: SFML
+SFML: $(OBJS)
+	g++ $? -o ../bin/$(BIN) -lsfml-graphics -lsfml-window -lsfml-system
+
 .PHONY: run
 run:
 	./../bin/$(BIN)
