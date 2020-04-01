@@ -12,13 +12,14 @@ packadd termdebug
 syntax on
 set encoding=utf-8
 set mouse=a
+set termwinsize=20x0
 set number
 set relativenumber
-set autochdir
 set clipboard+=unnamedplus
 set hidden
-set scrolloff=5
 set autoread
+set splitbelow
+set splitright
 au CursorHold * checktime
 set path=$PWD/**,/usr/local/lib/*,/usr/local/include
 set wildmenu
@@ -68,10 +69,10 @@ set softtabstop=2   " Sets the number of columns for a TAB
 
 set expandtab       " Expand TABs to spaces
 
-" Omni-completion
 filetype plugin on
 
-highlight CursorLine cterm=NONE ctermbg=NONE  ctermfg=NONE guibg=NONE guifg=NONE
+autocmd CursorHoldI * highlight CursorLine term=underline ctermbg=NONE
+autocmd CursorHold * highlight CursorLine term=underline ctermbg=237 guibg=#3c3836
 set cursorline
 
 "FILE BROWSING
@@ -97,7 +98,14 @@ nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 autocmd BufEnter * let dir = finddir('src/..',';')
 autocmd BufEnter * let root_project = fnamemodify(dir, ':t')
+
 " Mapping
+"
+function! ExecuteMacroOverVisualRange()
+  echo "@".getcmdline()
+  execute ":'<,'>normal @".nr2char(getchar())
+endfunction
+
 let mapleader= " "
 " F5 para empezar para debugear/continuar
 " S-F5 para parar de debugear
@@ -123,16 +131,22 @@ nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado'<cr>
+inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>i
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
+inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>i
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
 nnoremap <silent><C-P> :FZF ..<CR>
 nnoremap <silent><C-N> :Lines<CR>
-nnoremap <silent>+ :Gwrite<cr>
-nnoremap <silent>- :Gread <CR>
+nnoremap <silent>gw :Gwrite<cr>
+nnoremap <silent>gr :Gread<CR>
+nnoremap <silent><leader>gs :Gstatus<CR>
+nnoremap <silent><leader>gp :Gpush<CR>
+
 imap jk <Esc>
+imap JK <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
@@ -145,6 +159,10 @@ inoremap { {}<left>
 inoremap < <><left>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
+
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+nnoremap n nzz
+nnoremap N nzz
 
 " ALE
 let b:ale_fixers = ['stylelint', 'eslint']"
