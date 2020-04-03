@@ -1,6 +1,6 @@
 # dotfiles
-Archivos personales de configuracion\
-Herramientas general:\
+## Archivos personales de configuracion
+### Herramientas general:
 -FZF\
 -Catch2\
 -thefuck\
@@ -8,13 +8,13 @@ Herramientas general:\
 -colorls\
 -bat\
 -bash-git-prompt\
-\
-Vim Plugins:\
+### Vim Plugins:
 -Vim-plug\
 -ALE\
--coc.nvim + ccls\
-  -coc-pairs\
-  -coc-snippets\
+-coc.nvim + ccls
+ - coc-pairs
+ - coc-snippets
+ 
 -Taglist\
 -fzf.vim\
 -obsession.vim\
@@ -24,4 +24,5 @@ Vim Plugins:\
 -vim-gitgutter\
 -vimspector (experimental)
 -vim-snippets\
+
 -Theme: Gruvbox
