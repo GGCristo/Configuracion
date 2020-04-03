@@ -18,7 +18,6 @@ set relativenumber
 set clipboard+=unnamedplus
 set hidden
 set autoread
-set splitbelow
 set splitright
 au CursorHold * checktime
 set path=$PWD/**,/usr/local/lib/*,/usr/local/include
@@ -44,6 +43,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
+  Plug 'honza/vim-snippets'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -71,9 +71,13 @@ set expandtab       " Expand TABs to spaces
 
 filetype plugin on
 
-autocmd CursorHoldI * highlight CursorLine term=underline ctermbg=NONE
+highlight CursorColumn  ctermbg=NONE guibg=NONE
+autocmd CursorHoldI * highlight CursorColumn term=underline ctermbg=237 guibg=#3c3836
+autocmd CursorHoldI * highlight CursorLine ctermbg=NONE guibg=NONE
 autocmd CursorHold * highlight CursorLine term=underline ctermbg=237 guibg=#3c3836
+autocmd CursorHold * highlight CursorColumn term=underline ctermbg=NONE guibg=NONE
 set cursorline
+set cursorcolumn
 
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
@@ -90,11 +94,6 @@ let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
 set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found. 
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
-" Snippets
-nnoremap ,dxt :-1read $HOME/.vim/.skeletons/.skeleton.doxygen_beginning<CR>jA
-nnoremap ,dx :-1read $HOME/.vim/.skeletons/.skeleton.doxygen<CR>jA
-nnoremap ,kk :-1read $HOME/.vim/.skeletons/.skeleton.cout<CR>=<Space>4wei
-nnoremap ,cpp :-1read $HOME/.vim/.skeletons/.skeleton.cpp<CR>3j
 
 autocmd BufEnter * let dir = finddir('src/..',';')
 autocmd BufEnter * let root_project = fnamemodify(dir, ':t')
@@ -140,8 +139,8 @@ nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
 nnoremap <silent><C-P> :FZF ..<CR>
 nnoremap <silent><C-N> :Lines<CR>
-nnoremap <silent>gw :Gwrite<cr>
-nnoremap <silent>gr :Gread<CR>
+nnoremap <silent><leader>gw :Gwrite<cr>
+nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :Gstatus<CR>
 nnoremap <silent><leader>gp :Gpush<CR>
 
@@ -151,13 +150,7 @@ inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
-inoremap < <><left>
-inoremap {<CR> {<CR>}<ESC>O
+
 inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
