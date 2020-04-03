@@ -13,6 +13,8 @@ Vim Plugins:\
 -Vim-plug\
 -ALE\
 -coc.nvim + ccls\
+  -coc-pairs\
+  -coc-snippets\
 -Taglist\
 -fzf.vim\
 -obsession.vim\
@@ -21,4 +23,5 @@ Vim Plugins:\
 -vim-startify\
 -vim-gitgutter\
 -vimspector (experimental)
+-vim-snippets\
 -Theme: Gruvbox
