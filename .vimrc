@@ -34,11 +34,15 @@ set switchbuf+=usetab,newtab
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'MaskRay/ccls', { 'dir': '~/ccls' }
-  
+
   Plug 'junegunn/fzf.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-dispatch'
+
   Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
@@ -91,7 +95,7 @@ let g:netrw_winsize = 10
 "augroup END
 let g:netrw_list_hide=netrw_gitignore#Hide()
 let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
-set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found. 
+set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
 
@@ -118,8 +122,8 @@ let mapleader= " "
 "S-F11 Step out of current function scope
 nnoremap <silent><F2> :TlistToggle<cr>
 nnoremap <silent><F3> :copen<cr>
-nnoremap <silent><S-F3> :cclose<cr>
-nnoremap <silent><F4> :wa<bar>cd ../build<bar>make<cr><cr>:cw<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><leader><F3> :cclose<cr>
+nnoremap <silent><F4> :wa<bar>echo "Compilando"<bar>cd ../build<bar>Make<cr>:echo "😁Compiló😁"<cr>
 nnoremap <silent><leader><F4> :make -C ../build run<cr>
 nnoremap <silent><S-F4> :make -C ../build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <F7> :!cd ..; ctags -R
@@ -130,9 +134,9 @@ nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado'<cr>
-inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>i
+inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>a
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
-inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>i
+inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>a
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -145,7 +149,6 @@ nnoremap <silent><leader>gs :Gstatus<CR>
 nnoremap <silent><leader>gp :Gpush<CR>
 
 imap jk <Esc>
-imap JK <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
@@ -158,9 +161,10 @@ nnoremap n nzz
 nnoremap N nzz
 
 " ALE
-let b:ale_fixers = ['stylelint', 'eslint']"
+let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clean-format', 'clangtidy']}
 let g:ale_linters = {'cpp': ['g++']}
 let g:ale_open_list = 1
+let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
@@ -171,6 +175,7 @@ let g:ale_sign_column_always = 1
 let g:ale_fix_on_save = 1
 let g:ale_lint_on_text_changed=1
 let g:ale_pattern_options_enabled = 1
+"let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 
@@ -215,6 +220,9 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
 
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <NUL> coc#refresh()

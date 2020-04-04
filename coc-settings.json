@@ -23,6 +23,6 @@
         }
     },
     "diagnostic.enable":false,
-    "coc.preferences.jumpCommand": "drop",
+    "coc.preferences.jumpCommand": "tab drop",
     "tsserver.trace.server": "verbose"
 }
