@@ -1,13 +1,13 @@
 # dotfiles
 ## Archivos personales de configuracion
-### Herramientas general:
+### Herramientas generales:
 -FZF\
 -Catch2\
 -thefuck\
 -hub\
 -colorls\
 -bat\
--bash-git-prompt\
+-bash-git-prompt
 ### Vim Plugins:
 -Vim-plug\
 -ALE\
@@ -22,7 +22,9 @@
 -vim-airline\
 -vim-startify\
 -vim-gitgutter\
--vimspector (experimental)
+-vimspector (experimental)\
 -vim-snippets\
+-vim-surround\
+-vim-dispatch
 
 -Theme: Gruvbox
