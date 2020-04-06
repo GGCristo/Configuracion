@@ -15,10 +15,10 @@
  - coc-pairs
  - coc-snippets
  
--Taglist\
+-Tagbar\
 -fzf.vim\
 -obsession.vim\
--fugitive.vim\
+-fugitive.vim + gv.vim\
 -vim-airline\
 -vim-startify\
 -vim-gitgutter\
