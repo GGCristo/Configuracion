@@ -43,11 +43,13 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-dispatch'
 
+  Plug 'majutsushi/tagbar'
   Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
+  Plug 'junegunn/gv.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -120,7 +122,7 @@ let mapleader= " "
 "F10 Step Over
 "F11 Step Into
 "S-F11 Step out of current function scope
-nnoremap <silent><F2> :TlistToggle<cr>
+nnoremap <silent><F2> :TagbarToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><leader><F3> :cclose<cr>
 nnoremap <silent><F4> :wa<bar>echo "Compilando"<bar>cd ../build<bar>Make<cr>:echo "😁Compiló😁"<cr>
@@ -144,9 +146,11 @@ nnoremap <C-L> <C-W>l
 nnoremap <silent><C-P> :FZF ..<CR>
 nnoremap <silent><C-N> :Lines<CR>
 nnoremap <silent><leader>gw :Gwrite<cr>
+nnoremap <silent><leader>gl :GV<cr>
 nnoremap <silent><leader>gr :Gread<CR>
-nnoremap <silent><leader>gs :Gstatus<CR>
-nnoremap <silent><leader>gp :Gpush<CR>
+nnoremap <silent><leader>gs :G<CR>
+nnoremap <silent><leader>gp :Git push<CR>
+nnoremap <silent><leader>gb :!hub browse<CR>
 
 imap jk <Esc>
 inoremap <C-H> <Left>
@@ -157,6 +161,8 @@ inoremap <C-L> <Right>
 inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+nnoremap <leader>x *``cgn
+nnoremap <leader>X #``cgn
 nnoremap n nzz
 nnoremap N nzz
 
