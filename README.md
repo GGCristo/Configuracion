@@ -1,4 +1,4 @@
-# dotfiles
+# dotfiles :floppy_disk:
 ## Archivos personales de configuracion
 ### Herramientas generales:
 -FZF\
@@ -25,6 +25,7 @@
 -vimspector (experimental)\
 -vim-snippets\
 -vim-surround\
--vim-dispatch
+-vim-dispatch\
+-vim-sneak
 
 -Theme: Gruvbox
