@@ -49,7 +49,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
-  Plug 'junegunn/gv.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -143,10 +142,10 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-nnoremap <silent><C-P> :FZF ..<CR>
+nnoremap <silent><C-P> :Files ..<CR>
 nnoremap <silent><C-N> :Lines<CR>
 nnoremap <silent><leader>gw :Gwrite<cr>
-nnoremap <silent><leader>gl :GV<cr>
+nnoremap <silent><leader>gl :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Git push<CR>
@@ -157,6 +156,8 @@ inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
+vnoremap <silent><UP> :m '<-2<CR>gv=gv
+vnoremap <silent><DOWN> :m '>+1<CR>gv=gv
 
 inoremap {;<CR> {<CR>};<ESC>O
 
@@ -167,7 +168,7 @@ nnoremap n nzz
 nnoremap N nzz
 
 " ALE
-let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clean-format', 'clangtidy']}
+let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clangtidy', 'remove_trailing_lines', 'trim_whitespace']}
 let g:ale_linters = {'cpp': ['g++']}
 let g:ale_open_list = 1
 let g:airline#extensions#ale#enabled = 1
@@ -343,6 +344,9 @@ let g:airline_theme="dark"
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
+let g:fzf_preview_window = 'right:60%'
+command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--info=inline']}), <bang>0)
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
