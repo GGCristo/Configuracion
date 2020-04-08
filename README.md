@@ -25,7 +25,6 @@
 -vimspector (experimental)\
 -vim-snippets\
 -vim-surround\
--vim-dispatch\
--vim-sneak
+-vim-dispatch
 
 -Theme: Gruvbox
