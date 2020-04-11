@@ -18,13 +18,14 @@
 -Tagbar\
 -fzf.vim\
 -obsession.vim\
--fugitive.vim + gv.vim\
+-fugitive.vim\
 -vim-airline\
 -vim-startify\
 -vim-gitgutter\
 -vimspector (experimental)\
 -vim-snippets\
 -vim-surround\
--vim-dispatch
+-vim-dispatch\
+-CurtineIncSw
 
 -Theme: Gruvbox
