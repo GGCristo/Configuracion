@@ -30,7 +30,6 @@ set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set switchbuf+=usetab,newtab
 
 
-" Plugins taglist instalado manualmente
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'MaskRay/ccls', { 'dir': '~/ccls' }
@@ -49,6 +48,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
+  Plug 'ericcurtin/CurtineIncSw.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -124,13 +124,14 @@ let mapleader= " "
 nnoremap <silent><F2> :TagbarToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><leader><F3> :cclose<cr>
-nnoremap <silent><F4> :wa<bar>echo "Compilando"<bar>cd ../build<bar>Make<cr>:echo "😁Compiló😁"<cr>
-nnoremap <silent><leader><F4> :make -C ../build run<cr>
-nnoremap <silent><S-F4> :make -C ../build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
-nnoremap <F7> :!cd ..; ctags -R
+nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><leader><F4> :make -C build run<cr>
+nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <F7> :ctags -R
 nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
 nnoremap <silent><F12> :Lex<cr>
 
+map <silent><leader><leader> :call CurtineIncSw()<CR>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
@@ -142,13 +143,13 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-nnoremap <silent><C-P> :Files ..<CR>
+nnoremap <silent><C-P> :Files<CR>
 nnoremap <silent><C-N> :Lines<CR>
 nnoremap <silent><leader>gw :Gwrite<cr>
 nnoremap <silent><leader>gl :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
-nnoremap <silent><leader>gp :Git push<CR>
+nnoremap <silent><leader>gp :Git push origin HEAD<CR>
 nnoremap <silent><leader>gb :!hub browse<CR>
 
 imap jk <Esc>
@@ -344,9 +345,14 @@ let g:airline_theme="dark"
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
+let g:fzf_action = {
+  \ 'enter': 'drop',
+  \ 'ctrl-t': 'tab drop',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit'}
 let g:fzf_preview_window = 'right:60%'
 command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--info=inline']}), <bang>0)
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
@@ -355,9 +361,18 @@ packadd! vimspector
 "Gitgutter
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_sign_priority = 8
-highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
-highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
-highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
+let g:gitgutter_sign_added              = '┃'
+let g:gitgutter_sign_modified           = '┃'
+let g:gitgutter_sign_removed            = '┃'
+let g:gitgutter_sign_removed_first_line = '┃'
+let g:gitgutter_sign_modified_removed   = '┃'
+highlight GitGutterAdd    ctermfg=40
+highlight GitGutterChange ctermfg=93
+highlight GitGutterDelete ctermfg=1
+hi clear SignColumn
+"highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
+"highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
+"highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
 
 " Startify
 

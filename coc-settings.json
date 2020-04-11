@@ -23,7 +23,7 @@
         }
     },
     "diagnostic.enable":false,
-    "coc.preferences.diagnostic.displayByAle": true,
     "coc.preferences.jumpCommand": "tab drop",
-    "tsserver.trace.server": "verbose"
+    "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+    "suggest.enablePreview": true
 }

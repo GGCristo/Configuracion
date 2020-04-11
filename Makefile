@@ -34,5 +34,5 @@ test: $(TESTBIN)
 $(BIN).o: ../src/$(BIN).cpp
 	g++ -c $< -o $@
 
-%.o: ../src/%.cpp ../include/%.h
+%.o: ../src/%.cpp ../include/%.hpp
 	g++ -c $< -o $@
