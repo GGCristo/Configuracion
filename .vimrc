@@ -36,6 +36,7 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/fzf.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'dense-analysis/ale'
 
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
@@ -49,6 +50,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
   Plug 'ericcurtin/CurtineIncSw.vim'
+  Plug 'ryanoasis/vim-devicons'
+  Plug 'preservim/nerdtree'
+  Plug 'godlygeek/tabular'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -129,7 +133,7 @@ nnoremap <silent><leader><F4> :make -C build run<cr>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <F7> :ctags -R
 nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
-nnoremap <silent><F12> :Lex<cr>
+nnoremap <silent><F12> :NERDTreeToggle<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<CR>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -163,6 +167,7 @@ vnoremap <silent><DOWN> :m '>+1<CR>gv=gv
 inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+map <silent><leader>r :source $MYVIMRC<CR>
 nnoremap <leader>x *``cgn
 nnoremap <leader>X #``cgn
 nnoremap n nzz
@@ -408,4 +413,53 @@ let g:startify_fortune_use_unicode = 1
 
 hi StartifyFooter        guifg=#5f5f00 guibg=orange gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
-   ""\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
+   "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
+
+" Tener buenas pestañas
+"
+" Rename tabs to show tab number.
+" (Based on http://stackoverflow.com/questions/5927952/whats-implementation-of-vims-default-tabline-function)
+set tabline=%!MyTabLine()
+if exists("+showtabline")
+    function! MyTabLine()
+        let s = ''
+        let wn = ''
+        let t = tabpagenr()
+        let i = 1
+        while i <= tabpagenr('$')
+            let buflist = tabpagebuflist(i)
+            let winnr = tabpagewinnr(i)
+            let s .= '%' . i . 'T'
+            let s .= (i == t ? '%1*' : '%2*')
+            let s .= ' '
+            let wn = tabpagewinnr(i,'$')
+
+            let s .= '%#TabNum#'
+            let s .= i
+            " let s .= '%*'
+            let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#')
+            let bufnr = buflist[winnr - 1]
+            let file = bufname(bufnr)
+            let buftype = getbufvar(bufnr, 'buftype')
+            if buftype == 'nofile'
+                if file =~ '\/.'
+                    let file = substitute(file, '.*\/\ze.', '', '')
+                endif
+            else
+                let file = fnamemodify(file, ':p:t')
+            endif
+            if file == ''
+                let file = '[No Name]'
+            endif
+            let s .= ' ' . file . ' '
+            let i = i + 1
+        endwhile
+        let s .= '%T%#TabLineFill#%='
+        let s .= (tabpagenr('$') > 1 ? '%999XX' : 'X')
+        return s
+    endfunction
+    set stal=2
+    set tabline=%!MyTabLine()
+    set showtabline=1
+    highlight link TabNum Special
+endif

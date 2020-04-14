@@ -26,6 +26,9 @@
 -vim-snippets\
 -vim-surround\
 -vim-dispatch\
--CurtineIncSw
+-CurtineIncSw\
+-Nerdtree\
+-Vim-devicons\
+-Tabular
 
 -Theme: Gruvbox

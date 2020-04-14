@@ -22,7 +22,7 @@
             }
         }
     },
-    "diagnostic.enable":false,
+    "diagnostic.enable": false,
     "coc.preferences.jumpCommand": "tab drop",
     "coc.preferences.currentFunctionSymbolAutoUpdate": true,
     "suggest.enablePreview": true

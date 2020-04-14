@@ -1,8 +1,11 @@
+# Makefile génerico si un cpp solo depende de su header, si un un cpp depende de varios headers habra que crear una regla especial para él.
 BIN = main
 TEST = $(wildcard ../test/*.cpp)
 TESTBIN = $(patsubst ../test/%.cpp, ../bin/%, $(TEST))
 SRC = $(wildcard ../src/*.cpp)
-OBJS = $(patsubst ../src/%.cpp,%.o,$(SRC))
+OBJS = $(patsubst ../src/%.cpp, %.o, $(SRC))
+HEADER = #Escribe aquí el nombre de las clases con template
+HEADER := $(patsubst %, ../include/%.hpp, $(HEADER))
 CFLAGS = -g -Wall
 
 .PHONY: all
@@ -19,7 +22,7 @@ run:
 
 .PHONY: debug
 debug:
-	g++ $(CFLAGS) ../src/* -o ../bin/$(BIN)
+	g++ $(CFLAGS) ../src/* $(HEADER) -o ../bin/$(BIN)
 
 .PHONY: clean
 clean:
@@ -28,10 +31,17 @@ clean:
 .PHONY: test
 test: $(TESTBIN)
 
+#(NOMBRE).o ../src/(NOMBRE).cpp ../include/(NOMBRE).hpp ../include/.hpp
+	#g++ -c $< -o $@
+###################################################################
+
+
+###################################################################
+
 ../bin/%: ../test/%.cpp ../test/catch.hpp
 	g++ $< -o $@
 
-$(BIN).o: ../src/$(BIN).cpp
+$(BIN).o: ../src/$(BIN).cpp $(HEADER)
 	g++ -c $< -o $@
 
 %.o: ../src/%.cpp ../include/%.hpp
