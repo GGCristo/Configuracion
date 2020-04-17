@@ -124,6 +124,7 @@ export NVM_DIR="/home/cristo/.nvm"
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export FZF_DEFAULT_OPTS='--bind k:preview-up,j:preview-down'
 #export FZF_DEFAULT_COMMAND='grep -l -g ""'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 

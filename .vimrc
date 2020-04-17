@@ -53,6 +53,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'ryanoasis/vim-devicons'
   Plug 'preservim/nerdtree'
   Plug 'godlygeek/tabular'
+  Plug 'simnalamburt/vim-mundo'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -131,7 +132,7 @@ nnoremap <silent><leader><F3> :cclose<cr>
 nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
 nnoremap <silent><leader><F4> :make -C build run<cr>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
-nnoremap <F7> :ctags -R
+nnoremap <silent><F7> :MundoToggle<CR>
 nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
 nnoremap <silent><F12> :NERDTreeToggle<cr>
 
@@ -148,7 +149,11 @@ nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
 nnoremap <silent><C-P> :Files<CR>
-nnoremap <silent><C-N> :Lines<CR>
+if executable ("rg")
+  nnoremap <silent><C-N> :Rg<CR>
+else
+  nnoremap <silent><C-N> :Lines<CR>
+endif
 nnoremap <silent><leader>gw :Gwrite<cr>
 nnoremap <silent><leader>gl :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
@@ -168,6 +173,7 @@ inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 map <silent><leader>r :source $MYVIMRC<CR>
+map <silent><leader>bd :%bd<bar>e#<bar>bd#<CR>
 nnoremap <leader>x *``cgn
 nnoremap <leader>X #``cgn
 nnoremap n nzz
