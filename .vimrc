@@ -15,7 +15,7 @@ set mouse=a
 set termwinsize=20x0
 set number
 set relativenumber
-set clipboard+=unnamedplus
+set clipboard^=unnamedplus
 set hidden
 set autoread
 set splitright
@@ -108,13 +108,30 @@ set tags=./tags;/ "This will look in the current directory for "tags", and work 
 autocmd BufEnter * let dir = finddir('src/..',';')
 autocmd BufEnter * let root_project = fnamemodify(dir, ':t')
 
-" Mapping
+" Mapping && Functions
 "
 function! ExecuteMacroOverVisualRange()
   echo "@".getcmdline()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
+function! Preserve(command)
+  " Preparation: save last search, and cursor position.
+  let save_cursor = getpos(".")
+  let old_query = getreg('/')
+  execute a:command
+  " Clean up: restore previous search history, and cursor position
+  call setpos('.', save_cursor)
+  call setreg('/', old_query)
+endfunction
+
+function! Swap(word)
+  if expand(a:word) ==# "true"
+    echo "Funciona"
+  else
+    echo "No funciona"
+  endif
+endfunction
 let mapleader= " "
 " F5 para empezar para debugear/continuar
 " S-F5 para parar de debugear
@@ -134,13 +151,13 @@ nnoremap <silent><leader><F4> :make -C build run<cr>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <silent><F7> :MundoToggle<CR>
 nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
-nnoremap <silent><F12> :NERDTreeToggle<cr>
+nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<CR>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtA;<Esc>`t
 nnoremap <C-_> <C-I>
-nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado'<cr>
+nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>a
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
 inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>a
@@ -166,14 +183,15 @@ inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
-vnoremap <silent><UP> :m '<-2<CR>gv=gv
-vnoremap <silent><DOWN> :m '>+1<CR>gv=gv
+nnoremap Q :call Swap(<C-R><C-W>)<CR>
+vnoremap <silent><K> :m '<-2<CR>gv=gv
+vnoremap <silent><J> :m '>+1<CR>gv=gv
 
 inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 map <silent><leader>r :source $MYVIMRC<CR>
-map <silent><leader>bd :%bd<bar>e#<bar>bd#<CR>
+map <silent><leader>bd :call Preserve("%bd<bar>e#<bar>bd#")<CR>
 nnoremap <leader>x *``cgn
 nnoremap <leader>X #``cgn
 nnoremap n nzz
@@ -364,6 +382,8 @@ let g:fzf_action = {
 let g:fzf_preview_window = 'right:60%'
 command! -bang -nargs=? -complete=dir Files
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+command! -bang -nargs=* Rg
+    \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
@@ -421,51 +441,15 @@ hi StartifyFooter        guifg=#5f5f00 guibg=orange gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
    "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
 
-" Tener buenas pestañas
-"
-" Rename tabs to show tab number.
-" (Based on http://stackoverflow.com/questions/5927952/whats-implementation-of-vims-default-tabline-function)
-set tabline=%!MyTabLine()
-if exists("+showtabline")
-    function! MyTabLine()
-        let s = ''
-        let wn = ''
-        let t = tabpagenr()
-        let i = 1
-        while i <= tabpagenr('$')
-            let buflist = tabpagebuflist(i)
-            let winnr = tabpagewinnr(i)
-            let s .= '%' . i . 'T'
-            let s .= (i == t ? '%1*' : '%2*')
-            let s .= ' '
-            let wn = tabpagewinnr(i,'$')
-
-            let s .= '%#TabNum#'
-            let s .= i
-            " let s .= '%*'
-            let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#')
-            let bufnr = buflist[winnr - 1]
-            let file = bufname(bufnr)
-            let buftype = getbufvar(bufnr, 'buftype')
-            if buftype == 'nofile'
-                if file =~ '\/.'
-                    let file = substitute(file, '.*\/\ze.', '', '')
-                endif
-            else
-                let file = fnamemodify(file, ':p:t')
-            endif
-            if file == ''
-                let file = '[No Name]'
-            endif
-            let s .= ' ' . file . ' '
-            let i = i + 1
-        endwhile
-        let s .= '%T%#TabLineFill#%='
-        let s .= (tabpagenr('$') > 1 ? '%999XX' : 'X')
-        return s
-    endfunction
-    set stal=2
-    set tabline=%!MyTabLine()
-    set showtabline=1
-    highlight link TabNum Special
-endif
+"NERDTree
+let NERDTreeQuitOnOpen = 1
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let NERDTreeAutoDeleteBuffer = 1
+let NERDTreeMinimalUI = 1
+function MyNerdToggle()
+    if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
+      :NERDTreeToggle
+    else
+      :NERDTreeFind
+    endif
+endfunction

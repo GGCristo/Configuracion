@@ -4,7 +4,7 @@ TEST = $(wildcard ../test/*.cpp)
 TESTBIN = $(patsubst ../test/%.cpp, ../bin/%, $(TEST))
 SRC = $(wildcard ../src/*.cpp)
 OBJS = $(patsubst ../src/%.cpp, %.o, $(SRC))
-HEADER = #Escribe aquí el nombre de las clases con template
+HEADER = Tabla FExploracion FDispersion Celda #Escribe aquí el nombre de las clases con template
 HEADER := $(patsubst %, ../include/%.hpp, $(HEADER))
 CFLAGS = -g -Wall
 
@@ -31,15 +31,15 @@ clean:
 .PHONY: test
 test: $(TESTBIN)
 
+../bin/%: ../test/%.cpp ../test/catch.hpp
+	g++ $< -o $@
+
 #(NOMBRE).o ../src/(NOMBRE).cpp ../include/(NOMBRE).hpp ../include/.hpp
 	#g++ -c $< -o $@
 ###################################################################
 
 
 ###################################################################
-
-../bin/%: ../test/%.cpp ../test/catch.hpp
-	g++ $< -o $@
 
 $(BIN).o: ../src/$(BIN).cpp $(HEADER)
 	g++ -c $< -o $@

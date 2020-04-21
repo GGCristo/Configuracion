@@ -117,15 +117,18 @@ if ! shopt -oq posix; then
 fi
 # VARS
 EDITOR='/usr/bin/vim'
-VISUAL="$EDITOR"
+VISUAL='/usr/bin/vim'
 
 export NVM_DIR="/home/cristo/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_OPTS='--bind k:preview-up,j:preview-down'
-#export FZF_DEFAULT_COMMAND='grep -l -g ""'
+export FZF_DEFAULT_OPTS='--bind ctrl-y:preview-up,ctrl-e:preview-down'
+if [ -x "$(command -v rg)" ]; then
+export FZF_DEFAULT_COMMAND='rg --files'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+fi
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 
 # bash-git-prompt
@@ -235,3 +238,5 @@ alias gbrow="hub browse"
 # Thefuck
 eval $(thefuck --alias)
 stty -ixon
+
+alias vim="/usr/bin/vim"

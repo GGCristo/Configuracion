@@ -1,0 +1,15 @@
+#!/bin/bash
+mkdir -p src/ build/ include/ bin/ test/
+cp $HOME/dotfiles/.gitignore .
+cp $HOME/dotfiles/.vimspector.json .
+cp $HOME/dotfiles/Makefile build/
+cp $HOME/dotfiles/catch.hpp test/
+git init
+if [[ "$1" == "private" ]]; 
+then
+  echo "Creando repositorio privado"
+  hub create -p
+else
+  echo "Creando repositorio publico"
+  hub create
+fi
