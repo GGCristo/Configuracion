@@ -3,6 +3,7 @@ set nocompatible
 set noswapfile
 set nobackup
 set autoindent
+set ballooneval
 set balloonevalterm
 set complete=.,w,b,u,t,i,kspell
 set background=dark
@@ -54,16 +55,17 @@ call plug#begin('~/.vim/plugged')
   Plug 'preservim/nerdtree'
   Plug 'godlygeek/tabular'
   Plug 'simnalamburt/vim-mundo'
+  Plug 'haya14busa/incsearch.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
 
-" Persist undo history between file editing sessions.
-
-colorscheme gruvbox
 set t_Co=256
+colorscheme gruvbox
+
 set laststatus=2
+" Persist undo history between file editing sessions.
 set undofile
 set undolevels=5000
 set undodir=~/.vim/undodir
@@ -105,9 +107,6 @@ set tags=./tags;/ "This will look in the current directory for "tags", and work 
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
 
-autocmd BufEnter * let dir = finddir('src/..',';')
-autocmd BufEnter * let root_project = fnamemodify(dir, ':t')
-
 " Mapping && Functions
 "
 function! ExecuteMacroOverVisualRange()
@@ -125,6 +124,12 @@ function! Preserve(command)
   call setreg('/', old_query)
 endfunction
 
+function! SaveSession()
+  let dir = finddir('src/..',';')
+  let root_project = fnamemodify(dir, ':t')
+  execute ':Obsession ~/.vim/session/' . expand(root_project)
+endfunction
+
 function! Swap(word)
   if expand(a:word) ==# "true"
     echo "Funciona"
@@ -132,6 +137,7 @@ function! Swap(word)
     echo "No funciona"
   endif
 endfunction
+
 let mapleader= " "
 " F5 para empezar para debugear/continuar
 " S-F5 para parar de debugear
@@ -146,11 +152,20 @@ let mapleader= " "
 nnoremap <silent><F2> :TagbarToggle<cr>
 nnoremap <silent><F3> :copen<cr>
 nnoremap <silent><leader><F3> :cclose<cr>
+
 nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><leader>d :Make -C build debug<cr><cr>:echo "DEBUG"<cr>
 nnoremap <silent><leader><F4> :make -C build run<cr>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
+
 nnoremap <silent><F7> :MundoToggle<CR>
-nnoremap <expr><F8> ':Obsession ~/.vim/session/' . expand(root_project) . '<cr>:echo "Se guardó la sesion" <cr>'
+
+if executable("cppcheck")
+  nnoremap <silent><F8> :!cppcheck . dir<CR>
+else
+  nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
+endif
+
 nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<CR>
@@ -453,3 +468,16 @@ function MyNerdToggle()
       :NERDTreeFind
     endif
 endfunction
+
+" Incsearch
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+set hlsearch
+let g:incsearch#auto_nohlsearch = 1
+map n  <Plug>(incsearch-nohl-n)
+map N  <Plug>(incsearch-nohl-N)
+map *  <Plug>(incsearch-nohl-*)
+map #  <Plug>(incsearch-nohl-#)
+map g* <Plug>(incsearch-nohl-g*)
+map g# <Plug>(incsearch-nohl-g#)

@@ -4,9 +4,9 @@ TEST = $(wildcard ../test/*.cpp)
 TESTBIN = $(patsubst ../test/%.cpp, ../bin/%, $(TEST))
 SRC = $(wildcard ../src/*.cpp)
 OBJS = $(patsubst ../src/%.cpp, %.o, $(SRC))
-HEADER = Tabla FExploracion FDispersion Celda #Escribe aquí el nombre de las clases con template
+HEADER = #Escribe aquí el nombre de las clases con template
 HEADER := $(patsubst %, ../include/%.hpp, $(HEADER))
-CFLAGS = -g -Wall
+CFLAGS = -g -pedantic-errors -Wall -Wextra  -std=c++17 -fsanitize=address -static-libasan
 
 .PHONY: all
 all: $(OBJS)
