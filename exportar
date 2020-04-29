@@ -1,0 +1,5 @@
+#!/bin/bash
+CARPETA=~/Escritorio/"${PWD##*/}_Cristo_García_González"
+mkdir -p $CARPETA
+cp -r * $CARPETA
+tar -zcvf $CARPETA.tgz -C ~/Escritorio "${PWD##*/}_Cristo_García_González"

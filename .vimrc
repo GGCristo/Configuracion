@@ -155,7 +155,7 @@ nnoremap <silent><leader><F3> :cclose<cr>
 
 nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
 nnoremap <silent><leader>d :Make -C build debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :make -C build run<cr>
+nnoremap <silent><leader><F4> :!clear<CR>:make -C build run<CR>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
@@ -400,6 +400,8 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 
+"Tagbar
+let g:tagbar_autoclose=1
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
