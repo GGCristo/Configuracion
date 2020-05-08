@@ -56,6 +56,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'godlygeek/tabular'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
+  Plug 'AndrewRadev/switch.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -161,7 +162,7 @@ nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean �
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
-  nnoremap <silent><F8> :!cppcheck . dir<CR>
+  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem .<CR>
 else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
@@ -170,7 +171,7 @@ nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<CR>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
-nnoremap ,,  mtA;<Esc>`t
+nnoremap ,,  mtg_a;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>a
@@ -198,7 +199,7 @@ inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
-nnoremap Q :call Swap(<C-R><C-W>)<CR>
+" Q = switch_mapping
 vnoremap <silent><K> :m '<-2<CR>gv=gv
 vnoremap <silent><J> :m '>+1<CR>gv=gv
 
@@ -477,9 +478,12 @@ map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 set hlsearch
 let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)
+map n  <Plug>(incsearch-nohl-n)zz
+map N  <Plug>(incsearch-nohl-N)zz
+map *  <Plug>(incsearch-nohl-*)zz
+map #  <Plug>(incsearch-nohl-#)zz
+map g* <Plug>(incsearch-nohl-g*)zz
+map g# <Plug>(incsearch-nohl-g#)zz
+
+" Switch.vim
+  let g:switch_mapping = "Q"
