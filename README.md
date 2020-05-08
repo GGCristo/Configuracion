@@ -29,6 +29,7 @@
 -CurtineIncSw\
 -Nerdtree\
 -Vim-devicons\
--Tabular
+-Tabular\
+-Switch.vim
 
 -Theme: Gruvbox
