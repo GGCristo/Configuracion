@@ -43,9 +43,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-dispatch'
-
   Plug 'majutsushi/tagbar'
   Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
@@ -156,7 +156,7 @@ nnoremap <silent><leader><F3> :cclose<cr>
 
 nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
 nnoremap <silent><leader>d :Make -C build debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :!clear<CR>:make -C build run<CR>
+nnoremap <silent><leader><F4> :!clear<CR>:!make -C build run<CR>
 nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
@@ -383,10 +383,19 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+" Airline
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline_theme="dark"
-
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = '☰'
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.dirty='⚡'
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
