@@ -57,12 +57,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
   Plug 'AndrewRadev/switch.vim'
+  Plug 'Valloric/ListToggle'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
 
 set t_Co=256
+let g:gruvbox_contrast_dark='medium'
+set termguicolors
 colorscheme gruvbox
 
 set laststatus=2
@@ -89,8 +92,13 @@ autocmd CursorHoldI * highlight CursorColumn term=underline ctermbg=237 guibg=#3
 autocmd CursorHoldI * highlight CursorLine ctermbg=NONE guibg=NONE
 autocmd CursorHold * highlight CursorLine term=underline ctermbg=237 guibg=#3c3836
 autocmd CursorHold * highlight CursorColumn term=underline ctermbg=NONE guibg=NONE
-set cursorline
-set cursorcolumn
+augroup CursorLine
+  au!
+  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+  au WinLeave * setlocal nocursorline
+augroup END
+" set cursorline
+" set cursorcolumn
 
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
@@ -131,14 +139,6 @@ function! SaveSession()
   execute ':Obsession ~/.vim/session/' . expand(root_project)
 endfunction
 
-function! Swap(word)
-  if expand(a:word) ==# "true"
-    echo "Funciona"
-  else
-    echo "No funciona"
-  endif
-endfunction
-
 let mapleader= " "
 " F5 para empezar para debugear/continuar
 " S-F5 para parar de debugear
@@ -151,8 +151,9 @@ let mapleader= " "
 "F11 Step Into
 "S-F11 Step out of current function scope
 nnoremap <silent><F2> :TagbarToggle<cr>
-nnoremap <silent><F3> :copen<cr>
-nnoremap <silent><leader><F3> :cclose<cr>
+let g:lt_quickfix_list_toggle_map = '<F3>'
+" nnoremap <silent><F3> :copen<cr>
+" nnoremap <silent><leader><F3> :cclose<cr>
 
 nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
 nnoremap <silent><leader>d :Make -C build debug<cr><cr>:echo "DEBUG"<cr>
@@ -213,13 +214,20 @@ nnoremap <leader>X #``cgn
 nnoremap n nzz
 nnoremap N nzz
 
+" Spelling
+:command! WQ wq
+:command! Wq wq
+:command! W w
+:command! Q q
+
 " ALE
 let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clangtidy', 'remove_trailing_lines', 'trim_whitespace']}
 let g:ale_linters = {'cpp': ['g++']}
 let g:ale_open_list = 1
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_warning = ''
+
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 " Keep the sign gutter open at all times
@@ -312,7 +320,7 @@ endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
-hi CocHighlightText ctermfg=231 guifg=#ffffff ctermbg=60 guibg=#df5f87
+hi CocHighlightText ctermfg=black ctermbg=72 guifg=black guibg=#689d6a
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
@@ -385,6 +393,8 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 " Airline
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline_theme="dark"
 let g:airline_left_sep = ''
@@ -464,7 +474,7 @@ let g:startify_custom_header = s:filter_header([
 
 let g:startify_fortune_use_unicode = 1
 
-hi StartifyFooter        guifg=#5f5f00 guibg=orange gui=NONE
+hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
    "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
 

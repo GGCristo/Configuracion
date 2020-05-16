@@ -1,7 +1,8 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
-source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette.sh"
+# Doesn't work at Konsole
+source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
