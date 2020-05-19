@@ -30,6 +30,8 @@
 -Nerdtree\
 -Vim-devicons\
 -Tabular\
--Switch.vim
+-Switch.vim\
+-List-Toggle\
+-vim-easymotion
 
 -Theme: Gruvbox
