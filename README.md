@@ -3,6 +3,7 @@
 ### Herramientas generales:
 -FZF\
 -Catch2\
+-Cppcheck\
 -thefuck\
 -hub\
 -colorls\
