@@ -58,6 +58,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'haya14busa/incsearch.vim'
   Plug 'AndrewRadev/switch.vim'
   Plug 'Valloric/ListToggle'
+  Plug 'easymotion/vim-easymotion'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -155,10 +156,10 @@ let g:lt_quickfix_list_toggle_map = '<F3>'
 " nnoremap <silent><F3> :copen<cr>
 " nnoremap <silent><leader><F3> :cclose<cr>
 
-nnoremap <silent><F4> :wa<bar>Make -C build<cr>:echo "😁Compiló😁"<cr>
-nnoremap <silent><leader>d :Make -C build debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :!clear<CR>:!make -C build run<CR>
-nnoremap <silent><S-F4> :make -C build clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <silent><F4> :wa<bar>Make<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><leader>d :Make debug<cr><cr>:echo "DEBUG"<cr>
+nnoremap <silent><leader><F4> :!clear<CR>:!make run<CR>
+nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
@@ -175,9 +176,9 @@ nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtg_a;<Esc>`t
 nnoremap <C-_> <C-I>
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
-inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>a
+inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
-inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>a
+inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -211,6 +212,7 @@ map <silent><leader>r :source $MYVIMRC<CR>
 map <silent><leader>bd :call Preserve("%bd<bar>e#<bar>bd#")<CR>
 nnoremap <leader>x *``cgn
 nnoremap <leader>X #``cgn
+map Y y$
 nnoremap n nzz
 nnoremap N nzz
 
@@ -222,7 +224,7 @@ nnoremap N nzz
 
 " ALE
 let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clangtidy', 'remove_trailing_lines', 'trim_whitespace']}
-let g:ale_linters = {'cpp': ['g++']}
+let g:ale_linters = {'cpp': ['g++','cppcheck']}
 let g:ale_open_list = 1
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
@@ -321,6 +323,8 @@ endfunction
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
 hi CocHighlightText ctermfg=black ctermbg=72 guifg=black guibg=#689d6a
+hi CoCHoverRange ctermfg=black ctermbg=72 guifg=black guibg=#689d6a
+
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
@@ -405,7 +409,7 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = '☰'
 let g:airline_symbols.maxlinenr = ''
-let g:airline_symbols.dirty='⚡'
+
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
@@ -505,4 +509,9 @@ map g* <Plug>(incsearch-nohl-g*)zz
 map g# <Plug>(incsearch-nohl-g#)zz
 
 " Switch.vim
-  let g:switch_mapping = "Q"
+let g:switch_mapping = "Q"
+
+" Easymotion
+let g:EasyMotion_do_mapping = 0
+nmap s <Plug>(easymotion-overwin-f2)
+let g:EasyMotion_smartcase = 1
