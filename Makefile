@@ -30,9 +30,10 @@ clean:
 
 .PHONY: test
 test: $(TESTBIN)
+	./bin/test
 
 bin/%: test/%.cpp test/catch.hpp
-	g++ $< -o $@
+	g++ -std=c++11 $< -o $@
 
 #build/(NOMBRE).o: src/(NOMBRE).cpp include/(NOMBRE).hpp include/.hpp
 	#g++ -c $< -o $@
