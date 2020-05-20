@@ -157,7 +157,7 @@ let g:lt_quickfix_list_toggle_map = '<F3>'
 " nnoremap <silent><leader><F3> :cclose<cr>
 
 nnoremap <silent><F4> :wa<bar>Make<cr>:echo "😁Compiló😁"<cr>
-nnoremap <silent><leader>d :Make debug<cr><cr>:echo "DEBUG"<cr>
+nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
 nnoremap <silent><leader><F4> :!clear<CR>:!make run<CR>
 nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
@@ -223,8 +223,10 @@ nnoremap N nzz
 :command! Q q
 
 " ALE
-let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace'], 'cpp' : ['clangtidy', 'remove_trailing_lines', 'trim_whitespace']}
-let g:ale_linters = {'cpp': ['g++','cppcheck']}
+let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
+let g:ale_linters = {'cpp': ['g++','cppcheck', 'clangtidy']}
+let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
+" let g:ale_cpp_clangtidy_checks = ['*']
 let g:ale_open_list = 1
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'

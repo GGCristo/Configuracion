@@ -2,5 +2,7 @@
 CARPETA=~/Escritorio/"${PWD##*/}_Cristo_García_González"
 mkdir -p $CARPETA
 cp -r * $CARPETA
-make -C $CARPETA/build/ clean
-tar -zcvf $CARPETA.tgz -C ~/Escritorio "${PWD##*/}_Cristo_García_González"
+make clean
+echo $CARPETA
+find . -path '*/.*' -prune -o -type f -print | zip $CARPETA -@
+# zip -r $CARPETA .

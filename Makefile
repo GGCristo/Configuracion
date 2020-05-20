@@ -10,6 +10,7 @@ CFLAGS = -g -pedantic-errors -Wall -Wextra  -std=c++17 -fsanitize=address -stati
 
 .PHONY: all
 all: $(OBJS)
+	mkdir -p bin
 	g++ $? -o bin/$(BIN)
 
 .PHONY: SFML
@@ -33,6 +34,7 @@ test: $(TESTBIN)
 	./bin/test
 
 bin/%: test/%.cpp test/catch.hpp
+	mkdir -p bin
 	g++ -std=c++11 $< -o $@
 
 #build/(NOMBRE).o: src/(NOMBRE).cpp include/(NOMBRE).hpp include/.hpp
