@@ -1,4 +1,4 @@
-# dotfiles :floppy_disk:
+# dotfiles <img src="https://media.giphy.com/media/du3J3cXyzhj75IOgvA/giphy.gif" width="60" height="60" />
 ## Archivos personales de configuracion
 ### Herramientas generales:
 -FZF\
