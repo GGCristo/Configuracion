@@ -4,11 +4,13 @@
 -FZF\
 -Catch2\
 -Cppcheck\
+-clang-tidy\
 -thefuck\
 -hub\
 -colorls\
 -bat\
--bash-git-prompt
+-bash-git-prompt\
+-Travis CI
 ### Vim Plugins:
 -Vim-plug\
 -ALE\
