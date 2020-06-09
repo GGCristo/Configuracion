@@ -1,8 +1,7 @@
 #!/bin/bash
 CARPETA=~/Escritorio/"${PWD##*/}_Cristo_García_González"
+make clean
 mkdir -p $CARPETA
 cp -r * $CARPETA
-make clean
-echo $CARPETA
 find . -path '*/.*' -prune -o -type f -print | zip $CARPETA -@
 # zip -r $CARPETA .

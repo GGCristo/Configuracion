@@ -225,9 +225,9 @@ nnoremap N nzz
 " ALE
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
 let g:ale_linters = {'cpp': ['g++','cppcheck', 'clangtidy']}
-let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
-" let g:ale_cpp_clangtidy_checks = ['*']
-let g:ale_open_list = 1
+" let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
+let g:ale_cpp_clangtidy_checks = ['clang-analyzer-*', 'performance-*', 'readability-*', 'modernize-*', 'bugprone-*']
+let g:ale_open_list = 0
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = ''
@@ -512,7 +512,10 @@ map g# <Plug>(incsearch-nohl-g#)zz
 
 " Switch.vim
 let g:switch_mapping = "Q"
-
+let g:switch_custom_definitions =
+    \ [
+    \   ['>', '<']
+    \ ]
 " Easymotion
 let g:EasyMotion_do_mapping = 0
 nmap s <Plug>(easymotion-overwin-f2)

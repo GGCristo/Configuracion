@@ -4,6 +4,7 @@ cp $HOME/dotfiles/.gitignore .
 cp $HOME/dotfiles/.vimspector.json .
 cp $HOME/dotfiles/Makefile build/
 cp $HOME/dotfiles/catch.hpp test/
+cp $HOME/dotfiles/.travis.yml .
 git init
 if [[ "$1" == "private" ]]; 
 then

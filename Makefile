@@ -37,7 +37,7 @@ bin/%: test/%.cpp test/catch.hpp
 	mkdir -p bin
 	g++ -std=c++11 $< -o $@
 
-#build/(NOMBRE).o: src/(NOMBRE).cpp include/(NOMBRE).hpp include/.hpp
+#build/NOMBRE.o: src/NOMBRE.cpp include/NOMBRE.hpp include/NOMBRE.hpp
 	#g++ -c $< -o $@
 ###################################################################
 
