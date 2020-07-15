@@ -59,7 +59,18 @@ ccls (para C++):
  ```sh
  (sudo) cmake --build Release --target install
  ```
-Algun font de Nerdfonts\
+El corrector ortográfico\
+https://www.atareao.es/tutorial/vim/el-corrector-ortografico-en-vim/
+```sh
+mkdir -p ~/.vim/spell
+cd ~/.vim/spell
+wget http://ftp.vim.org/vim/runtime/spell/es.latin1.spl
+wget http://ftp.vim.org/vim/runtime/spell/es.latin1.sug
+wget http://ftp.vim.org/vim/runtime/spell/es.utf-8.spl
+wget http://ftp.vim.org/vim/runtime/spell/es.utf-8.sug
+```
+
+Algun font de Nerdfonts
 
 Se recomienda para desarrollo en C++:\
 Cppcheck\
