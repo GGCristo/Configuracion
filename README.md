@@ -42,9 +42,9 @@
 Para instalar Vim (versión IDE).\
 `stty -ixon` en el script de arranque (p. ej: .bashrc)\
 Dependencias:\
-Vim version 8.2 con python 3\
-node.js 10.12 o superior (https://www.digitalocean.com/community/tutorials/como-instalar-node-js-en-ubuntu-18-04-es) \
-ccls (para C++):
+o Vim version 8.2 con python 3\
+o node.js 10.12 o superior (https://www.digitalocean.com/community/tutorials/como-instalar-node-js-en-ubuntu-18-04-es) \
+o ccls (para C++):
 >Build;
  ```sh
  cd
@@ -59,7 +59,9 @@ ccls (para C++):
  ```sh
  (sudo) cmake --build Release --target install
  ```
-El corrector ortográfico\
+o Ripgrep (recomendado)
+
+### El corrector ortográfico
 https://www.atareao.es/tutorial/vim/el-corrector-ortografico-en-vim/
 ```sh
 mkdir -p ~/.vim/spell
