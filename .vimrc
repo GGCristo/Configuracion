@@ -1,3 +1,18 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"    _____  .__        .__
+"   /     \ |__| ___  _|__| ____________   ____
+"  /  \ /  \|  | \  \/ /  |/     \_  __ \_/ ___\
+" /    Y    \  |  \   /|  |  Y Y  \  | \/\  \___
+" \____|__  /__|   \_/ |__|__|_|  /__|    \___  >
+"         \/                    \/            \/
+"   ________  _________________        .__          __
+"  /  _____/ /  _____/\_   ___ \_______|__| _______/  |_  ____
+" /   \  ___/   \  ___/    \  \/\_  __ \  |/  ___/\   __\/  _ \
+" \    \_\  \    \_\  \     \____|  | \/  |\___ \  |  | (  <_> )
+"  \______  /\______  /\______  /|__|  |__/____  > |__|  \____/
+"         \/        \/        \/               \/
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Basic ##############
 highlight Normal ctermbg=NONE
 set nocompatible
 set noswapfile
@@ -7,7 +22,6 @@ set ballooneval
 set balloonevalterm
 set complete=.,w,b,u,t,i,kspell
 set background=dark
-" Basic ##############
 filetype plugin indent on
 packadd termdebug
 syntax on
@@ -29,7 +43,61 @@ set incsearch
 set showbreak=↪\
 set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set switchbuf+=usetab,newtab
-setlocal spell spelllang=es,en_us
+set spelllang=es,en_us
+
+set laststatus=2
+" Persist undo history between file editing sessions.
+set undofile
+set undolevels=5000
+set undodir=~/.vim/undodir
+
+set tabstop=2       " The width of a TAB is set to 2.
+                    " Still it is a \t. It is just that
+                    " Vim will interpret it to be having
+                    " a width of 2.
+
+set shiftwidth=2    " Indents will have a width of 2
+
+set softtabstop=2   " Sets the number of columns for a TAB
+
+set expandtab       " Expand TABs to spaces
+
+filetype plugin on
+
+autocmd InsertEnter * set cul
+autocmd InsertLeave * set nocul
+
+call plug#begin('~/.vim/plugged')
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
+  Plug 'junegunn/fzf.vim'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'dense-analysis/ale'
+
+  Plug 'tpope/vim-obsession'
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-dispatch'
+  Plug 'majutsushi/tagbar'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+  Plug 'mhinz/vim-startify'
+  Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
+  Plug 'airblade/vim-gitgutter'
+  Plug 'honza/vim-snippets'
+  Plug 'ryanoasis/vim-devicons'
+  Plug 'preservim/nerdtree'
+  Plug 'godlygeek/tabular'
+  Plug 'simnalamburt/vim-mundo'
+  Plug 'haya14busa/incsearch.vim'
+  Plug 'AndrewRadev/switch.vim'
+  Plug 'Valloric/ListToggle'
+  Plug 'easymotion/vim-easymotion'
+
+  Plug 'gruvbox-community/gruvbox'
+call plug#end()
+
+" VISUALS
 augroup my_colours
   autocmd!
   autocmd ColorScheme hi SpellBad cterm=reverse
@@ -70,75 +138,11 @@ augroup SpellUnderline
     \   gui=Undercurl
     \   guisp=Red
   augroup END
-call plug#begin('~/.vim/plugged')
-  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-  Plug 'MaskRay/ccls', { 'dir': '~/ccls' }
-
-  Plug 'junegunn/fzf.vim'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'dense-analysis/ale'
-
-  Plug 'tpope/vim-obsession'
-  Plug 'tpope/vim-fugitive'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-dispatch'
-  Plug 'majutsushi/tagbar'
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
-  Plug 'mhinz/vim-startify'
-  Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
-  Plug 'airblade/vim-gitgutter'
-  Plug 'honza/vim-snippets'
-  Plug 'ericcurtin/CurtineIncSw.vim'
-  Plug 'ryanoasis/vim-devicons'
-  Plug 'preservim/nerdtree'
-  Plug 'godlygeek/tabular'
-  Plug 'simnalamburt/vim-mundo'
-  Plug 'haya14busa/incsearch.vim'
-  Plug 'AndrewRadev/switch.vim'
-  Plug 'Valloric/ListToggle'
-  Plug 'easymotion/vim-easymotion'
-
-  Plug 'gruvbox-community/gruvbox'
-call plug#end()
-
 
 set t_Co=256
 let g:gruvbox_contrast_dark='medium'
 set termguicolors
 colorscheme gruvbox
-
-set laststatus=2
-" Persist undo history between file editing sessions.
-set undofile
-set undolevels=5000
-set undodir=~/.vim/undodir
-
-set tabstop=2       " The width of a TAB is set to 2.
-                    " Still it is a \t. It is just that
-                    " Vim will interpret it to be having
-                    " a width of 2.
-
-set shiftwidth=2    " Indents will have a width of 2
-
-set softtabstop=2   " Sets the number of columns for a TAB
-
-set expandtab       " Expand TABs to spaces
-
-filetype plugin on
-
-highlight CursorColumn  ctermbg=NONE guibg=NONE
-autocmd CursorHoldI * highlight CursorColumn term=underline ctermbg=237 guibg=#3c3836
-autocmd CursorHoldI * highlight CursorLine ctermbg=NONE guibg=NONE
-autocmd CursorHold * highlight CursorLine term=underline ctermbg=237 guibg=#3c3836
-autocmd CursorHold * highlight CursorColumn term=underline ctermbg=NONE guibg=NONE
-augroup CursorLine
-  au!
-  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-  au WinLeave * setlocal nocursorline
-augroup END
-" set cursorline
-" set cursorcolumn
 
 "FILE BROWSING
 let g:netrw_banner=0       " disable annoying banne
@@ -155,9 +159,8 @@ let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
 set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
+" MAPPING && FUNCTIONS
 
-" Mapping && Functions
-"
 function! ExecuteMacroOverVisualRange()
   echo "@".getcmdline()
   execute ":'<,'>normal @".nr2char(getchar())
@@ -210,7 +213,7 @@ endif
 
 nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
-map <silent><leader><leader> :call CurtineIncSw()<CR>
+map <silent><leader><leader> :CocCommand clangd.switchSourceHeader<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtg_a;<Esc>`t
 nnoremap <C-_> <C-I>
@@ -229,7 +232,7 @@ else
   nnoremap <silent><C-N> :Lines<CR>
 endif
 nnoremap <silent><leader>gw :Gwrite<cr>
-nnoremap <silent><leader>gl :Commits<cr>
+nnoremap <silent><leader>gc :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Git push origin HEAD<CR>
@@ -254,6 +257,8 @@ nnoremap <leader>X #``cgn
 map Y y$
 nnoremap n nzz
 nnoremap N nzz
+
+nnoremap <silent><leader>v :vsp $MYVIMRC<CR> <C-W>H
 
 " Spelling
 :command! WQ wq
@@ -292,6 +297,9 @@ packloadall
 " Load all of the helptags now, after plugins have been loaded.
 " All messages and errors will be ignored.
 " " TextEdit might fail if hidden is not set.
+
+
+" COC
 
 " Some servers have issues with backup files, see #649.
 set nobackup
@@ -436,7 +444,7 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-" Airline
+" AIRLINE
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
@@ -465,13 +473,14 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 
-"Tagbar
+"TAGBAR
 let g:tagbar_autoclose=1
+
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
 
-"Gitgutter
+"GITGUTTER
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_sign_priority = 8
 let g:gitgutter_sign_added              = '┃'
@@ -487,8 +496,7 @@ hi clear SignColumn
 "highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
 "highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
 
-" Startify
-
+" STARTIFY
 function! s:filter_header(lines) abort
     let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
     let centered_lines = map(copy(a:lines),
@@ -523,7 +531,7 @@ hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
    "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
 
-"NERDTree
+"NERDTREE
 let NERDTreeQuitOnOpen = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let NERDTreeAutoDeleteBuffer = 1
@@ -536,7 +544,7 @@ function MyNerdToggle()
     endif
 endfunction
 
-" Incsearch
+" INCSEARCH
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
@@ -549,13 +557,14 @@ map #  <Plug>(incsearch-nohl-#)zz
 map g* <Plug>(incsearch-nohl-g*)zz
 map g# <Plug>(incsearch-nohl-g#)zz
 
-" Switch.vim
+" SWITCH.VIM
 let g:switch_mapping = "Q"
 let g:switch_custom_definitions =
     \ [
     \   ['>', '<']
     \ ]
-" Easymotion
+
+" EASYMOTION
 let g:EasyMotion_do_mapping = 0
 nmap s <Plug>(easymotion-overwin-f2)
 let g:EasyMotion_smartcase = 1

@@ -31,7 +31,11 @@ clean:
 
 .PHONY: test
 test: $(TESTBIN)
+ifneq ("$(wildcard bin/test)","")
 	./bin/test
+else
+	@echo "No hay ficheros de test"
+endif
 
 bin/%: test/%.cpp test/catch.hpp
 	mkdir -p bin
