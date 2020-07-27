@@ -12,7 +12,6 @@
 "  \______  /\______  /\______  /|__|  |__/____  > |__|  \____/
 "         \/        \/        \/               \/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Basic ##############
 highlight Normal ctermbg=NONE
 set nocompatible
 set noswapfile
@@ -93,6 +92,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'AndrewRadev/switch.vim'
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
+  Plug 'jeaye/color_coded', { 'do': '~/dotfiles/color_coded_script'}
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
