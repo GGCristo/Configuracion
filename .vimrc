@@ -66,6 +66,12 @@ filetype plugin on
 autocmd InsertEnter * set cul
 autocmd InsertLeave * set nocul
 
+if has('win32') || has ('win64')
+    let $VIMHOME = $VIM."/vimfiles"
+else
+    let $VIMHOME = $HOME."/.vim"
+endif
+
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -175,6 +181,14 @@ function! Preserve(command)
   call setpos('.', save_cursor)
   call setreg('/', old_query)
 endfunction
+
+" Puedo usar regex para rellenar args
+" https://stackoverflow.com/questions/9033239/vim-regex-or-in-file-name-pattern-on-windows:w
+function! ArgsPattern(pat)
+  let file_list = filter(split(globpath('.','**'),nr2char(10)), 'v:val =~ ''' . substitute(a:pat,"'","''",'g') . '''')
+  execute 'args ' . join(map(file_list,'fnameescape(v:val)'),' ')
+endfunction
+command! -nargs=+ ArgsPattern call ArgsPattern(<q-args>)
 
 function! SaveSession()
   let dir = finddir('src/..',';')
@@ -444,6 +458,8 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+
 " AIRLINE
 let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
 let g:airline#extensions#tabline#enabled = 1
@@ -478,6 +494,7 @@ let g:tagbar_autoclose=1
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+let g:vimspector_bottombar_height = 15
 packadd! vimspector
 
 "GITGUTTER

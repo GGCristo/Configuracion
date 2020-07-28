@@ -1,4 +1,5 @@
 {
+    "yank.highlight.duration" : 300,
     "diagnostic.enable": false,
     "coc.preferences.currentFunctionSymbolAutoUpdate": true,
     "suggest.enablePreview": true,
