@@ -212,7 +212,7 @@ let g:lt_quickfix_list_toggle_map = '<F3>'
 " nnoremap <silent><F3> :copen<cr>
 " nnoremap <silent><leader><F3> :cclose<cr>
 
-nnoremap <silent><F4> :wa<bar>Make<cr>:echo "😁Compiló😁"<cr>
+nnoremap <silent><F4> :wa<bar>Make<cr>
 nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
 nnoremap <silent><leader><F4> :!clear<CR>:!make run<CR>
 nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
@@ -220,7 +220,7 @@ nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
-  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem .<CR>
+  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/<CR>
 else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
@@ -239,7 +239,11 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
+if (executable("rg") && executable("bat"))
+nnoremap <silent><C-P> :call Fzf_dev()<CR>
+else
 nnoremap <silent><C-P> :Files<CR>
+endif
 if executable ("rg")
   nnoremap <silent><C-N> :Rg<CR>
 else
@@ -300,7 +304,7 @@ let g:ale_lint_on_text_changed=1
 let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+"let g:ale_set_quickfix = 1
 
 let g:ale_lint_delay = 1000
 " Put these lines at the very end of your vimrc file.
@@ -438,7 +442,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings using CoCList:
 " Show all diagnostics.
@@ -476,7 +480,6 @@ let g:airline_symbols.linenr = '☰'
 let g:airline_symbols.maxlinenr = ''
 
 " FZF
-set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_action = {
   \ 'enter': 'drop',
@@ -488,6 +491,39 @@ command! -bang -nargs=? -complete=dir Files
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 command! -bang -nargs=* Rg
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
+
+" Files + devicons
+function! Fzf_dev()
+  let l:fzf_files_options = '--preview "bat --style=numbers,changes --color always {2..-1} | head -'.&lines.'"'
+
+  function! s:files()
+    let l:files = split(system("rg --files"), '\n')
+    return s:prepend_icon(l:files)
+  endfunction
+
+  function! s:prepend_icon(candidates)
+    let l:result = []
+    for l:candidate in a:candidates
+      let l:filename = fnamemodify(l:candidate, ':p:t')
+      let l:icon = WebDevIconsGetFileTypeSymbol(l:filename, isdirectory(l:filename))
+      call add(l:result, printf('%s %s', l:icon, l:candidate))
+    endfor
+
+    return l:result
+  endfunction
+
+  function! s:edit_file(item)
+    let l:pos = stridx(a:item, ' ')
+    let l:file_path = a:item[pos+1:-1]
+    execute 'silent e' l:file_path
+  endfunction
+
+  call fzf#run({
+        \ 'source': <sid>files(),
+        \ 'sink':   function('s:edit_file'),
+        \ 'options': '-m ' . l:fzf_files_options,
+        \ 'down':    '40%' })
+endfunction
 
 "TAGBAR
 let g:tagbar_autoclose=1

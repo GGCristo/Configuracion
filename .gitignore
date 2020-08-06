@@ -1,6 +1,5 @@
 *.o
 .vimspector.json
 .vscode/
-catch.hpp
 bin/
 .DS_Store

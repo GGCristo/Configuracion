@@ -3,6 +3,7 @@ BIN = main
 TEST = $(wildcard test/*.cpp)
 TESTBIN = $(patsubst test/%.cpp, bin/%, $(TEST))
 SRC = $(wildcard src/*.cpp)
+SRC := $(filter-out src/main.cpp , $(SRC))
 OBJS = $(patsubst src/%.cpp, build/%.o, $(SRC))
 HEADER = #Escribe aquí el nombre de las clases o fichero de funciones con template
 HEADER := $(patsubst %, include/%.hpp, $(HEADER))
@@ -11,11 +12,11 @@ CFLAGS = -g -pedantic-errors -Wall -Wextra  -std=c++17 -fsanitize=address -stati
 .PHONY: all
 all: $(OBJS)
 	mkdir -p bin
-	g++ $? -o bin/$(BIN)
+	g++ src/main.cpp $? -o bin/$(BIN)
 
 .PHONY: SFML
 SFML: $(OBJS)
-	g++ $? -o bin/$(BIN) -lsfml-graphics -lsfml-window -lsfml-system
+	g++ src/main.cpp $? -o bin/$(BIN) -lsfml-graphics -lsfml-window -lsfml-system
 
 .PHONY: run
 run:
@@ -31,15 +32,11 @@ clean:
 
 .PHONY: test
 test: $(TESTBIN)
-ifneq ("$(wildcard bin/test)","")
 	./bin/test
-else
-	@echo "No hay ficheros de test"
-endif
 
-bin/%: test/%.cpp test/catch.hpp
+bin/%: test/%.cpp test/catch.hpp $(SRC)
 	mkdir -p bin
-	g++ -std=c++11 $< -o $@
+	g++ -std=c++11 $(SRC) $< -o $@
 
 #build/NOMBRE.o: src/NOMBRE.cpp include/NOMBRE.hpp include/NOMBRE.hpp
 	#g++ -c $< -o $@

@@ -1,6 +1,8 @@
 {
     "yank.highlight.duration" : 300,
-    "diagnostic.enable": false,
+    "coc.preferences.useQuickfixForLocations": false,
+    "coc.preferences.formatOnType": true,
+    "diagnostic.enable": true,
     "coc.preferences.currentFunctionSymbolAutoUpdate": true,
     "suggest.enablePreview": true,
     "clangd.path": "/home/cristo/.config/coc/extensions/coc-clangd-data/install/10.0.0/clangd_10.0.0/bin/clangd"

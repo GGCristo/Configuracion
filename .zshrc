@@ -106,7 +106,7 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind ctrl-y:preview-up,ctrl-e:preview-down'
 if [ -x "$(command -v rg)" ]; then
-export FZF_DEFAULT_COMMAND='rg --files'
+export FZF_DEFAULT_COMMAND='rg --hidden --no-ignore --files'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
@@ -215,5 +215,4 @@ eval $(thefuck --alias)
 stty -ixon
 
 alias vim="/usr/bin/vim"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(hub alias -s)"

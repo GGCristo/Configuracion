@@ -127,8 +127,9 @@ export NVM_DIR="/home/cristo/.nvm"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export FZF_DEFAULT_OPTS='--bind ctrl-y:preview-up,ctrl-e:preview-down'
 if [ -x "$(command -v rg)" ]; then
-export FZF_DEFAULT_COMMAND='rg --files'
+export FZF_DEFAULT_COMMAND='rg --hidden --no-ignore --files'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 
