@@ -109,6 +109,7 @@ if [ -x "$(command -v rg)" ]; then
 export FZF_DEFAULT_COMMAND='rg --hidden --no-ignore --files'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
+export FZF_ALT_C_COMMAND="ls -d .*/* */*"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 
 alias update='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'

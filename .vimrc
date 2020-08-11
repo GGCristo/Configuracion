@@ -3,14 +3,12 @@
 "   /     \ |__| ___  _|__| ____________   ____
 "  /  \ /  \|  | \  \/ /  |/     \_  __ \_/ ___\
 " /    Y    \  |  \   /|  |  Y Y  \  | \/\  \___
-" \____|__  /__|   \_/ |__|__|_|  /__|    \___  >
-"         \/                    \/            \/
+" \____|____/__|   \_/ |__|__|_|__/__|    \_____>
 "   ________  _________________        .__          __
 "  /  _____/ /  _____/\_   ___ \_______|__| _______/  |_  ____
 " /   \  ___/   \  ___/    \  \/\_  __ \  |/  ___/\   __\/  _ \
 " \    \_\  \    \_\  \     \____|  | \/  |\___ \  |  | (  <_> )
-"  \______  /\______  /\______  /|__|  |__/____  > |__|  \____/
-"         \/        \/        \/               \/
+"  \________/\________/\________/|__|  |__/______> |__|  \____/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 highlight Normal ctermbg=NONE
 set nocompatible
@@ -26,7 +24,7 @@ packadd termdebug
 syntax on
 set encoding=utf-8
 set mouse=a
-set termwinsize=20x0
+"set termwinsize=20x0
 set number
 set relativenumber
 set clipboard^=unnamedplus
@@ -66,12 +64,6 @@ filetype plugin on
 autocmd InsertEnter * set cul
 autocmd InsertLeave * set nocul
 
-if has('win32') || has ('win64')
-    let $VIMHOME = $VIM."/vimfiles"
-else
-    let $VIMHOME = $HOME."/.vim"
-endif
-
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -99,6 +91,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
   Plug 'jeaye/color_coded', { 'do': '~/dotfiles/color_coded_script'}
+  Plug 'tweekmonster/startuptime.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -239,11 +232,7 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
-if (executable("rg") && executable("bat"))
-nnoremap <silent><C-P> :call Fzf_dev()<CR>
-else
-nnoremap <silent><C-P> :Files<CR>
-endif
+nnoremap <expr> <C-P> (len(system('git rev-parse')) ? ':Files' : ':GFiles --cached --others --exclude-standard')."\<cr>"
 if executable ("rg")
   nnoremap <silent><C-N> :Rg<CR>
 else
@@ -254,7 +243,8 @@ nnoremap <silent><leader>gc :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Git push origin HEAD<CR>
-nnoremap <silent><leader>gb :!hub browse<CR>
+nnoremap <silent><leader>gh :!hub browse<CR>
+map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
 imap jk <Esc>
 inoremap <C-H> <Left>
@@ -480,6 +470,7 @@ let g:airline_symbols.linenr = '☰'
 let g:airline_symbols.maxlinenr = ''
 
 " FZF
+set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_action = {
   \ 'enter': 'drop',
@@ -515,7 +506,7 @@ function! Fzf_dev()
   function! s:edit_file(item)
     let l:pos = stridx(a:item, ' ')
     let l:file_path = a:item[pos+1:-1]
-    execute 'silent e' l:file_path
+    execute 'silent tab drop' l:file_path
   endfunction
 
   call fzf#run({
@@ -530,7 +521,6 @@ let g:tagbar_autoclose=1
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
-let g:vimspector_bottombar_height = 15
 packadd! vimspector
 
 "GITGUTTER
