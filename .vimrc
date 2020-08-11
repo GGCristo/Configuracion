@@ -65,9 +65,9 @@ filetype plugin on
 
 autocmd InsertEnter * set cul
 autocmd InsertLeave * set nocul
-
-if has('win32') || has ('win64')
-    let $VIMHOME = $VIM."/vimfiles"
+":h modifyOtherKeys
+let &t_TI = ""
+let &t_TE = ""
 else
     let $VIMHOME = $HOME."/.vim"
 endif
