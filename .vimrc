@@ -63,6 +63,9 @@ filetype plugin on
 
 autocmd InsertEnter * set cul
 autocmd InsertLeave * set nocul
+":h modifyOtherKeys
+let &t_TI = ""
+let &t_TE = ""
 
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
