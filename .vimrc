@@ -87,7 +87,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'honza/vim-snippets'
   Plug 'ryanoasis/vim-devicons'
   Plug 'preservim/nerdtree'
-  Plug 'godlygeek/tabular'
+  Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
   Plug 'AndrewRadev/switch.vim'
@@ -614,3 +614,30 @@ let g:switch_custom_definitions =
 let g:EasyMotion_do_mapping = 0
 nmap s <Plug>(easymotion-overwin-f2)
 let g:EasyMotion_smartcase = 1
+
+" Vim-Easy-Align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+let g:easy_align_delimiters = {
+\ '>': { 'pattern': '>>\|=>\|>' },
+\ '<': { 'pattern': '<<\|<' },
+\ '/': {
+\     'pattern':         '//\+\|/\*\|\*/',
+\     'delimiter_align': 'l',
+\     'ignore_groups':   ['!Comment'] },
+\ ']': {
+\     'pattern':       '[[\]]',
+\     'left_margin':   0,
+\     'right_margin':  0,
+\     'stick_to_left': 0
+\   },
+\ ')': {
+\     'pattern':       '[()]',
+\     'left_margin':   0,
+\     'right_margin':  0,
+\     'stick_to_left': 0
+\   }
+\ }
