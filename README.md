@@ -43,6 +43,22 @@ Para instalar Vim (versión IDE).\
 `stty -ixon` en el script de arranque (p. ej: .bashrc)\
 Dependencias:\
 o Vim version 8.2 con python 3\
+o Universal-Ctags
+```
+# install libjansson first
+$ sudo apt-get install libjansson-dev
+
+# then compile and install universal-ctags.
+#
+# NOTE: Don't use `sudo apt install ctags`, which will install exuberant-ctags and it's not guaranteed to work with vista.vim.
+#
+$ git clone https://github.com/universal-ctags/ctags.git --depth=1
+$ cd ctags
+$ ./autogen.sh
+$ ./configure
+$ make
+$ sudo make install
+```
 o node.js 10.12 o superior (https://www.digitalocean.com/community/tutorials/como-instalar-node-js-en-ubuntu-18-04-es) \
 o ccls (para C++):
 >Build;
