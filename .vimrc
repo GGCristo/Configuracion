@@ -10,6 +10,7 @@
 " \    \_\  \    \_\  \     \____|  | \/  |\___ \  |  | (  <_> )
 "  \________/\________/\________/|__|  |__/______> |__|  \____/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Basic
 highlight Normal ctermbg=NONE
 set nocompatible
 set noswapfile
@@ -67,6 +68,12 @@ autocmd InsertLeave * set nocul
 let &t_TI = ""
 let &t_TE = ""
 
+augroup remember_folds
+  autocmd!
+  autocmd BufWinLeave *.* mkview
+  autocmd BufWinEnter *.* silent! loadview
+augroup END
+
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -80,7 +87,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-dispatch'
   Plug 'majutsushi/tagbar'
   Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
@@ -93,8 +99,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'AndrewRadev/switch.vim'
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
-  Plug 'jeaye/color_coded', { 'do': '~/dotfiles/color_coded_script'}
   Plug 'tweekmonster/startuptime.vim'
+  Plug 'sheerun/vim-polyglot'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -309,7 +315,6 @@ packloadall
 " All messages and errors will be ignored.
 " " TextEdit might fail if hidden is not set.
 
-
 " COC
 
 " Some servers have issues with backup files, see #649.
@@ -486,39 +491,6 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 
-" Files + devicons
-function! Fzf_dev()
-  let l:fzf_files_options = '--preview "bat --style=numbers,changes --color always {2..-1} | head -'.&lines.'"'
-
-  function! s:files()
-    let l:files = split(system("rg --files"), '\n')
-    return s:prepend_icon(l:files)
-  endfunction
-
-  function! s:prepend_icon(candidates)
-    let l:result = []
-    for l:candidate in a:candidates
-      let l:filename = fnamemodify(l:candidate, ':p:t')
-      let l:icon = WebDevIconsGetFileTypeSymbol(l:filename, isdirectory(l:filename))
-      call add(l:result, printf('%s %s', l:icon, l:candidate))
-    endfor
-
-    return l:result
-  endfunction
-
-  function! s:edit_file(item)
-    let l:pos = stridx(a:item, ' ')
-    let l:file_path = a:item[pos+1:-1]
-    execute 'silent tab drop' l:file_path
-  endfunction
-
-  call fzf#run({
-        \ 'source': <sid>files(),
-        \ 'sink':   function('s:edit_file'),
-        \ 'options': '-m ' . l:fzf_files_options,
-        \ 'down':    '40%' })
-endfunction
-
 "TAGBAR
 let g:tagbar_autoclose=1
 
@@ -641,3 +613,40 @@ let g:easy_align_delimiters = {
 \     'stick_to_left': 0
 \   }
 \ }
+
+" Polyglot
+" C++
+let g:cpp_class_scope_highlight = 1
+"Highlighting of class scope is disabled by default. To enable set
+
+let g:cpp_class_scope_highlight = 1
+
+"Highlighting of member variables is disabled by default. To enable set
+
+let g:cpp_member_variable_highlight = 1
+
+"Highlighting of class names in declarations is disabled by default. To enable set
+
+let g:cpp_class_decl_highlight = 1
+
+"Highlighting of POSIX functions is disabled by default. To enable set
+
+let g:cpp_posix_standard = 1
+
+"There are two ways to highlight template functions. Either
+
+let g:cpp_experimental_simple_template_highlight = 1
+
+"which works in most cases, but can be a little slow on large files. Alternatively set
+
+"let g:cpp_experimental_template_highlight = 1
+
+"which is a faster implementation but has some corner cases where it doesn't work.
+
+"Note: C++ template syntax is notoriously difficult to parse, so don't expect this feature to be perfect.
+
+"Highlighting of library concepts is enabled by
+
+let g:cpp_concepts_highlight = 1
+
+"This will highlight the keywords concept and requires as well as all named requirements (like DefaultConstructible) in the standard library.
