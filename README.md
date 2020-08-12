@@ -17,7 +17,6 @@
 -coc.nvim
  - coc-pairs
  - coc-snippets
- - coc-clangd
  
 -Tagbar\
 -fzf.vim\
@@ -26,7 +25,7 @@
 -vim-airline\
 -vim-startify\
 -vim-gitgutter\
--vimspector (experimental)\
+-vimspector\
 -vim-snippets\
 -vim-surround\
 -vim-dispatch\
