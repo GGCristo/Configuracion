@@ -44,6 +44,21 @@ Para instalar Vim (versión IDE).\
 Dependencias:\
 o Vim version 8.2 con python 3\
 o node.js 10.12 o superior (https://www.digitalocean.com/community/tutorials/como-instalar-node-js-en-ubuntu-18-04-es) \
+o ccls (para C++):
+>Build;
+ ```sh
+ cd
+ git clone --depth=1 --recursive https://github.com/MaskRay/ccls
+ cd ccls
+ wget -c http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+ tar xf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+ cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PWD/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04
+ cmake --build Release
+ ```
+>Install;
+ ```sh
+ (sudo) cmake --build Release --target install
+ ```
 o Ripgrep (recomendado)
 
 ### El corrector ortográfico
