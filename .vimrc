@@ -68,17 +68,18 @@ autocmd InsertLeave * set nocul
 let &t_TI = ""
 let &t_TE = ""
 
-"augroup remember_folds
-"  autocmd!
-"  autocmd BufWinLeave *.* mkview
-"  autocmd BufWinEnter *.* silent! loadview
-"augroup END
+augroup remember_folds
+  autocmd!
+  autocmd BufWinLeave *.* mkview
+  autocmd BufWinEnter *.* silent! loadview
+augroup END
 
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'junegunn/fzf.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'jackguo380/vim-lsp-cxx-highlight'
   Plug 'dense-analysis/ale'
 
   Plug 'tpope/vim-obsession'
@@ -92,15 +93,16 @@ call plug#begin('~/.vim/plugged')
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
   Plug 'ryanoasis/vim-devicons'
-  Plug 'preservim/nerdtree'
+  Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
   Plug 'AndrewRadev/switch.vim'
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
-  Plug 'jeaye/color_coded', { 'do': '~/dotfiles/color_coded_script'}
   Plug 'tweekmonster/startuptime.vim'
+  Plug 'liuchengxu/vista.vim'
+  Plug 'ericcurtin/CurtineIncSw.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -229,7 +231,7 @@ endif
 
 nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
-map <silent><leader><leader> :CocCommand clangd.switchSourceHeader<cr>
+map <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtg_a;<Esc>`t
 nnoremap <C-_> <C-I>
@@ -274,8 +276,11 @@ nnoremap <leader>X #``cgn
 map Y y$
 nnoremap n nzz
 nnoremap N nzz
-
 nnoremap <silent><leader>v :vsp $MYVIMRC<CR> <C-W>H
+" Experimental
+nnoremap <expr> <Right> &ft ==# 'qf' ? ':col<cr>' : 'jk<Right>'
+nnoremap <expr> <Left> &ft ==# 'qf' ? ':cnew<cr>' : 'jk<Left>'
+nnoremap <silent><leader>p :pu<CR>
 
 " Spelling
 :command! WQ wq
@@ -613,3 +618,21 @@ let g:easy_align_delimiters = {
 \     'stick_to_left': 0
 \   }
 \ }
+" Vista
+if filereadable(expand('~/.vim/plugged/vista.vim/plugin/vista.vim'))
+  nnoremap <C-M> :Vista finder coc<CR>
+  " How each level is indented and what to prepend.
+  " This could make the display more compact or more spacious.
+  " e.g., more compact: ["▸ ", ""]
+  " Note: this option only works the LSP executives, doesn't work for `:Vista ctags`.
+  let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
+
+  " Executive used when opening vista sidebar without specifying it.
+  " See all the avaliable executives via `:echo g:vista#executives`.
+  let g:vista_default_executive = 'ctags'
+
+  " To enable fzf's preview window set g:vista_fzf_preview.
+  " The elements of g:vista_fzf_preview will be passed as arguments to fzf#vim#with_preview()
+  " For example:
+  let g:vista_fzf_preview = ['right:50%']
+endif
