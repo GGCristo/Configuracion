@@ -86,8 +86,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-dispatch'
+  Plug 'rbong/vim-crystalline'
   Plug 'majutsushi/tagbar'
-  Plug 'vim-airline/vim-airline'
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
@@ -101,7 +101,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
   Plug 'tweekmonster/startuptime.vim'
-  Plug 'liuchengxu/vista.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
 
   Plug 'gruvbox-community/gruvbox'
@@ -266,6 +265,9 @@ inoremap <C-L> <Right>
 vnoremap <silent><K> :m '<-2<CR>gv=gv
 vnoremap <silent><J> :m '>+1<CR>gv=gv
 
+nnoremap <silent><TAB> :bn<CR>
+nnoremap <silent><S-TAB> :bp<CR>
+
 inoremap {;<CR> {<CR>};<ESC>O
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
@@ -305,7 +307,7 @@ let g:ale_lint_on_text_changed=1
 let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
-"let g:ale_set_quickfix = 1
+let g:ale_set_quickfix = 1
 
 let g:ale_lint_delay = 1000
 " Put these lines at the very end of your vimrc file.
@@ -427,8 +429,8 @@ omap af <Plug>(coc-funcobj-a)
 " Use <TAB> for selections ranges.
 " NOTE: Requires 'textDocument/selectionRange' support from the language server.
 " coc-tsserver, coc-python are the examples of servers that support it.
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
+"nmap <silent> <TAB> <Plug>(coc-range-select)
+"xmap <silent> <TAB> <Plug>(coc-range-select)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -463,21 +465,6 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 "nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
-
-" AIRLINE
-let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#ale#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline_theme="dark"
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = '☰'
-let g:airline_symbols.maxlinenr = ''
 
 " FZF
 set rtp+=~/.fzf
@@ -616,25 +603,64 @@ let g:easy_align_delimiters = {
 \   }
 \ }
 
-" Vista
-if filereadable(expand('~/.vim/plugged/vista.vim/plugin/vista.vim'))
-  nnoremap <C-M> :Vista finder coc<CR>
-  " How each level is indented and what to prepend.
-  " This could make the display more compact or more spacious.
-  " e.g., more compact: ["▸ ", ""]
-  " Note: this option only works the LSP executives, doesn't work for `:Vista ctags`.
-  let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
-
-  " Executive used when opening vista sidebar without specifying it.
-  " See all the avaliable executives via `:echo g:vista#executives`.
-  let g:vista_default_executive = 'ctags'
-
-  " To enable fzf's preview window set g:vista_fzf_preview.
-  " The elements of g:vista_fzf_preview will be passed as arguments to fzf#vim#with_preview()
-  " For example:
-  let g:vista_fzf_preview = ['right:50%']
-endif
-
 " vim-lsp-cxx-highlight
 " Change member variables
 hi LspCxxHlGroupMemberVariable ctermfg=21 guifg=#83A598
+
+" vim-crystalline
+
+function! StatusLine(current, width)
+  let l:s = ''
+
+  if a:current
+    let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
+  else
+    let l:s .= '%#CrystallineInactive#'
+  endif
+  let l:s .= ' %f%h%w%m%r '
+  if a:current
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+  endif
+
+  let l:s .= '%='
+  if a:current
+    let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
+    let l:s .= crystalline#left_mode_sep('')
+  endif
+  if a:width > 80
+    let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
+  else
+    let l:s .= ' '
+  endif
+
+  return l:s
+endfunction
+
+if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim'))
+
+  function! TabLabel(buf, max_width) abort
+    let [l:left, l:name, l:short_name, l:right] = crystalline#default_tablabel_parts(a:buf, a:max_width)
+    return l:left . l:short_name . ' ' . WebDevIconsGetFileTypeSymbol(l:name) . (l:right ==# ' ' ? '' : ' ') . l:right
+  endfunction
+
+  function! TabLine() abort
+    return crystalline#bufferline(0, 0, 1, 1, 'TabLabel', crystalline#default_tabwidth() + 3)
+  endfunction
+
+else
+
+  function! TabLine()
+    let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
+    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
+  endfunction
+
+endif
+
+let g:crystalline_enable_sep = 1
+let g:crystalline_statusline_fn = 'StatusLine'
+let g:crystalline_tabline_fn = 'TabLine'
+let g:crystalline_theme = 'badwolf'
+
+set showtabline=2
+set guioptions-=e
+set laststatus=2
