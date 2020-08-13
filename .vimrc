@@ -277,10 +277,7 @@ map Y y$
 nnoremap n nzz
 nnoremap N nzz
 nnoremap <silent><leader>v :vsp $MYVIMRC<CR> <C-W>H
-" Experimental
-nnoremap <expr> <Right> &ft ==# 'qf' ? ':col<cr>' : 'jk<Right>'
-nnoremap <expr> <Left> &ft ==# 'qf' ? ':cnew<cr>' : 'jk<Left>'
-nnoremap <silent><leader>p :pu<CR>
+noremap <silent><leader>p :pu<CR>
 
 " Spelling
 :command! WQ wq
@@ -463,7 +460,7 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 " Do default action for previous item.
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+"nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
 
@@ -618,6 +615,7 @@ let g:easy_align_delimiters = {
 \     'stick_to_left': 0
 \   }
 \ }
+
 " Vista
 if filereadable(expand('~/.vim/plugged/vista.vim/plugin/vista.vim'))
   nnoremap <C-M> :Vista finder coc<CR>
@@ -636,3 +634,7 @@ if filereadable(expand('~/.vim/plugged/vista.vim/plugin/vista.vim'))
   " For example:
   let g:vista_fzf_preview = ['right:50%']
 endif
+
+" vim-lsp-cxx-highlight
+" Change member variables
+hi LspCxxHlGroupMemberVariable ctermfg=21 guifg=#83A598
