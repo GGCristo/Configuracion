@@ -68,12 +68,6 @@ autocmd InsertLeave * set nocul
 let &t_TI = ""
 let &t_TE = ""
 
-augroup remember_folds
-  autocmd!
-  autocmd BufWinLeave *.* mkview
-  autocmd BufWinEnter *.* silent! loadview
-augroup END
-
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -97,11 +91,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
-  Plug 'AndrewRadev/switch.vim'
   Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
+  Plug 'junegunn/vim-peekaboo'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -262,8 +256,8 @@ inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
 " Q = switch_mapping
-vnoremap <silent><K> :m '<-2<CR>gv=gv
-vnoremap <silent><J> :m '>+1<CR>gv=gv
+vnoremap <silent><Up> :m '<-2<CR>gv=gv
+vnoremap <silent><Down> :m '>+1<CR>gv=gv
 
 nnoremap <silent><TAB> :bn<CR>
 nnoremap <silent><S-TAB> :bp<CR>
@@ -308,6 +302,7 @@ let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
+let g:alex_disable_lsp = 1
 
 let g:ale_lint_delay = 1000
 " Put these lines at the very end of your vimrc file.
@@ -464,8 +459,6 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 "nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
-
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
@@ -604,10 +597,11 @@ let g:easy_align_delimiters = {
 \ }
 
 " vim-lsp-cxx-highlight
-" Change member variables
-hi LspCxxHlGroupMemberVariable ctermfg=21 guifg=#83A598
+hi LspCxxHlSymVariable ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
+hi LspCxxHlSymParameter ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
+hi LspCxxHlGroupMemberVariable ctermfg=Magenta guifg=#bd93f9
 
-" vim-crystalline
+"vim-crystalline
 
 function! StatusLine(current, width)
   let l:s = ''
