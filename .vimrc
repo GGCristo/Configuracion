@@ -36,13 +36,13 @@ au CursorHold * checktime
 set path=$PWD/**,/usr/local/lib/*,/usr/local/include
 set wildmenu
 set backspace=indent,eol,start
-set list
 set incsearch
+set list listchars=tab:⍿·,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set showbreak=↪\
-set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set switchbuf+=usetab,newtab
 set spelllang=es,en_us
 
+set cul
 set laststatus=2
 " Persist undo history between file editing sessions.
 set undofile
@@ -62,11 +62,11 @@ set expandtab       " Expand TABs to spaces
 
 filetype plugin on
 
-autocmd InsertEnter * set cul
-autocmd InsertLeave * set nocul
 ":h modifyOtherKeys
 let &t_TI = ""
 let &t_TE = ""
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -86,6 +86,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
   Plug 'honza/vim-snippets'
+  Plug 'SirVer/ultisnips'
   Plug 'ryanoasis/vim-devicons'
   Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
   Plug 'junegunn/vim-easy-align'
@@ -96,6 +97,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'junegunn/vim-peekaboo'
+  Plug 'junegunn/goyo.vim'
+  Plug 'Yggdroot/indentLine'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -227,7 +230,6 @@ nnoremap <silent><F12> :call MyNerdToggle()<cr>
 map <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 nnoremap ,,  mtg_a;<Esc>`t
-nnoremap <C-_> <C-I>
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
@@ -658,3 +660,13 @@ let g:crystalline_theme = 'badwolf'
 set showtabline=2
 set guioptions-=e
 set laststatus=2
+
+" Goyo
+nnoremap <leader><S-G> :Goyo<CR>
+
+" UltiSnips (Snippets)
+
+let g:UltiSnipsExpandTrigger="<S-Q>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
