@@ -72,6 +72,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
   git
   battery
+  you-should-use
 )
 RPROMPT='$(battery_pct_prompt) ...'
 source $ZSH/oh-my-zsh.sh

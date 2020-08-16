@@ -27,6 +27,7 @@ set encoding=utf-8
 set mouse=a
 "set termwinsize=20x0
 set number
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set relativenumber
 set clipboard^=unnamedplus
 set hidden
@@ -99,6 +100,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/vim-peekaboo'
   Plug 'junegunn/goyo.vim'
   Plug 'Yggdroot/indentLine'
+  Plug 'unblevable/quick-scope'
+  Plug 'markonm/traces.vim'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -147,6 +150,7 @@ augroup SpellUnderline
 
 set t_Co=256
 let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_invert_selection=0
 set termguicolors
 colorscheme gruvbox
 
@@ -275,7 +279,13 @@ map Y y$
 nnoremap n nzz
 nnoremap N nzz
 nnoremap <silent><leader>v :vsp $MYVIMRC<CR> <C-W>H
-noremap <silent><leader>p :pu<CR>
+" Easy paste above/below
+nnoremap <silent><leader>p :put<CR>
+nnoremap <silent><leader><S-p> :put!<CR>
+
+" Easy new lines
+nnoremap <silent> [<space> :call append(line('.')-1, '')<CR>
+nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
 
 " Spelling
 :command! WQ wq
@@ -323,7 +333,7 @@ set nobackup
 set nowritebackup
 
 " Give more space for displaying messages.
-set cmdheight=2
+"set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
@@ -670,3 +680,11 @@ let g:UltiSnipsExpandTrigger="<S-Q>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsEditSplit="vertical"
+
+" indentLine
+let g:indentLine_fileTypeExclude = ['help', 'startify']
+
+" quick-scope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
+highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
