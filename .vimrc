@@ -21,7 +21,6 @@ set balloonevalterm
 set complete=.,w,b,u,t,i,kspell
 set background=dark
 filetype plugin indent on
-packadd termdebug
 syntax on
 set encoding=utf-8
 set mouse=a
@@ -31,10 +30,11 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set relativenumber
 set clipboard^=unnamedplus
 set hidden
+set cc=81
 set autoread
 set splitright
 au CursorHold * checktime
-set path=$PWD/**,/usr/local/lib/*,/usr/local/include
+set path+=/**
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
@@ -69,6 +69,15 @@ let &t_TE = ""
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
+" More range selectors
+" https://www.reddit.com/r/vim/comments/i8prmn/vifm_as_a_nerdtree_alternative_my_in_progress/
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '-', '#' ]
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
 call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -102,9 +111,13 @@ call plug#begin('~/.vim/plugged')
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
+  Plug 'vhdirk/vim-cmake'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
+
+" Abbrevation
+iabbrev Vector vector
 
 " VISUALS
 augroup my_colours
@@ -265,8 +278,10 @@ inoremap <C-L> <Right>
 vnoremap <silent><Up> :m '<-2<CR>gv=gv
 vnoremap <silent><Down> :m '>+1<CR>gv=gv
 
-nnoremap <silent><TAB> :bn<CR>
-nnoremap <silent><S-TAB> :bp<CR>
+nnoremap <silent><expr> <tab> tabpagenr('$')>1 ? "gt" : ':bn<cr>'
+nnoremap <silent><expr> <S-tab> tabpagenr('$')>1 ? "gT" : ':bp<cr>'
+"nnoremap <silent><TAB> :tabnext|bn<CR>
+"nnoremap <silent><S-TAB> :tabprevios|bp<CR>
 
 inoremap {;<CR> {<CR>};<ESC>O
 

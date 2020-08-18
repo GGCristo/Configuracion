@@ -73,8 +73,11 @@ plugins=(
   git
   battery
   you-should-use
+  zsh-autosuggestions
 )
 RPROMPT='$(battery_pct_prompt) ...'
+bindkey '^ ' autosuggest-accept
+autoload -Uz compinit && compinit
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -217,4 +220,3 @@ eval $(thefuck --alias)
 stty -ixon
 
 alias vim="/usr/bin/vim"
-eval "$(hub alias -s)"
