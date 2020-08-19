@@ -111,7 +111,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
-  Plug 'vhdirk/vim-cmake'
+  Plug 'cdelledonne/vim-cmake'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -229,9 +229,10 @@ let g:lt_quickfix_list_toggle_map = '<F3>'
 " nnoremap <silent><F3> :copen<cr>
 " nnoremap <silent><leader><F3> :cclose<cr>
 
-nnoremap <silent><F4> :wa<bar>Make<cr>
+nnoremap <silent><F4> :CMakeBuild<cr>
+"nnoremap <expr><F4> (&makeprg == "make" && exists(':CMake') ? ':wa \| CMake \| Make' : ':wa \| Make')."\<cr>"
 nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :!clear<CR>:!make run<CR>
+nnoremap <silent><leader><F4> :!clear<CR>:!./bin/main<CR>
 nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
@@ -640,12 +641,15 @@ function! StatusLine(current, width)
   endif
   let l:s .= ' %f%h%w%m%r '
   if a:current
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()} '
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{cmake#statusline#GetCmdInfo()}'
   endif
 
   let l:s .= '%='
+
   if a:current
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
+    let l:s .= crystalline#left_sep('', 'Fill') . ' %{cmake#switch#GetCurrent()}'
+    let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
     let l:s .= crystalline#left_mode_sep('')
   endif
   if a:width > 80
@@ -703,3 +707,12 @@ let g:indentLine_fileTypeExclude = ['help', 'startify']
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
 highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
+
+"vim-cmake
+let g:cmake_default_config='build'
+nmap <leader>cg <Plug>(CMakeGenerate)
+nmap <leader>cb <Plug>(CMakeBuild)
+nmap <leader>ci <Plug>(CMakeInstall)
+nmap <leader>cs <Plug>(CMakeSwitch)
+nmap <leader>co <Plug>(CMakeOpen)
+nmap <leader>cq <Plug>(CMakeClose)
