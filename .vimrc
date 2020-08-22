@@ -26,6 +26,7 @@ set encoding=utf-8
 set mouse=a
 "set termwinsize=20x0
 set number
+" I dont want autocomments
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set relativenumber
 set clipboard^=unnamedplus
@@ -33,12 +34,12 @@ set hidden
 set cc=81
 set autoread
 set splitright
-au CursorHold * checktime
+"au CursorHold * checktime
 set path+=/**
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
-set list listchars=tab:⍿·,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 set showbreak=↪\
 set switchbuf+=usetab,newtab
 set spelllang=es,en_us
@@ -95,8 +96,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
-  Plug 'honza/vim-snippets'
-  Plug 'SirVer/ultisnips'
   Plug 'ryanoasis/vim-devicons'
   Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
   Plug 'junegunn/vim-easy-align'
@@ -107,11 +106,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'junegunn/vim-peekaboo'
-  Plug 'junegunn/goyo.vim'
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
-  Plug 'cdelledonne/vim-cmake'
+  Plug 'tpope/vim-commentary'
+  Plug 'GGCristo/vim-cmake'
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -208,6 +207,8 @@ endfunction
 command! -nargs=+ ArgsPattern call ArgsPattern(<q-args>)
 
 function! SaveSession()
+  cd %:h
+  cd ..
   let dir = finddir('src/..',';')
   let root_project = fnamemodify(dir, ':t')
   execute ':Obsession ~/.vim/session/' . expand(root_project)
@@ -231,9 +232,9 @@ let g:lt_quickfix_list_toggle_map = '<F3>'
 
 nnoremap <silent><F4> :CMakeBuild<cr>
 "nnoremap <expr><F4> (&makeprg == "make" && exists(':CMake') ? ':wa \| CMake \| Make' : ':wa \| Make')."\<cr>"
-nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :!clear<CR>:!./bin/main<CR>
-nnoremap <silent><S-F4> :make clean<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
+"nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
+nnoremap <silent><leader><F4> :!clear<cr>:!./bin/main<CR>
+nnoremap <silent><S-F4> :!rm bin/main<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
@@ -313,7 +314,12 @@ nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
 let g:ale_linters = {'cpp': ['g++','cppcheck', 'clangtidy']}
 " let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
-let g:ale_cpp_clangtidy_checks = ['clang-analyzer-*', 'performance-*', 'readability-*', 'modernize-*', 'bugprone-*']
+let g:ale_cpp_clangtidy_checks = [
+      \'clang-analyzer-*',
+      \'performance-*',
+      \'readability-*','-readability-implicit-bool-conversion',
+      \'modernize-*',
+      \'bugprone-*']
 let g:ale_open_list = 0
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
@@ -321,12 +327,16 @@ let g:ale_sign_warning = ''
 
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+highlight ALEError ctermbg=none cterm=underline
+highlight ALEWarning ctermbg=none cterm=underline
+highlight ALEErrorLine ctermbg=none cterm=None
+highlight ALEWarningLine ctermbg=none cterm=None
 " Keep the sign gutter open at all times
 let g:ale_sign_column_always = 1
 " Set this variable to 1 to fix files when you save them.
 let g:ale_fix_on_save = 1
 let g:ale_lint_on_text_changed=1
-let g:ale_pattern_options_enabled = 1
+"let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
@@ -690,16 +700,6 @@ set showtabline=2
 set guioptions-=e
 set laststatus=2
 
-" Goyo
-nnoremap <leader><S-G> :Goyo<CR>
-
-" UltiSnips (Snippets)
-
-let g:UltiSnipsExpandTrigger="<S-Q>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsEditSplit="vertical"
-
 " indentLine
 let g:indentLine_fileTypeExclude = ['help', 'startify']
 
@@ -716,3 +716,6 @@ nmap <leader>ci <Plug>(CMakeInstall)
 nmap <leader>cs <Plug>(CMakeSwitch)
 nmap <leader>co <Plug>(CMakeOpen)
 nmap <leader>cq <Plug>(CMakeClose)
+
+"vim-commentary
+autocmd FileType c,cppcs,java selocal commentstring=//\ %s

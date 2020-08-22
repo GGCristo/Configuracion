@@ -26,6 +26,5 @@
     "coc.preferences.useQuickfixForLocations": false,
     "coc.preferences.formatOnType": true,
     "diagnostic.displayByAle": true,
-    "coc.preferences.currentFunctionSymbolAutoUpdate": true,
-    "suggest.enablePreview": true
+    "coc.preferences.currentFunctionSymbolAutoUpdate": true
 }
