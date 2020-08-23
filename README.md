@@ -11,7 +11,7 @@
 -bat\
 -Albert\
 -Travis CI\
--rg\
+-Ripgrep\
 -zsh(oh-my-zsh)
  - zsh-you-should-use
  - zsh-autosuggestion
@@ -78,8 +78,7 @@ o ccls (para C++):
  ```sh
  (sudo) cmake --build Release --target install
  ```
-o Ripgrep (recomendado)
-
+ 
 ### El corrector ortográfico
 https://www.atareao.es/tutorial/vim/el-corrector-ortografico-en-vim/
 ```sh
