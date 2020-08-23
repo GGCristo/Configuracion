@@ -9,8 +9,11 @@
 -hub\
 -colorls\
 -bat\
--bash-git-prompt\
--Travis CI
+-Albert\
+-Travis CI\
+-zsh(oh-my-zsh)
+ - zsh-you-should-use
+ - zsh-autosuggestion
 ### Vim Plugins:
 -Vim-plug\
 -ALE\
