@@ -11,6 +11,7 @@
 -bat\
 -Albert\
 -Travis CI\
+-rg\
 -zsh(oh-my-zsh)
  - zsh-you-should-use
  - zsh-autosuggestion
