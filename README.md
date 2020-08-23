@@ -94,4 +94,5 @@ Algun font de Nerdfonts
 
 Se recomienda para desarrollo en C++:\
 Cppcheck\
-clang-tidy
+clang-tidy\
+cmake
