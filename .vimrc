@@ -35,7 +35,7 @@ set cc=81
 set autoread
 set splitright
 "au CursorHold * checktime
-set path+=/**
+set path+=/**,/home/cristo/
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
@@ -234,7 +234,7 @@ nnoremap <silent><F4> :CMakeBuild<cr>
 "nnoremap <expr><F4> (&makeprg == "make" && exists(':CMake') ? ':wa \| CMake \| Make' : ':wa \| Make')."\<cr>"
 "nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
 nnoremap <silent><leader><F4> :!clear<cr>:!./bin/main<CR>
-nnoremap <silent><S-F4> :!rm bin/main<cr><cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <silent><S-F4> :CMakeClean<cr>:echo "🌬 Se usó clean 🌬"<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 

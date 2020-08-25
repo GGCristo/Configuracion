@@ -4,7 +4,7 @@ source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
 
 # Path to your oh-my-zsh installation.
 export ZSH="/home/cristo/.oh-my-zsh"
-
+export PATH="/home/cristo/.gem/ruby/2.7.0/bin:$PATH"
 export VISUAL=vim
 export EDITOR="$VISUAL"
 # Set name of the theme to load --- if set to "random", it will
@@ -77,10 +77,10 @@ plugins=(
   you-should-use
   zsh-autosuggestions
 )
+source $ZSH/oh-my-zsh.sh
 RPROMPT='$(battery_pct_prompt) ...'
 bindkey '^ ' autosuggest-accept
 autoload -Uz compinit && compinit
-source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -221,4 +221,4 @@ alias gbrow="hub browse"
 eval $(thefuck --alias)
 stty -ixon
 
-alias vim="/usr/bin/vim"
+#alias vim="/usr/bin/vim"
