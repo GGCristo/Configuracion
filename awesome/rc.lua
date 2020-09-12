@@ -82,7 +82,7 @@ local virtualmachine    = "virtualbox"
 -- awesome variables
 awful.util.terminal = terminal
 --awful.util.tagnames = {  " ", " ", " ", " ", " ", " ", " ", " ", " ", " "  }
-awful.util.tagnames = { " DEV ", " WWW ", " SYS ", " DOC ", " VBOX ", " CHAT ", " MUS ", " VID ", " GFX " }
+awful.util.tagnames = { " DEV ", " WWW ", "eMail", "Escritorio"}
 awful.layout.suit.tile.left.mirror = true
 awful.layout.layouts = {
   awful.layout.suit.tile,
@@ -454,18 +454,16 @@ awful.key({ modkey, }, "z", function () awful.screen.focused().quake:toggle() en
 {description = "dropdown application", group = "super"}),
 
 -- Widgets popups
-awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end,
-{description = "show calendar", group = "widgets"}),
 awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end,
 {description = "show filesystem", group = "widgets"}),
 awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end,
 {description = "show weather", group = "widgets"}),
 
 -- Brightness
-awful.key({ }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 10") end,
-{description = "+10%", group = "hotkeys"}),
-awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 10") end,
-{description = "-10%", group = "hotkeys"}),
+awful.key({ }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 5") end,
+{description = "+5%", group = "hotkeys"}),
+awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 5") end,
+{description = "-5%", group = "hotkeys"}),
 
 -- ALSA volume control
 --awful.key({ modkey1 }, "Up",

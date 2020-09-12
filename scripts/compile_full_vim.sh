@@ -9,14 +9,14 @@
 #   ./compile_full_vim.sh
 
 main(){
-	echo "y" | sudo apt-get remove \
+	echo "y" | sudo pacman -R \
 		vim \
 		vim-runtime \
 		gvim \
 		vim-tiny \
 		vim-common \
 		vim-gui-common
-	echo "y" | sudo apt-get install \
+	echo "y" | sudo pacman -R \
 		libncurses5-dev \
 		libgnome2-dev \
 		libgnomeui-dev \

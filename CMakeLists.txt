@@ -1,13 +1,23 @@
 cmake_minimum_required(VERSION "3.10")
 
-project()
+project(Simulador)
 
 set(SOURCES
+  src/DBMS.cpp
+  src/Persona.cpp
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-add_executable(main ${SOURCES})
-#add_executable("($PROJECT_NAME)" src/main.cpp)
-#
-#install(TARGETS "($PROJECT_NAME)" DESTINATION bin)
-#install(FILES "src/main.cpp" DESTINATION src)
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -pedantic-errors -Wall -Wextra -std=c++17 -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -pedantic-errors -Wall -Wextra -std=c++17")
+add_executable(main ${SOURCES} src/main.cpp)
+
+find_package(Catch2 REQUIRED)
+enable_testing()
+
+add_executable(mytest EXCLUDE_FROM_ALL ${SOURCES} test/mytest.cpp)
+target_link_libraries(mytest Catch2::Catch2)
+
+add_test(
+  NAME testeo
+  COMMAND mytest)

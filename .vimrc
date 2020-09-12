@@ -24,7 +24,6 @@ filetype plugin indent on
 syntax on
 set encoding=utf-8
 set mouse=a
-"set termwinsize=20x0
 set number
 " I dont want autocomments
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
@@ -35,7 +34,7 @@ set cc=81
 set autoread
 set splitright
 "au CursorHold * checktime
-set path+=/**,/home/cristo/
+set path+=/**
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
@@ -62,13 +61,16 @@ set softtabstop=2   " Sets the number of columns for a TAB
 
 set expandtab       " Expand TABs to spaces
 
-filetype plugin on
-
+"filetype plugin on
+"
 ":h modifyOtherKeys
 let &t_TI = ""
 let &t_TE = ""
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+if &term == "alacritty"
+  let &term = "xterm-256color"
+endif
 
 " More range selectors
 " https://www.reddit.com/r/vim/comments/i8prmn/vifm_as_a_nerdtree_alternative_my_in_progress/
@@ -110,7 +112,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'tpope/vim-commentary'
-  Plug 'GGCristo/vim-cmake'
+  Plug 'cdelledonne/vim-cmake', {'branch': 'quickfix-integration'}
 
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
@@ -118,7 +120,7 @@ call plug#end()
 " Abbrevation
 iabbrev Vector vector
 
-" VISUALS
+"" VISUALS
 augroup my_colours
   autocmd!
   autocmd ColorScheme hi SpellBad cterm=reverse
@@ -166,18 +168,6 @@ let g:gruvbox_invert_selection=0
 set termguicolors
 colorscheme gruvbox
 
-"FILE BROWSING
-let g:netrw_banner=0       " disable annoying banne
-let g:netrw_browse_split=4 " open in prior window
-let g:netrw_altv=1         " open splits to the right
-let g:netrw_liststyle=3    " tree view
-let g:netrw_winsize = 10
-"augroup ProjectDrawer
-"  autocmd!
-"  autocmd VimEnter * :Vexplore
-"augroup END
-let g:netrw_list_hide=netrw_gitignore#Hide()
-let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
 set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
 
@@ -197,7 +187,7 @@ function! Preserve(command)
   call setpos('.', save_cursor)
   call setreg('/', old_query)
 endfunction
-
+"
 " Puedo usar regex para rellenar args
 " https://stackoverflow.com/questions/9033239/vim-regex-or-in-file-name-pattern-on-windows:w
 function! ArgsPattern(pat)
@@ -227,8 +217,6 @@ let mapleader= " "
 "S-F11 Step out of current function scope
 nnoremap <silent><F2> :TagbarToggle<cr>
 let g:lt_quickfix_list_toggle_map = '<F3>'
-" nnoremap <silent><F3> :copen<cr>
-" nnoremap <silent><leader><F3> :cclose<cr>
 
 nnoremap <silent><F4> :CMakeBuild<cr>
 "nnoremap <expr><F4> (&makeprg == "make" && exists(':CMake') ? ':wa \| CMake \| Make' : ':wa \| Make')."\<cr>"
@@ -239,7 +227,7 @@ nnoremap <silent><S-F4> :CMakeClean<cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
-  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/<CR>
+  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/<CR>
 else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
@@ -263,6 +251,7 @@ if executable ("rg")
 else
   nnoremap <silent><C-N> :Lines<CR>
 endif
+nnoremap <silent><C-M> :BTags<cr>
 nnoremap <silent><leader>gw :Gwrite<cr>
 nnoremap <silent><leader>gc :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
@@ -276,14 +265,11 @@ inoremap <C-H> <Left>
 inoremap <C-J> <Down>
 inoremap <C-K> <Up>
 inoremap <C-L> <Right>
-" Q = switch_mapping
 vnoremap <silent><Up> :m '<-2<CR>gv=gv
 vnoremap <silent><Down> :m '>+1<CR>gv=gv
 
 nnoremap <silent><expr> <tab> tabpagenr('$')>1 ? "gt" : ':bn<cr>'
 nnoremap <silent><expr> <S-tab> tabpagenr('$')>1 ? "gT" : ':bp<cr>'
-"nnoremap <silent><TAB> :tabnext|bn<CR>
-"nnoremap <silent><S-TAB> :tabprevios|bp<CR>
 
 inoremap {;<CR> {<CR>};<ESC>O
 
@@ -304,6 +290,20 @@ nnoremap <silent><leader><S-p> :put!<CR>
 nnoremap <silent> [<space> :call append(line('.')-1, '')<CR>
 nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
 
+"auto close {
+"(https://www.reddit.com/r/vim/comments/6h0dy7/which_autoclosing_plugin_do_you_use/)
+function! s:CloseBracket()
+    let line = getline('.')
+    if line =~# '^\s*\(struct\|class\|enum\) '
+        return "{\<Enter>};\<Esc>O"
+    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
+        " Probably inside a function call. Close it off.
+        return "{\<Enter>});\<Esc>O"
+    else
+        return "{\<Enter>}\<Esc>O"
+    endif
+endfunction
+inoremap <expr> {<Enter> <SID>CloseBracket()
 " Spelling
 :command! WQ wq
 :command! Wq wq
@@ -312,18 +312,23 @@ nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
 
 " ALE
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
-let g:ale_linters = {'cpp': ['g++','cppcheck', 'clangtidy']}
+let g:ale_linters = {'cpp': ['g++','clangtidy']}
 " let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
 let g:ale_cpp_clangtidy_checks = [
       \'clang-analyzer-*',
       \'performance-*',
       \'readability-*','-readability-implicit-bool-conversion',
-      \'modernize-*',
+      \ '-readability-magic-numbers',
+      \'modernize-*','-modernize-use-trailing-return-type',
       \'bugprone-*']
 let g:ale_open_list = 0
-let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = ''
+
+" Use just ESLint for linting and fixing files which end in '.foo.js'
+let g:ale_pattern_options = {
+      \   'test.cpp': {'ale_enabled': 0},
+      \}
 
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
@@ -501,24 +506,24 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_action = {
-  \ 'enter': 'drop',
-  \ 'ctrl-t': 'tab drop',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit'}
+      \ 'enter': 'drop',
+      \ 'ctrl-t': 'tab drop',
+      \ 'ctrl-x': 'split',
+      \ 'ctrl-v': 'vsplit'}
 let g:fzf_preview_window = 'right:60%'
 command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 command! -bang -nargs=* Rg
-    \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
+      \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 
-"TAGBAR
+""TAGBAR
 let g:tagbar_autoclose=1
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
 
-"GITGUTTER
+"Gitgutter
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_sign_priority = 8
 let g:gitgutter_sign_added              = '┃'
@@ -530,44 +535,44 @@ highlight GitGutterAdd    ctermfg=40
 highlight GitGutterChange ctermfg=93
 highlight GitGutterDelete ctermfg=1
 hi clear SignColumn
-"highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
-"highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
-"highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
+""highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
+""highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
+""highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
 
-" STARTIFY
+"STARTIFY
 function! s:filter_header(lines) abort
-    let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
-    let centered_lines = map(copy(a:lines),
+  let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
+  let centered_lines = map(copy(a:lines),
         \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
-    return centered_lines
+  return centered_lines
 endfunction
 
 let g:startify_custom_header = s:filter_header([
- \'  ##############..... ##############  ',
- \'  ##############......##############  ',
- \'    ##########..........##########    ',
- \'    ##########........##########      ',
- \'    ##########.......##########       ',
- \'    ##########.....##########..       ',
- \'    ##########....##########.....     ',
- \'  ..##########..##########.........   ',
- \'....##########.#########............. ',
- \'  ..################JJJ............   ',
- \'    ################.............     ',
- \'    ##############.JJJ.JJJJJJJJJJ     ',
- \'    ############...JJ...JJ..JJ  JJ    ',
- \'    ##########....JJ...JJ..JJ  JJ     ',
- \'    ########......JJJ..JJJ JJJ JJJ    ',
- \'    ######    .........               ',
- \'                .....                 ',
- \'                  .      ',
- \])
+      \'  ##############..... ##############  ',
+      \'  ##############......##############  ',
+      \'    ##########..........##########    ',
+      \'    ##########........##########      ',
+      \'    ##########.......##########       ',
+      \'    ##########.....##########..       ',
+      \'    ##########....##########.....     ',
+      \'  ..##########..##########.........   ',
+      \'....##########.#########............. ',
+      \'  ..################JJJ............   ',
+      \'    ################.............     ',
+      \'    ##############.JJJ.JJJJJJJJJJ     ',
+      \'    ############...JJ...JJ..JJ  JJ    ',
+      \'    ##########....JJ...JJ..JJ  JJ     ',
+      \'    ########......JJJ..JJJ JJJ JJJ    ',
+      \'    ######    .........               ',
+      \'                .....                 ',
+      \'                  .      ',
+      \])
 
 let g:startify_fortune_use_unicode = 1
 
 hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
-   "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
+      "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
 
 "NERDTREE
 let NERDTreeQuitOnOpen = 1
@@ -575,11 +580,11 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeMinimalUI = 1
 function MyNerdToggle()
-    if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
-      :NERDTreeToggle
-    else
-      :NERDTreeFind
-    endif
+  if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
+    :NERDTreeToggle
+  else
+    :NERDTreeFind
+  endif
 endfunction
 
 " INCSEARCH
@@ -595,51 +600,45 @@ map #  <Plug>(incsearch-nohl-#)zz
 map g* <Plug>(incsearch-nohl-g*)zz
 map g# <Plug>(incsearch-nohl-g#)zz
 
-" SWITCH.VIM
-let g:switch_mapping = "Q"
-let g:switch_custom_definitions =
-    \ [
-    \   ['>', '<']
-    \ ]
 
-" EASYMOTION
+"" EASYMOTION
 let g:EasyMotion_do_mapping = 0
 nmap s <Plug>(easymotion-overwin-f2)
 let g:EasyMotion_smartcase = 1
 
-" Vim-Easy-Align
+"" Vim-Easy-Align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 let g:easy_align_delimiters = {
-\ '>': { 'pattern': '>>\|=>\|>' },
-\ '<': { 'pattern': '<<\|<' },
-\ '/': {
-\     'pattern':         '//\+\|/\*\|\*/',
-\     'delimiter_align': 'l',
-\     'ignore_groups':   ['!Comment'] },
-\ ']': {
-\     'pattern':       '[[\]]',
-\     'left_margin':   0,
-\     'right_margin':  0,
-\     'stick_to_left': 0
-\   },
-\ ')': {
-\     'pattern':       '[()]',
-\     'left_margin':   0,
-\     'right_margin':  0,
-\     'stick_to_left': 0
-\   }
-\ }
+      \ '>': { 'pattern': '>>\|=>\|>' },
+      \ '<': { 'pattern': '<<\|<' },
+      \ '/': {
+      \     'pattern':         '//\+\|/\*\|\*/',
+      \     'delimiter_align': 'l',
+      \     'ignore_groups':   ['!Comment'] },
+      \ ']': {
+      \     'pattern':       '[[\]]',
+      \     'left_margin':   0,
+      \     'right_margin':  0,
+      \     'stick_to_left': 0
+      \   },
+      \ ')': {
+      \     'pattern':       '[()]',
+      \     'left_margin':   0,
+      \     'right_margin':  0,
+      \     'stick_to_left': 0
+      \   }
+      \ }
 
-" vim-lsp-cxx-highlight
+"" vim-lsp-cxx-highlight
 hi LspCxxHlSymVariable ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
 hi LspCxxHlSymParameter ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
 hi LspCxxHlGroupMemberVariable ctermfg=Magenta guifg=#bd93f9
 
-"vim-crystalline
+""vim-crystalline
 
 function! StatusLine(current, width)
   let l:s = ''
@@ -700,22 +699,21 @@ set showtabline=2
 set guioptions-=e
 set laststatus=2
 
-" indentLine
+"" indentLine
 let g:indentLine_fileTypeExclude = ['help', 'startify']
 
-" quick-scope
+"" quick-scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
 highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
 
-"vim-cmake
+""vim-cmake
 let g:cmake_default_config='build'
-nmap <leader>cg <Plug>(CMakeGenerate)
-nmap <leader>cb <Plug>(CMakeBuild)
-nmap <leader>ci <Plug>(CMakeInstall)
+nmap cg <Plug>(CMakeGenerate)
+nmap cb <Plug>(CMakeBuild)
 nmap <leader>cs <Plug>(CMakeSwitch)
-nmap <leader>co <Plug>(CMakeOpen)
-nmap <leader>cq <Plug>(CMakeClose)
+nmap co <Plug>(CMakeOpen)
+nmap cq <Plug>(CMakeClose)
 
-"vim-commentary
-autocmd FileType c,cppcs,java selocal commentstring=//\ %s
+""vim-commentary
+autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s

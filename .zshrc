@@ -221,4 +221,13 @@ alias gbrow="hub browse"
 eval $(thefuck --alias)
 stty -ixon
 
-#alias vim="/usr/bin/vim"
+# (https://medium.com/@GroundControl/better-git-diffs-with-fzf-89083739a9cb)
+fd()
+{
+  if [ -d .git ]; then
+    preview="git diff $@ --color=always -- {-1}"
+    git diff $@ --name-only | fzf -m --ansi --preview $preview
+  else
+    echo "No es un repositorio git."
+  fi;
+}
