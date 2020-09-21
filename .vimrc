@@ -33,7 +33,8 @@ set hidden
 set cc=81
 set autoread
 set splitright
-"au CursorHold * checktime
+au CursorHold * checktime
+autocmd FileType gitcommit setlocal spell
 set path+=/**
 set wildmenu
 set backspace=indent,eol,start
@@ -61,16 +62,13 @@ set softtabstop=2   " Sets the number of columns for a TAB
 
 set expandtab       " Expand TABs to spaces
 
-"filetype plugin on
-"
+filetype plugin on
+
 ":h modifyOtherKeys
 let &t_TI = ""
 let &t_TE = ""
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-if &term == "alacritty"
-  let &term = "xterm-256color"
-endif
 
 " More range selectors
 " https://www.reddit.com/r/vim/comments/i8prmn/vifm_as_a_nerdtree_alternative_my_in_progress/
@@ -112,15 +110,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'tpope/vim-commentary'
-  Plug 'cdelledonne/vim-cmake', {'branch': 'quickfix-integration'}
-
+  Plug 'cdelledonne/vim-cmake'
+  Plug 'metakirby5/codi.vim'
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
 " Abbrevation
 iabbrev Vector vector
 
-"" VISUALS
+"VISUALS
 augroup my_colours
   autocmd!
   autocmd ColorScheme hi SpellBad cterm=reverse
@@ -160,7 +158,7 @@ augroup SpellUnderline
     \   term=Reverse
     \   gui=Undercurl
     \   guisp=Red
-  augroup END
+augroup END
 
 set t_Co=256
 let g:gruvbox_contrast_dark='medium'
@@ -198,8 +196,8 @@ command! -nargs=+ ArgsPattern call ArgsPattern(<q-args>)
 
 function! SaveSession()
   cd %:h
-  cd ..
   let dir = finddir('src/..',';')
+  execute 'cd' fnameescape(dir)
   let root_project = fnamemodify(dir, ':t')
   execute ':Obsession ~/.vim/session/' . expand(root_project)
 endfunction
@@ -218,16 +216,16 @@ let mapleader= " "
 nnoremap <silent><F2> :TagbarToggle<cr>
 let g:lt_quickfix_list_toggle_map = '<F3>'
 
-nnoremap <silent><F4> :CMakeBuild<cr>
-"nnoremap <expr><F4> (&makeprg == "make" && exists(':CMake') ? ':wa \| CMake \| Make' : ':wa \| Make')."\<cr>"
-"nnoremap <silent><leader>d :wa<bar>Make debug<cr><cr>:echo "DEBUG"<cr>
-nnoremap <silent><leader><F4> :!clear<cr>:!./bin/main<CR>
-nnoremap <silent><S-F4> :CMakeClean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+autocmd FileType cpp,c nnoremap <silent><F4> :CMakeBuild<cr>
+autocmd FileType cpp,c map <silent><leader><F4> cq:!clear<cr>:!./bin/main<CR>
+autocmd FileType cpp,c nnoremap <silent><S-F4> :CMakeClean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+
+autocmd FileType javascript nnoremap <silent><F4> :!clear<cr>:!node %<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
-  nnoremap <silent><F8> :!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/<CR>
+  nnoremap <silent><F8> :!clear<cr>:!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/ -iDebug/<CR>
 else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
@@ -251,7 +249,7 @@ if executable ("rg")
 else
   nnoremap <silent><C-N> :Lines<CR>
 endif
-nnoremap <silent><C-M> :BTags<cr>
+nnoremap <silent><leader>s :BTags<cr>
 nnoremap <silent><leader>gw :Gwrite<cr>
 nnoremap <silent><leader>gc :Commits<cr>
 nnoremap <silent><leader>gr :Gread<CR>
@@ -312,7 +310,7 @@ inoremap <expr> {<Enter> <SID>CloseBracket()
 
 " ALE
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
-let g:ale_linters = {'cpp': ['g++','clangtidy']}
+let g:ale_linters = {'cpp': ['g++','clangtidy'], 'javascript' : ['eslint']}
 " let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
 let g:ale_cpp_clangtidy_checks = [
       \'clang-analyzer-*',
@@ -325,7 +323,6 @@ let g:ale_open_list = 0
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = ''
 
-" Use just ESLint for linting and fixing files which end in '.foo.js'
 let g:ale_pattern_options = {
       \   'test.cpp': {'ale_enabled': 0},
       \}
@@ -494,7 +491,7 @@ nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document.
 nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
 " Search workspace symbols.
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+"nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
 nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 " Do default action for previous item.
@@ -524,6 +521,9 @@ let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
 
 "Gitgutter
+if (executable("rg"))
+  let g:gitgutter_grep = 'rg'
+endif
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_sign_priority = 8
 let g:gitgutter_sign_added              = '┃'

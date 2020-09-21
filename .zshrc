@@ -222,7 +222,7 @@ eval $(thefuck --alias)
 stty -ixon
 
 # (https://medium.com/@GroundControl/better-git-diffs-with-fzf-89083739a9cb)
-fd()
+df()
 {
   if [ -d .git ]; then
     preview="git diff $@ --color=always -- {-1}"
