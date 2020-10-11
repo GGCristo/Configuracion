@@ -16,8 +16,6 @@ set nocompatible
 set noswapfile
 set nobackup
 set autoindent
-set ballooneval
-set balloonevalterm
 set complete=.,w,b,u,t,i,kspell
 set background=dark
 filetype plugin indent on
@@ -33,7 +31,7 @@ set hidden
 set cc=81
 set autoread
 set splitright
-au CursorHold * checktime
+"au CursorHold * checktime
 autocmd FileType gitcommit setlocal spell
 set path+=/**
 set wildmenu
@@ -112,6 +110,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-commentary'
   Plug 'cdelledonne/vim-cmake'
   Plug 'metakirby5/codi.vim'
+  Plug 'wfxr/minimap.vim'
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
@@ -540,6 +539,7 @@ hi clear SignColumn
 ""highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
 
 "STARTIFY
+let g:startify_session_dir = '~/.vim/session'
 function! s:filter_header(lines) abort
   let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
   let centered_lines = map(copy(a:lines),

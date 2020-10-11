@@ -6,3 +6,4 @@ cp /usr/bin/create scripts/
 cp /usr/bin/exportar scripts/
 cp ~/.zshrc .
 cp -r ~/.config/awesome/ .
+cp ~/.vim/coc-settings.json .
