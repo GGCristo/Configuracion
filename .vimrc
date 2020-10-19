@@ -33,12 +33,12 @@ set autoread
 set splitright
 "au CursorHold * checktime
 autocmd FileType gitcommit setlocal spell
-set path+=/**
+set path+=**
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
 set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
-set showbreak=↪\
+"set showbreak=↪\
 set switchbuf+=usetab,newtab
 set spelllang=es,en_us
 
@@ -84,6 +84,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+  Plug 'GGCristo/Crear'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'junegunn/fzf.vim'
@@ -116,7 +117,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-commentary'
   Plug 'cdelledonne/vim-cmake'
   Plug 'metakirby5/codi.vim'
-  Plug 'wfxr/minimap.vim'
+  "Plug 'wfxr/minimap.vim'
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 

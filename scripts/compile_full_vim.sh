@@ -9,14 +9,14 @@
 #   ./compile_full_vim.sh
 
 main(){
-	echo "y" | sudo pacman -R \
+	echo "y" | sudo apt-get remove \
 		vim \
 		vim-runtime \
 		gvim \
 		vim-tiny \
 		vim-common \
-		vim-gui-common
-	echo "y" | sudo pacman -R \
+    vim-nox
+	echo "y" | sudo apt-get install \
 		libncurses5-dev \
 		libgnome2-dev \
 		libgnomeui-dev \
@@ -28,25 +28,24 @@ main(){
 		libxpm-dev \
 		libxt-dev \
 		python-dev ruby-dev \
-		mercurial
+    python2-dev \
+    python3-dev \
+		git
 
 	cd ~
-	hg clone https://code.google.com/p/vim/
+	git clone https://github.com/vim/vim.git
 	cd vim
 	./configure --with-features=huge \
 		--enable-multibyte \
-		--enable-rubyinterp \
-		--enable-pythoninterp \
-		--with-python-config-dir=/usr/lib/python2.7/config \
+		--enable-rubyinterp=yes \
     --enable-python3interp=yes \
-    --with-python3-command=python3.7 \
-    --with-python3-config-dir=/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu \
-		--enable-perlinterp \
-		--enable-luainterp \
-		--enable-gui=gtk2 \
+    --with-python3-config-dir=/usr/lib/python3.8/config-3.8-x86_64-linux-gnu \
+		--enable-perlinterp=yes \
+		--enable-luainterp=yes \
 		--enable-cscope \
+    --enable-gui=auto \
 		--prefix=/usr
-	make VIMRUNTIMEDIR=/usr/share/vim/vim74
+	make VIMRUNTIMEDIR=/usr/share/vim/vim82
 	sudo make install
 }
 

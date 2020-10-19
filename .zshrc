@@ -221,13 +221,18 @@ alias gbrow="hub browse"
 eval $(thefuck --alias)
 stty -ixon
 
+# You must configure difftool
+# git config --global diff.tool vimdiff
+# git config --global difftool.prompt false
 # (https://medium.com/@GroundControl/better-git-diffs-with-fzf-89083739a9cb)
 getdiff()
 {
   if [ -d .git ]; then
     preview="git diff $@ --color=always -- {-1}"
-    git diff $@ --name-only | fzf -m --ansi --preview $preview
+    execute="enter:execute(git difftool {} < /dev/tty)"
+    git diff $@ --name-only | fzf -m --ansi --bind $execute \
+                --preview $preview
   else
-    echo "No es un repositorio git."
+    echo "It's not a git repository"
   fi;
 }
