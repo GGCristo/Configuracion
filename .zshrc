@@ -217,6 +217,7 @@ alias gh='cd "$(git rev-parse --show-toplevel)"'
 alias gu='git ls-files . --exclude-standard --others'
 
 alias gbrow="hub browse"
+alias nvide="$HOME/neovide/target/release/neovide"
 # Thefuck
 eval $(thefuck --alias)
 stty -ixon

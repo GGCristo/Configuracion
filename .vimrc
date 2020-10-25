@@ -41,8 +41,14 @@ set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
 set switchbuf+=usetab,newtab
 set spelllang=es,en_us
-
-set cul
+if has ('nvim')
+  set guifont=FiraCode\ Nerd\ Font\ Mono\
+endif
+augroup CursorLine
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
+augroup END
 set laststatus=2
 " Persist undo history between file editing sessions.
 set undofile
@@ -91,13 +97,18 @@ call plug#begin('~/.vim/plugged')
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'jackguo380/vim-lsp-cxx-highlight'
   Plug 'dense-analysis/ale'
+  Plug 'skywind3000/asynctasks.vim'
+  Plug 'skywind3000/asyncrun.vim'
 
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-dispatch'
+  Plug 'tpope/vim-apathy'
   Plug 'rbong/vim-crystalline'
-  Plug 'majutsushi/tagbar'
+  if !has('nvim')
+    Plug 'rhysd/vim-healthcheck'
+  endif
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
@@ -117,7 +128,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-commentary'
   Plug 'cdelledonne/vim-cmake'
   Plug 'metakirby5/codi.vim'
-  "Plug 'wfxr/minimap.vim'
+  Plug 'psliwka/vim-smoothie'
+  Plug 'machakann/vim-highlightedyank'
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
@@ -219,19 +231,20 @@ let mapleader= " "
 "F10 Step Over
 "F11 Step Into
 "S-F11 Step out of current function scope
-nnoremap <silent><F2> :TagbarToggle<cr>
 let g:lt_quickfix_list_toggle_map = '<F3>'
 
-autocmd FileType cpp,c nnoremap <silent><F4> :CMakeBuild<cr>
-autocmd FileType cpp,c map <silent><leader><F4> cq:!clear<cr>:!./bin/main<CR>
-autocmd FileType cpp,c nnoremap <silent><S-F4> :CMakeClean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+let modo = 1
+nnoremap <expr>cb ((modo) ? ':AsyncTask project-build' : ':echo "Hola"')."\<cr>"
+map <expr>cr ((modo) ? ':!clear' ."\<cr>". ':AsyncTask project-run' : ':echo "Hola"')."\<cr>"
+nnoremap <silent><S-F4> :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
 
 autocmd FileType javascript nnoremap <silent><F4> :!clear<cr>:!node %<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
-  nnoremap <silent><F8> :!clear<cr>:!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/ -iDebug/<CR>
+  nnoremap <silent><F8> :!clear<cr>:!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/ -iDebug/ -i.ccls-cache/<CR>
 else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
@@ -240,7 +253,7 @@ nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
-nnoremap ,,  mtg_a;<Esc>`t
+nnoremap ,,  mtA;<Esc>`t
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
@@ -252,6 +265,7 @@ nnoremap <C-L> <C-W>l
 nnoremap <expr> <C-P> (len(system('git rev-parse')) ? ':Files' : ':GFiles --cached --others --exclude-standard')."\<cr>"
 if executable ("rg")
   nnoremap <silent><C-N> :Rg<CR>
+  set grepprg=rg\ --vimgrep\ --hidden\
 else
   nnoremap <silent><C-N> :Lines<CR>
 endif
@@ -272,11 +286,32 @@ inoremap <C-L> <Right>
 vnoremap <silent><Up> :m '<-2<CR>gv=gv
 vnoremap <silent><Down> :m '>+1<CR>gv=gv
 
-nnoremap <silent><expr> <tab> tabpagenr('$')>1 ? "gt" : ':bn<cr>'
-nnoremap <silent><expr> <S-tab> tabpagenr('$')>1 ? "gT" : ':bp<cr>'
+nnoremap <silent> <tab> :call Tab()<cr>
+nnoremap <silent> <S-tab> :call STab()<cr>
 
 inoremap {;<CR> {<CR>};<ESC>O
 
+function! Tab()
+  if &ft == "qf"
+    execute "cnewer"
+  elseif tabpagenr('$') > 1
+    execute "tabnext"
+  else
+    execute "bn"
+  endif
+endfunction
+
+function! STab()
+  if &ft == "qf"
+    execute "colder"
+  elseif tabpagenr('$') > 1
+    execute "tabprevious"
+  else
+    execute "bp"
+  endif
+endfunction
+
+"autocmd BufLeave * cclose
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 map <silent><leader>r :source $MYVIMRC<CR>
 map <silent><leader>bd :call Preserve("%bd<bar>e#<bar>bd#")<CR>
@@ -316,10 +351,10 @@ inoremap <expr> {<Enter> <SID>CloseBracket()
 
 " ALE
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
-let g:ale_linters = {'cpp': ['g++','clangtidy'], 'javascript' : ['eslint']}
+let g:ale_linters = {'cpp': ['g++','clangd','ccls'], 'javascript' : ['eslint']}
 " let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
 let g:ale_cpp_clangtidy_checks = [
-      \'clang-analyzer-*',
+      \'-clang-analyzer-*',
       \'performance-*',
       \'readability-*','-readability-implicit-bool-conversion',
       \ '-readability-magic-numbers',
@@ -343,7 +378,9 @@ highlight ALEWarningLine ctermbg=none cterm=None
 let g:ale_sign_column_always = 1
 " Set this variable to 1 to fix files when you save them.
 let g:ale_fix_on_save = 1
-let g:ale_lint_on_text_changed=1
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 1
 "let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
 let g:ale_set_loclist = 0
@@ -351,6 +388,8 @@ let g:ale_set_quickfix = 1
 let g:alex_disable_lsp = 1
 
 let g:ale_lint_delay = 1000
+nmap <silent> [g <Plug>(ale_previous_wrap)
+nmap <silent> ]g <Plug>(ale_next_wrap)
 " Put these lines at the very end of your vimrc file.
 
 " Load all plugins now.
@@ -408,10 +447,6 @@ if has('patch8.1.1068')
 else
   imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
-
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
@@ -487,24 +522,6 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " provide custom statusline: lightline.vim, vim-airline.
 " set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
-" Mappings using CoCList:
-" Show all diagnostics.
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-"nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-"nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
 " FZF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
@@ -541,6 +558,8 @@ highlight GitGutterAdd    ctermfg=40
 highlight GitGutterChange ctermfg=93
 highlight GitGutterDelete ctermfg=1
 hi clear SignColumn
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
 ""highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
 ""highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
 ""highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
@@ -664,7 +683,7 @@ function! StatusLine(current, width)
   let l:s .= '%='
 
   if a:current
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{cmake#switch#GetCurrent()}'
+    let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo ?"build":"Debug"}'
     let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
     let l:s .= crystalline#left_mode_sep('')
   endif
@@ -714,13 +733,13 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
 highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
 
-""vim-cmake
-let g:cmake_default_config='build'
-nmap cg <Plug>(CMakeGenerate)
-nmap cb <Plug>(CMakeBuild)
-nmap <leader>cs <Plug>(CMakeSwitch)
-nmap co <Plug>(CMakeOpen)
-nmap cq <Plug>(CMakeClose)
-
 ""vim-commentary
 autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s
+
+" highlightedyank
+let g:highlightedyank_highlight_duration = 500
+"asyncrun
+let g:asyncrun_open = 6
+let g:asyncrun_rootmarks = ['src']
+let g:asynctasks_term_pos = 'external'
+let g:asynctasks_term_pos = 'tab'
