@@ -1,0 +1,23 @@
+[project-generate]
+command=mkdir -p build && cd build && cmake ..
+cwd=$(VIM_ROOT)
+
+[project-build]
+command=make
+cwd=$(VIM_ROOT)/build
+
+[project-generate-debug]
+command=mkdir -p Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
+cwd=$(VIM_ROOT)
+
+[project-build-debug]
+command=make
+cwd=$(VIM_ROOT)/Debug
+
+[project-run]
+command=./bin/main
+output=terminal
+
+[project-clean]
+command=rm -rf build && rm -rf Debug && rm bin/main
+cwd=$(VIM_ROOT)

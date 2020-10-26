@@ -103,7 +103,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-dispatch'
   Plug 'tpope/vim-apathy'
   Plug 'rbong/vim-crystalline'
   if !has('nvim')
@@ -117,7 +116,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
-  Plug 'Valloric/ListToggle'
   Plug 'easymotion/vim-easymotion'
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
@@ -126,7 +124,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'tpope/vim-commentary'
-  Plug 'cdelledonne/vim-cmake'
   Plug 'metakirby5/codi.vim'
   Plug 'psliwka/vim-smoothie'
   Plug 'machakann/vim-highlightedyank'
@@ -231,11 +228,18 @@ let mapleader= " "
 "F10 Step Over
 "F11 Step Into
 "S-F11 Step out of current function scope
-let g:lt_quickfix_list_toggle_map = '<F3>'
+noremap <silent><F3> :call asyncrun#quickfix_toggle(13)<cr>
+aug QFClose
+  au!
+  au WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+aug END
 
 let modo = 1
-nnoremap <expr>cb ((modo) ? ':AsyncTask project-build' : ':echo "Hola"')."\<cr>"
-map <expr>cr ((modo) ? ':!clear' ."\<cr>". ':AsyncTask project-run' : ':echo "Hola"')."\<cr>"
+nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
+      \   ':AsyncTask project-generate-debug')."\<cr>"
+nnoremap <silent><expr><F4> ((modo) ? ':AsyncTask project-build' :
+      \   ':AsyncTask project-build-debug')."\<cr>"
+map <expr><leader><F4> ':AsyncTask project-run<cr>'
 nnoremap <silent><S-F4> :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
 
@@ -677,7 +681,7 @@ function! StatusLine(current, width)
   let l:s .= ' %f%h%w%m%r '
   if a:current
     let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()} '
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{cmake#statusline#GetCmdInfo()}'
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{g:asyncrun_status}'
   endif
 
   let l:s .= '%='
@@ -738,8 +742,18 @@ autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s
 
 " highlightedyank
 let g:highlightedyank_highlight_duration = 500
+
 "asyncrun
-let g:asyncrun_open = 6
 let g:asyncrun_rootmarks = ['src']
 let g:asynctasks_term_pos = 'external'
 let g:asynctasks_term_pos = 'tab'
+command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+      \ if exists(':Make') == 2
+      \   noautocmd Make
+      \ else
+      \   silent noautocmd make!
+      \   redraw!
+      \   return 'call fugitive#cwindow()'
+      \ endif
+let g:asyncrun_exit = "silent call system('aplay ~/.vim/notify.wav &')"
+let g:ayncrun_bell = 1
