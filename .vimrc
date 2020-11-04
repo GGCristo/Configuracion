@@ -33,13 +33,12 @@ set autoread
 set splitright
 "au CursorHold * checktime
 autocmd FileType gitcommit setlocal spell
-set path+=**
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
 set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
-set switchbuf+=usetab,newtab
+"set switchbuf+=usetab,newtab
 set spelllang=es,en_us
 if has ('nvim')
   set guifont=FiraCode\ Nerd\ Font\ Mono\
@@ -68,12 +67,6 @@ set expandtab       " Expand TABs to spaces
 
 filetype plugin on
 
-":h modifyOtherKeys
-let &t_TI = ""
-let &t_TE = ""
-let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-
 " More range selectors
 " https://www.reddit.com/r/vim/comments/i8prmn/vifm_as_a_nerdtree_alternative_my_in_progress/
 for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '-', '#' ]
@@ -83,46 +76,48 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', 
   execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 call plug#begin('~/.vim/plugged')
   Plug 'GGCristo/Crear'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'junegunn/fzf.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'jackguo380/vim-lsp-cxx-highlight'
+  if has ('nvim')
+    Plug 'romgrk/barbar.nvim'
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-treesitter/playground'
+    Plug 'kyazdani42/nvim-web-devicons'
+  else
+    Plug 'jackguo380/vim-lsp-cxx-highlight'
+    Plug 'ryanoasis/vim-devicons'
+  end
   Plug 'dense-analysis/ale'
   Plug 'skywind3000/asynctasks.vim'
   Plug 'skywind3000/asyncrun.vim'
+  Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
 
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-apathy'
+
   Plug 'rbong/vim-crystalline'
-  if !has('nvim')
-    Plug 'rhysd/vim-healthcheck'
-  endif
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
-  Plug 'ryanoasis/vim-devicons'
   Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
-  Plug 'easymotion/vim-easymotion'
+  Plug 'easymotion/vim-easymotion', {'on': '<Plug>(easymotion-overwin-f2)'}
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'junegunn/vim-peekaboo'
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
+  Plug 'wincent/terminus'
+  "Plug 'ap/vim-css-color'
   Plug 'tpope/vim-commentary'
   Plug 'metakirby5/codi.vim'
   Plug 'psliwka/vim-smoothie'
@@ -133,6 +128,12 @@ call plug#end()
 " Abbrevation
 iabbrev Vector vector
 
+set t_Co=256
+let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_invert_selection=0
+set termguicolors
+
+colorscheme gruvbox
 "VISUALS
 augroup my_colours
   autocmd!
@@ -175,11 +176,6 @@ augroup SpellUnderline
     \   guisp=Red
 augroup END
 
-set t_Co=256
-let g:gruvbox_contrast_dark='medium'
-let g:gruvbox_invert_selection=0
-set termguicolors
-colorscheme gruvbox
 
 set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
                   "IOW, you can be anywhere in your source tree instead of just the root of it.
@@ -243,8 +239,6 @@ map <expr><leader><F4> ':AsyncTask project-run<cr>'
 nnoremap <silent><S-F4> :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
 
-autocmd FileType javascript nnoremap <silent><F4> :!clear<cr>:!node %<cr>
-
 nnoremap <silent><F7> :MundoToggle<CR>
 
 if executable("cppcheck")
@@ -257,7 +251,7 @@ nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
-nnoremap ,,  mtA;<Esc>`t
+"nnoremap ,,  mtA;<Esc>`t
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
 nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
@@ -298,20 +292,28 @@ inoremap {;<CR> {<CR>};<ESC>O
 function! Tab()
   if &ft == "qf"
     execute "cnewer"
-  elseif tabpagenr('$') > 1
-    execute "tabnext"
+  elseif filereadable(expand('~/.vim/plugged/barbar.nvim/plugin/bufferline.vim')) && has('nvim')
+    execute "BufferNext"
   else
-    execute "bn"
+    if tabpagenr('$') > 1
+      execute "tabnext"
+    else
+      execute "bn"
+    endif
   endif
 endfunction
 
 function! STab()
   if &ft == "qf"
     execute "colder"
-  elseif tabpagenr('$') > 1
-    execute "tabprevious"
+  elseif filereadable(expand('~/.vim/plugged/barbar.nvim/plugin/bufferline.vim')) && has('nvim')
+    execute "BufferPrevious"
   else
-    execute "bp"
+    if tabpagenr('$') > 1
+      execute "tabprevious"
+    else
+      execute "bp"
+    endif
   endif
 endfunction
 
@@ -372,10 +374,10 @@ let g:ale_pattern_options = {
       \   'test.cpp': {'ale_enabled': 0},
       \}
 
-highlight ALEErrorSign ctermbg=NONE ctermfg=red
-highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
-highlight ALEError ctermbg=none cterm=underline
-highlight ALEWarning ctermbg=none cterm=underline
+highlight ALEErrorSign ctermbg=NONE ctermfg=red guifg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
+highlight ALEError ctermbg=none cterm=underline gui=undercurl
+highlight ALEWarning ctermbg=none cterm=underline gui=undercurl
 highlight ALEErrorLine ctermbg=none cterm=None
 highlight ALEWarningLine ctermbg=none cterm=None
 " Keep the sign gutter open at all times
@@ -387,21 +389,13 @@ let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 1
 "let g:ale_pattern_options_enabled = 1
 "let g:ale_set_balloons=1
-let g:ale_set_loclist = 0
+ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 let g:alex_disable_lsp = 1
 
 let g:ale_lint_delay = 1000
 nmap <silent> [g <Plug>(ale_previous_wrap)
 nmap <silent> ]g <Plug>(ale_next_wrap)
-" Put these lines at the very end of your vimrc file.
-
-" Load all plugins now.
-" Plugins need to be added to runtimepath before helptags can be generated.
-packloadall
-" Load all of the helptags now, after plugins have been loaded.
-" All messages and errors will be ignored.
-" " TextEdit might fail if hidden is not set.
 
 " COC
 
@@ -471,8 +465,8 @@ endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
-hi CocHighlightText ctermfg=black ctermbg=72 guifg=black guibg=#689d6a
-hi CoCHoverRange ctermfg=black ctermbg=72 guifg=black guibg=#689d6a
+hi CocHighlightText ctermbg=241 guibg=#665c54
+hi! link CocHoverRange CocHighlightText
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
@@ -545,7 +539,7 @@ let g:tagbar_autoclose=1
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
-packadd! vimspector
+"packadd! vimspector
 
 "Gitgutter
 if (executable("rg"))
@@ -558,9 +552,9 @@ let g:gitgutter_sign_modified           = '┃'
 let g:gitgutter_sign_removed            = '┃'
 let g:gitgutter_sign_removed_first_line = '┃'
 let g:gitgutter_sign_modified_removed   = '┃'
-highlight GitGutterAdd    ctermfg=40
-highlight GitGutterChange ctermfg=93
-highlight GitGutterDelete ctermfg=1
+highlight GitGutterAdd    ctermfg=40 guifg=#00d700
+highlight GitGutterChange ctermfg=93 guifg=#8700ff
+highlight GitGutterDelete ctermfg=1 guifg=#f70000
 hi clear SignColumn
 nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)
@@ -681,18 +675,19 @@ function! StatusLine(current, width)
   let l:s .= ' %f%h%w%m%r '
   if a:current
     let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()} '
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{g:asyncrun_status}'
+    let l:s .= crystalline#right_sep('Fill', 'Fill') . ' %{g:asyncrun_status}'
   endif
 
   let l:s .= '%='
 
   if a:current
+    let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{coc#status()}'
     let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo ?"build":"Debug"}'
     let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
     let l:s .= crystalline#left_mode_sep('')
   endif
   if a:width > 80
-    let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
+    let l:s .= '%{&ft} %l/%L %c %P '
   else
     let l:s .= ' '
   endif
@@ -700,7 +695,7 @@ function! StatusLine(current, width)
   return l:s
 endfunction
 
-if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim'))
+if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim')) && !has('nvim')
 
   function! TabLabel(buf, max_width) abort
     let [l:left, l:name, l:short_name, l:right] = crystalline#default_tablabel_parts(a:buf, a:max_width)
@@ -711,6 +706,7 @@ if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim'))
     return crystalline#bufferline(0, 0, 1, 1, 'TabLabel', crystalline#default_tabwidth() + 3)
   endfunction
 
+  let g:crystalline_tabline_fn = 'TabLine'
 else
 
   function! TabLine()
@@ -722,7 +718,6 @@ endif
 
 let g:crystalline_enable_sep = 1
 let g:crystalline_statusline_fn = 'StatusLine'
-let g:crystalline_tabline_fn = 'TabLine'
 let g:crystalline_theme = 'badwolf'
 
 set showtabline=2
@@ -748,12 +743,40 @@ let g:asyncrun_rootmarks = ['src']
 let g:asynctasks_term_pos = 'external'
 let g:asynctasks_term_pos = 'tab'
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
-      \ if exists(':Make') == 2
-      \   noautocmd Make
-      \ else
-      \   silent noautocmd make!
-      \   redraw!
-      \   return 'call fugitive#cwindow()'
-      \ endif
-let g:asyncrun_exit = "silent call system('aplay ~/.vim/notify.wav &')"
-let g:ayncrun_bell = 1
+"let g:asyncrun_exit = "silent call system('aplay ~/.vim/notify.wav &')"
+"let g:ayncrun_bell = 1
+
+" vim-doge
+let g:doge_comment_jump_modes = ['n', 's']
+
+"----- NEOVIM ------------------------------------------------------------------
+if has ('nvim')
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained",
+  highlight = {
+    enable = true,
+  },
+}
+EOF
+augroup nvim_treesitter
+  autocmd!
+  autocmd VimEnter * call _nvim_treesitter()
+augroup END
+function! _nvim_treesitter()
+  hi TSVariable ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
+  hi TSField ctermfg=Magenta guifg=#bd93f9
+  hi TSProperty ctermfg=Magenta guifg=#bd93f9
+endfunction
+" barbar.nvim
+nnoremap <silent>, :BufferPick<cr>
+end " If has nvim
+
+" Put these lines at the very end of your vimrc file.
+
+" Load all plugins now.
+" Plugins need to be added to runtimepath before helptags can be generated.
+packloadall
+" Load all of the helptags now, after plugins have been loaded.
+" All messages and errors will be ignored.
+" " TextEdit might fail if hidden is not set.
