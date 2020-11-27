@@ -38,7 +38,7 @@ set backspace=indent,eol,start
 set incsearch
 set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
-"set switchbuf+=usetab,newtab
+set switchbuf+=useopen,usetab
 set spelllang=es,en_us
 if has ('nvim')
   set guifont=FiraCode\ Nerd\ Font\ Mono\
@@ -77,20 +77,20 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', 
 endfor
 
 call plug#begin('~/.vim/plugged')
-  Plug 'GGCristo/Crear'
+  Plug 'liuchengxu/vista.vim'
+  Plug 'kassio/neoterm'
+  Plug 'm-pilia/vim-ccls'
+  Plug 'GGCristo/crear.vim'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'junegunn/fzf.vim'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'neoclide/coc.nvim'
   if has ('nvim')
-    Plug 'romgrk/barbar.nvim'
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-treesitter/playground'
-    Plug 'kyazdani42/nvim-web-devicons'
-  else
-    Plug 'jackguo380/vim-lsp-cxx-highlight'
-    Plug 'ryanoasis/vim-devicons'
   end
+  Plug 'kyazdani42/nvim-web-devicons'
+  Plug 'ryanoasis/vim-devicons'
   Plug 'dense-analysis/ale'
   Plug 'skywind3000/asynctasks.vim'
   Plug 'skywind3000/asyncrun.vim'
@@ -102,21 +102,26 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-apathy'
 
   Plug 'rbong/vim-crystalline'
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
   Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
+  Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': ':UpdateRemotePlugins'}
+  Plug 'lambdalisue/battery.vim'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
   Plug 'easymotion/vim-easymotion', {'on': '<Plug>(easymotion-overwin-f2)'}
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
+  Plug 'stsewd/fzf-checkout.vim'
   Plug 'junegunn/vim-peekaboo'
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'wincent/terminus'
+  Plug 'rhysd/git-messenger.vim'
   "Plug 'ap/vim-css-color'
   Plug 'tpope/vim-commentary'
   Plug 'metakirby5/codi.vim'
@@ -233,11 +238,18 @@ aug END
 let modo = 1
 nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
       \   ':AsyncTask project-generate-debug')."\<cr>"
-nnoremap <silent><expr><F4> ((modo) ? ':AsyncTask project-build' :
-      \   ':AsyncTask project-build-debug')."\<cr>"
+nnoremap <silent><F4> :call Building(modo)<cr>
 map <expr><leader><F4> ':AsyncTask project-run<cr>'
-nnoremap <silent><S-F4> :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
 nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
+func Building(modo)
+  :ALEDisable
+if (a:modo)
+  :AsyncTask project-build
+else
+  :AsyncTask project-build-debug
+endif
+endfunction
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
@@ -267,19 +279,21 @@ if executable ("rg")
 else
   nnoremap <silent><C-N> :Lines<CR>
 endif
-nnoremap <silent><leader>s :BTags<cr>
+nnoremap <silent><leader>s :Vista finder coc<cr>
 nnoremap <silent><leader>gw :Gwrite<cr>
 nnoremap <silent><leader>gc :Commits<cr>
+nnoremap <silent><leader>gb :GBranches<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Git push origin HEAD<CR>
 nnoremap <silent><leader>gh :!hub browse<CR>
-map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
+"map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
+imap jj <Esc>lmtA;<Esc>`t
 imap jk <Esc>
 inoremap <C-H> <Left>
-inoremap <C-J> <Down>
-inoremap <C-K> <Up>
+inoremap <C-J> <Left>
+inoremap <C-K> <Right>
 inoremap <C-L> <Right>
 vnoremap <silent><Up> :m '<-2<CR>gv=gv
 vnoremap <silent><Down> :m '>+1<CR>gv=gv
@@ -288,32 +302,35 @@ nnoremap <silent> <tab> :call Tab()<cr>
 nnoremap <silent> <S-tab> :call STab()<cr>
 
 inoremap {;<CR> {<CR>};<ESC>O
+" I use Allman indentation style
+noremap [[ [[k
 
 function! Tab()
   if &ft == "qf"
     execute "cnewer"
-  elseif filereadable(expand('~/.vim/plugged/barbar.nvim/plugin/bufferline.vim')) && has('nvim')
-    execute "BufferNext"
+  elseif tabpagenr('$') > 1
+    execute "tabnext"
   else
-    if tabpagenr('$') > 1
-      execute "tabnext"
-    else
+    let start_buffer = bufnr('%')
+    execute "bn"
+    while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
       execute "bn"
-    endif
+    endwhile
   endif
 endfunction
 
 function! STab()
   if &ft == "qf"
     execute "colder"
-  elseif filereadable(expand('~/.vim/plugged/barbar.nvim/plugin/bufferline.vim')) && has('nvim')
-    execute "BufferPrevious"
+  elseif tabpagenr('$') > 1
+    execute "tabprevious"
   else
-    if tabpagenr('$') > 1
-      execute "tabprevious"
-    else
-      execute "bp"
-    endif
+    let start_buffer = bufnr('%')
+    execute "bn"
+    while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
+      execute "bn"
+    endwhile
+    execute "bp"
   endif
 endfunction
 
@@ -408,7 +425,7 @@ set nowritebackup
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
-set updatetime=300
+set updatetime=100
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -435,7 +452,11 @@ endfunction
 vmap <C-j> <Plug>(coc-snippets-select)
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <NUL> coc#refresh()
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <NUL> coc#refresh()
+endif
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.
@@ -533,9 +554,7 @@ command! -bang -nargs=? -complete=dir Files
       \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
-
-""TAGBAR
-let g:tagbar_autoclose=1
+let g:fzf_buffers_jump=1
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
@@ -681,6 +700,7 @@ function! StatusLine(current, width)
   let l:s .= '%='
 
   if a:current
+    let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{battery#component()}'
     let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{coc#status()}'
     let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo ?"build":"Debug"}'
     let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
@@ -695,7 +715,7 @@ function! StatusLine(current, width)
   return l:s
 endfunction
 
-if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim')) && !has('nvim')
+if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim'))
 
   function! TabLabel(buf, max_width) abort
     let [l:left, l:name, l:short_name, l:right] = crystalline#default_tablabel_parts(a:buf, a:max_width)
@@ -706,7 +726,6 @@ if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim')) &&
     return crystalline#bufferline(0, 0, 1, 1, 'TabLabel', crystalline#default_tabwidth() + 3)
   endfunction
 
-  let g:crystalline_tabline_fn = 'TabLine'
 else
 
   function! TabLine()
@@ -716,6 +735,7 @@ else
 
 endif
 
+let g:crystalline_tabline_fn = 'TabLine'
 let g:crystalline_enable_sep = 1
 let g:crystalline_statusline_fn = 'StatusLine'
 let g:crystalline_theme = 'badwolf'
@@ -743,6 +763,12 @@ let g:asyncrun_rootmarks = ['src']
 let g:asynctasks_term_pos = 'external'
 let g:asynctasks_term_pos = 'tab'
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+au User AsyncRunStop call DontTouchMyTerminal()
+func DontTouchMyTerminal()
+if (g:asyncrun_status=="success")
+  :ALEEnable
+endif
+endfunction
 "let g:asyncrun_exit = "silent call system('aplay ~/.vim/notify.wav &')"
 "let g:ayncrun_bell = 1
 
@@ -768,8 +794,6 @@ function! _nvim_treesitter()
   hi TSField ctermfg=Magenta guifg=#bd93f9
   hi TSProperty ctermfg=Magenta guifg=#bd93f9
 endfunction
-" barbar.nvim
-nnoremap <silent>, :BufferPick<cr>
 end " If has nvim
 
 " Put these lines at the very end of your vimrc file.
