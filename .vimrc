@@ -40,6 +40,18 @@ set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
 set switchbuf+=useopen,usetab
 set spelllang=es,en_us
+" terminal
+tnoremap <C-B>[ <C-\><C-N>
+augroup termIgnore
+    autocmd!
+    if has('nvim')
+      autocmd TermOpen * setlocal nobuflisted
+      " autocmd TermOpen * resize -10 <bar> <C-W>J
+    else
+      autocmd TerminalOpen * setlocal nobuflisted
+    endif
+augroup END
+
 if has ('nvim')
   set guifont=FiraCode\ Nerd\ Font\ Mono\
 endif
@@ -77,9 +89,10 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', 
 endfor
 
 call plug#begin('~/.vim/plugged')
+  " Plug 'KenN7/vim-arsync'
+  Plug 'GGCristo/vim-arsync'
   Plug 'liuchengxu/vista.vim'
   Plug 'kassio/neoterm'
-  Plug 'm-pilia/vim-ccls'
   Plug 'GGCristo/crear.vim'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
@@ -87,9 +100,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'neoclide/coc.nvim'
   if has ('nvim')
     Plug 'nvim-treesitter/nvim-treesitter'
-    Plug 'nvim-treesitter/playground'
+    Plug 'akinsho/nvim-toggleterm.lua'
   end
-  Plug 'kyazdani42/nvim-web-devicons'
   Plug 'ryanoasis/vim-devicons'
   Plug 'dense-analysis/ale'
   Plug 'skywind3000/asynctasks.vim'
@@ -99,16 +111,13 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-apathy'
 
   Plug 'rbong/vim-crystalline'
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
   Plug 'airblade/vim-gitgutter'
-  Plug 'preservim/nerdtree', {'on': 'NERDTreeFind'}
   Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': ':UpdateRemotePlugins'}
-  Plug 'lambdalisue/battery.vim'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
@@ -122,7 +131,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'markonm/traces.vim'
   Plug 'wincent/terminus'
   Plug 'rhysd/git-messenger.vim'
-  "Plug 'ap/vim-css-color'
   Plug 'tpope/vim-commentary'
   Plug 'metakirby5/codi.vim'
   Plug 'psliwka/vim-smoothie'
@@ -213,6 +221,9 @@ command! -nargs=+ ArgsPattern call ArgsPattern(<q-args>)
 function! SaveSession()
   cd %:h
   let dir = finddir('src/..',';')
+  if dir == ''
+    let dir = finddir('.git/..',';')
+  endif
   execute 'cd' fnameescape(dir)
   let root_project = fnamemodify(dir, ':t')
   execute ':Obsession ~/.vim/session/' . expand(root_project)
@@ -259,7 +270,8 @@ else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
 
-nnoremap <silent><F12> :call MyNerdToggle()<cr>
+nnoremap <silent><F12> :CHADopen<cr>
+" nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 map <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -326,11 +338,10 @@ function! STab()
     execute "tabprevious"
   else
     let start_buffer = bufnr('%')
-    execute "bn"
-    while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
-      execute "bn"
-    endwhile
     execute "bp"
+    while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
+      execute "bp"
+    endwhile
   endif
 endfunction
 
@@ -700,7 +711,6 @@ function! StatusLine(current, width)
   let l:s .= '%='
 
   if a:current
-    let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{battery#component()}'
     let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{coc#status()}'
     let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo ?"build":"Debug"}'
     let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
@@ -775,11 +785,39 @@ endfunction
 " vim-doge
 let g:doge_comment_jump_modes = ['n', 's']
 
+" autocmd User StartifyBufferOpened ARsyncUp
+
+" fzf-checkout.vim
+let g:fzf_branch_actions = {
+      \ 'pull': {
+      \   'prompt': 'Pull> ',
+      \   'execute': 'Git pull {branch}',
+      \   'multiple': v:false,
+      \   'keymap': 'ctrl-p',
+      \   'required': ['branch'],
+      \   'confirm': v:false,
+      \ },
+      \ 'diff': {
+      \   'prompt': 'Diff> ',
+      \   'execute': 'Git diff {branch}',
+      \   'multiple': v:false,
+      \   'keymap': 'ctrl-f',
+      \   'required': ['branch'],
+      \   'confirm': v:false,
+      \ },
+      \}
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
 lua <<EOF
+require"toggleterm".setup{
+  size = 15,
+  open_mapping = [[<c-\>]],
+  shade_filetypes = {},
+  shade_terminals = true,
+  persist_size = true,
+  direction = 'horizontal'
+}
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained",
   highlight = {
     enable = true,
   },

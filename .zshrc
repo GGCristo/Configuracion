@@ -237,3 +237,4 @@ getdiff()
     echo "It's not a git repository"
   fi;
 }
+. "/home/cristo/.local/share/lscolors.sh"
