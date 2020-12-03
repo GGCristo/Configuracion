@@ -11,10 +11,11 @@
 "  \________/\________/\________/|__|  |__/______> |__|  \____/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Basic
-highlight Normal ctermbg=NONE
-set nocompatible
 set noswapfile
+" Some servers have issues with backup files, see #649.
 set nobackup
+set nowritebackup
+
 set autoindent
 set complete=.,w,b,u,t,i,kspell
 set background=dark
@@ -23,16 +24,14 @@ syntax on
 set encoding=utf-8
 set mouse=a
 set number
-" I dont want autocomments
-autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set relativenumber
 set clipboard^=unnamedplus
 set hidden
 set cc=81
 set autoread
 set splitright
+set noequalalways
 "au CursorHold * checktime
-autocmd FileType gitcommit setlocal spell
 set wildmenu
 set backspace=indent,eol,start
 set incsearch
@@ -40,26 +39,18 @@ set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
 set switchbuf+=useopen,usetab
 set spelllang=es,en_us
+set dictionary+=/usr/share/dict/words,/usr/share/dict/spanish
+
+" Abbrevation
+iabbrev Vector vector
+
 " terminal
 tnoremap <C-B>[ <C-\><C-N>
-augroup termIgnore
-    autocmd!
-    if has('nvim')
-      autocmd TermOpen * setlocal nobuflisted
-      " autocmd TermOpen * resize -10 <bar> <C-W>J
-    else
-      autocmd TerminalOpen * setlocal nobuflisted
-    endif
-augroup END
+tnoremap <C-K> <C-\><C-N><C-W>k
 
-if has ('nvim')
-  set guifont=FiraCode\ Nerd\ Font\ Mono\
-endif
-augroup CursorLine
-    au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
-augroup END
+set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
+                  "IOW, you can be anywhere in your source tree instead of just the root of it.
+
 set laststatus=2
 " Persist undo history between file editing sessions.
 set undofile
@@ -77,9 +68,8 @@ set softtabstop=2   " Sets the number of columns for a TAB
 
 set expandtab       " Expand TABs to spaces
 
-filetype plugin on
-
-" More range selectors
+" pseudo-text object
+" https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
 " https://www.reddit.com/r/vim/comments/i8prmn/vifm_as_a_nerdtree_alternative_my_in_progress/
 for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '-', '#' ]
   execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
@@ -87,6 +77,38 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', 
   execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
   execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
+
+" augroup
+augroup TipoFile
+  au!
+  " I dont want autocomments
+  autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+  autocmd FileType gitcommit setlocal spell
+  ""vim-commentary
+  autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s
+augroup END
+
+augroup MyTerm
+   autocmd!
+    if has('nvim')
+      autocmd TermOpen * setlocal nobuflisted
+      " (https://github.com/akinsho/nvim-toggleterm.lua/blob/master/lua/toggleterm/colors.lua)
+      hi DarkenedPanel guibg=#1c1c1c
+      autocmd TermOpen * setlocal winhighlight=Normal:DarkenedPanel
+      " autocmd TermOpen * resize -10 <bar> <C-W>J
+    else
+      autocmd TerminalOpen * setlocal nobuflisted
+      " (https://github.com/akinsho/nvim-toggleterm.lua/blob/master/lua/toggleterm/colors.lua)
+      hi DarkenedPanel guibg=#1c1c1c
+      autocmd TerminalOpen * setlocal winhighlight=Normal:DarkenedPanel
+    endif
+augroup END
+
+augroup CursorLine
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
+augroup END
 
 call plug#begin('~/.vim/plugged')
   " Plug 'KenN7/vim-arsync'
@@ -101,6 +123,7 @@ call plug#begin('~/.vim/plugged')
   if has ('nvim')
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'akinsho/nvim-toggleterm.lua'
+    Plug 'norcalli/nvim-colorizer.lua'
   end
   Plug 'ryanoasis/vim-devicons'
   Plug 'dense-analysis/ale'
@@ -138,62 +161,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
-" Abbrevation
-iabbrev Vector vector
-
-set t_Co=256
-let g:gruvbox_contrast_dark='medium'
-let g:gruvbox_invert_selection=0
-set termguicolors
-
-colorscheme gruvbox
-"VISUALS
-augroup my_colours
-  autocmd!
-  autocmd ColorScheme hi SpellBad cterm=reverse
-augroup END
-" Force to use underline for spell check results
-augroup SpellUnderline
-  autocmd!
-  autocmd ColorScheme *
-    \ highlight SpellBad
-    \   cterm=Underline
-    \   ctermfg=NONE
-    \   ctermbg=NONE
-    \   term=Reverse
-    \   gui=Undercurl
-    \   guisp=Red
-  autocmd ColorScheme *
-    \ highlight SpellCap
-    \   cterm=Underline
-    \   ctermfg=NONE
-    \   ctermbg=NONE
-    \   term=Reverse
-    \   gui=Undercurl
-    \   guisp=Red
-  autocmd ColorScheme *
-    \ highlight SpellLocal
-    \   cterm=Underline
-    \   ctermfg=NONE
-    \   ctermbg=NONE
-    \   term=Reverse
-    \   gui=Undercurl
-    \   guisp=Red
-  autocmd ColorScheme *
-    \ highlight SpellRare
-    \   cterm=Underline
-    \   ctermfg=NONE
-    \   ctermbg=NONE
-    \   term=Reverse
-    \   gui=Undercurl
-    \   guisp=Red
-augroup END
-
-
-set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
-                  "IOW, you can be anywhere in your source tree instead of just the root of it.
-
-" MAPPING && FUNCTIONS
+" Functions
+function! Building(modo)
+  :ALEDisable
+if (a:modo)
+  :AsyncTask project-build
+else
+  :AsyncTask project-build-debug
+endif
+endfunction
 
 function! ExecuteMacroOverVisualRange()
   echo "@".getcmdline()
@@ -209,14 +185,6 @@ function! Preserve(command)
   call setpos('.', save_cursor)
   call setreg('/', old_query)
 endfunction
-"
-" Puedo usar regex para rellenar args
-" https://stackoverflow.com/questions/9033239/vim-regex-or-in-file-name-pattern-on-windows:w
-function! ArgsPattern(pat)
-  let file_list = filter(split(globpath('.','**'),nr2char(10)), 'v:val =~ ''' . substitute(a:pat,"'","''",'g') . '''')
-  execute 'args ' . join(map(file_list,'fnameescape(v:val)'),' ')
-endfunction
-command! -nargs=+ ArgsPattern call ArgsPattern(<q-args>)
 
 function! SaveSession()
   cd %:h
@@ -228,94 +196,6 @@ function! SaveSession()
   let root_project = fnamemodify(dir, ':t')
   execute ':Obsession ~/.vim/session/' . expand(root_project)
 endfunction
-
-let mapleader= " "
-" F5 para empezar para debugear/continuar
-" S-F5 para parar de debugear
-" C-S-F5 para restaurar el debuger con la misma configuración
-" F6 Para pausar el debugger
-  "nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
-" F9
-" S-F9
-"F10 Step Over
-"F11 Step Into
-"S-F11 Step out of current function scope
-noremap <silent><F3> :call asyncrun#quickfix_toggle(13)<cr>
-aug QFClose
-  au!
-  au WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
-aug END
-
-let modo = 1
-nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
-      \   ':AsyncTask project-generate-debug')."\<cr>"
-nnoremap <silent><F4> :call Building(modo)<cr>
-map <expr><leader><F4> ':AsyncTask project-run<cr>'
-nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
-nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
-func Building(modo)
-  :ALEDisable
-if (a:modo)
-  :AsyncTask project-build
-else
-  :AsyncTask project-build-debug
-endif
-endfunction
-
-nnoremap <silent><F7> :MundoToggle<CR>
-
-if executable("cppcheck")
-  nnoremap <silent><F8> :!clear<cr>:!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/ -iDebug/ -i.ccls-cache/<CR>
-else
-  nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
-endif
-
-nnoremap <silent><F12> :CHADopen<cr>
-" nnoremap <silent><F12> :call MyNerdToggle()<cr>
-
-map <silent><leader><leader> :call CurtineIncSw()<cr>
-nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
-"nnoremap ,,  mtA;<Esc>`t
-nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
-inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
-nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
-inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>
-nnoremap <C-H> <C-W>h
-nnoremap <C-J> <C-W>j
-nnoremap <C-K> <C-W>k
-nnoremap <C-L> <C-W>l
-nnoremap <expr> <C-P> (len(system('git rev-parse')) ? ':Files' : ':GFiles --cached --others --exclude-standard')."\<cr>"
-if executable ("rg")
-  nnoremap <silent><C-N> :Rg<CR>
-  set grepprg=rg\ --vimgrep\ --hidden\
-else
-  nnoremap <silent><C-N> :Lines<CR>
-endif
-nnoremap <silent><leader>s :Vista finder coc<cr>
-nnoremap <silent><leader>gw :Gwrite<cr>
-nnoremap <silent><leader>gc :Commits<cr>
-nnoremap <silent><leader>gb :GBranches<cr>
-nnoremap <silent><leader>gr :Gread<CR>
-nnoremap <silent><leader>gs :G<CR>
-nnoremap <silent><leader>gp :Git push origin HEAD<CR>
-nnoremap <silent><leader>gh :!hub browse<CR>
-"map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
-
-imap jj <Esc>lmtA;<Esc>`t
-imap jk <Esc>
-inoremap <C-H> <Left>
-inoremap <C-J> <Left>
-inoremap <C-K> <Right>
-inoremap <C-L> <Right>
-vnoremap <silent><Up> :m '<-2<CR>gv=gv
-vnoremap <silent><Down> :m '>+1<CR>gv=gv
-
-nnoremap <silent> <tab> :call Tab()<cr>
-nnoremap <silent> <S-tab> :call STab()<cr>
-
-inoremap {;<CR> {<CR>};<ESC>O
-" I use Allman indentation style
-noremap [[ [[k
 
 function! Tab()
   if &ft == "qf"
@@ -345,7 +225,103 @@ function! STab()
   endif
 endfunction
 
-"autocmd BufLeave * cclose
+"auto close {
+"(https://www.reddit.com/r/vim/comments/6h0dy7/which_autoclosing_plugin_do_you_use/)
+function! s:CloseBracket()
+    let line = getline('.')
+    if line =~# '^\s*\(struct\|class\|enum\) '
+        return "{\<Enter>};\<Esc>O"
+    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
+        " Probably inside a function call. Close it off.
+        return "{\<Enter>});\<Esc>O"
+    else
+        return "{\<Enter>}\<Esc>O"
+    endif
+endfunction
+
+" Maps
+let mapleader= " "
+" F5 para empezar para debugear/continuar
+" S-F5 para parar de debugear
+" C-S-F5 para restaurar el debuger con la misma configuración
+" F6 Para pausar el debugger
+  "nnoremap <silent><F6> :Termdebug %:r<CR><c-w>2j<c-w>L
+" F9
+" S-F9
+"F10 Step Over
+"F11 Step Into
+"S-F11 Step out of current function scope
+noremap <silent><F3> :call asyncrun#quickfix_toggle(13)<cr>
+aug QFClose
+  au!
+  au WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+aug END
+
+let modo = 1
+nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
+      \   ':AsyncTask project-generate-debug')."\<cr>"
+nnoremap <silent><F4> :call Building(modo)<cr>
+nnoremap <expr><leader><F4> ':AsyncTask project-run<cr>'
+nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
+
+nnoremap <silent><F7> :MundoToggle<CR>
+
+if executable("cppcheck")
+  nnoremap <silent><F8> :!clear<cr>:!cppcheck --enable=all --suppress=missingIncludeSystem . -itest/ -ibuild/ -iDebug/ -i.ccls-cache/<CR>
+else
+  nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
+endif
+
+nnoremap <silent><F12> :CHADopen<cr>
+
+nnoremap <silent><leader><leader> :call CurtineIncSw()<cr>
+nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
+"nnoremap ,,  mtA;<Esc>`t
+nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
+inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
+nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
+inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>
+nnoremap <C-H> <C-W>h
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
+nnoremap <C-L> <C-W>l
+nnoremap <expr> <C-P> (len(system('git rev-parse')) ? ':Files' : ':GFiles --cached --others --exclude-standard')."\<cr>"
+if executable ("rg")
+  nnoremap <silent><C-N> :Rg<CR>
+  set grepprg=rg\ --vimgrep\ --hidden\
+else
+  nnoremap <silent><C-N> :Lines<CR>
+endif
+nnoremap <silent><leader>s :Vista finder coc<cr>
+nnoremap <silent><leader>gw :Gwrite<cr>
+nnoremap <silent><leader>gc :Commits<cr>
+nnoremap <silent><leader>gb :GBranches<cr>
+nnoremap <silent><leader>gr :Gread<CR>
+nnoremap <silent><leader>gs :G<CR>
+nnoremap <silent><leader>gp :Git push origin HEAD<CR>
+nnoremap <silent><leader>gh :!hub browse<CR>
+"map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
+
+inoremap jj <Esc>lmtA;<Esc>`t
+inoremap jk <Esc>
+inoremap <C-H> <Left>
+inoremap <C-J> <Left>
+inoremap <C-K> <Right>
+inoremap <C-L> <Right>
+vnoremap <silent><Up> :m '<-2<CR>gv=gv
+vnoremap <silent><Down> :m '>+1<CR>gv=gv
+
+" (https://superuser.com/questions/410847/how-do-you-create-a-vim-key-mapping-that-requires-numbers-before-the-hotkey-lik)
+nnoremap <leader>t :<C-U>exe v:count . 'Ttoggle'<cr>
+
+nnoremap <silent> <tab> :call Tab()<cr>
+nnoremap <silent> <S-tab> :call STab()<cr>
+
+inoremap {;<CR> {<CR>};<ESC>O
+" I use Allman indentation style
+noremap [[ [[k
+
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 map <silent><leader>r :source $MYVIMRC<CR>
 map <silent><leader>bd :call Preserve("%bd<bar>e#<bar>bd#")<CR>
@@ -363,25 +339,12 @@ nnoremap <silent><leader><S-p> :put!<CR>
 nnoremap <silent> [<space> :call append(line('.')-1, '')<CR>
 nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
 
-"auto close {
-"(https://www.reddit.com/r/vim/comments/6h0dy7/which_autoclosing_plugin_do_you_use/)
-function! s:CloseBracket()
-    let line = getline('.')
-    if line =~# '^\s*\(struct\|class\|enum\) '
-        return "{\<Enter>};\<Esc>O"
-    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
-        " Probably inside a function call. Close it off.
-        return "{\<Enter>});\<Esc>O"
-    else
-        return "{\<Enter>}\<Esc>O"
-    endif
-endfunction
 inoremap <expr> {<Enter> <SID>CloseBracket()
 " Spelling
-:command! WQ wq
-:command! Wq wq
-:command! W w
-:command! Q q
+command! WQ wq
+command! Wq wq
+command! W w
+command! Q q
 
 " ALE
 let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
@@ -402,12 +365,6 @@ let g:ale_pattern_options = {
       \   'test.cpp': {'ale_enabled': 0},
       \}
 
-highlight ALEErrorSign ctermbg=NONE ctermfg=red guifg=red
-highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
-highlight ALEError ctermbg=none cterm=underline gui=undercurl
-highlight ALEWarning ctermbg=none cterm=underline gui=undercurl
-highlight ALEErrorLine ctermbg=none cterm=None
-highlight ALEWarningLine ctermbg=none cterm=None
 " Keep the sign gutter open at all times
 let g:ale_sign_column_always = 1
 " Set this variable to 1 to fix files when you save them.
@@ -426,10 +383,6 @@ nmap <silent> [g <Plug>(ale_previous_wrap)
 nmap <silent> ]g <Plug>(ale_next_wrap)
 
 " COC
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
 
 " Give more space for displaying messages.
 "set cmdheight=2
@@ -497,8 +450,6 @@ endfunction
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
-hi CocHighlightText ctermbg=241 guibg=#665c54
-hi! link CocHoverRange CocHighlightText
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
@@ -582,15 +533,8 @@ let g:gitgutter_sign_modified           = '┃'
 let g:gitgutter_sign_removed            = '┃'
 let g:gitgutter_sign_removed_first_line = '┃'
 let g:gitgutter_sign_modified_removed   = '┃'
-highlight GitGutterAdd    ctermfg=40 guifg=#00d700
-highlight GitGutterChange ctermfg=93 guifg=#8700ff
-highlight GitGutterDelete ctermfg=1 guifg=#f70000
-hi clear SignColumn
 nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)
-""highlight GitGutterAdd    guifg=green guibg=green ctermfg=green ctermbg=green
-""highlight GitGutterChange guifg=yellow guibg=yellow ctermfg=yellow ctermbg=yellow
-""highlight GitGutterDelete guifg=red guibg=red ctermfg=red ctermbg=red
 
 "STARTIFY
 let g:startify_session_dir = '~/.vim/session'
@@ -624,22 +568,8 @@ let g:startify_custom_header = s:filter_header([
 
 let g:startify_fortune_use_unicode = 1
 
-hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
 let g:startify_custom_footer = startify#fortune#boxed()
       "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
-
-"NERDTREE
-let NERDTreeQuitOnOpen = 1
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let NERDTreeAutoDeleteBuffer = 1
-let NERDTreeMinimalUI = 1
-function MyNerdToggle()
-  if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
-    :NERDTreeToggle
-  else
-    :NERDTreeFind
-  endif
-endfunction
 
 " INCSEARCH
 map /  <Plug>(incsearch-forward)
@@ -686,11 +616,6 @@ let g:easy_align_delimiters = {
       \     'stick_to_left': 0
       \   }
       \ }
-
-"" vim-lsp-cxx-highlight
-hi LspCxxHlSymVariable ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
-hi LspCxxHlSymParameter ctermfg=Grey guifg=#a0a8b0 cterm=none gui=none
-hi LspCxxHlGroupMemberVariable ctermfg=Magenta guifg=#bd93f9
 
 ""vim-crystalline
 
@@ -759,11 +684,6 @@ let g:indentLine_fileTypeExclude = ['help', 'startify']
 
 "" quick-scope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
-highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
-
-""vim-commentary
-autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s
 
 " highlightedyank
 let g:highlightedyank_highlight_duration = 500
@@ -785,9 +705,7 @@ endfunction
 " vim-doge
 let g:doge_comment_jump_modes = ['n', 's']
 
-" autocmd User StartifyBufferOpened ARsyncUp
-
-" fzf-checkout.vim
+" fzf-checkout.vim TODO
 let g:fzf_branch_actions = {
       \ 'pull': {
       \   'prompt': 'Pull> ',
@@ -806,6 +724,13 @@ let g:fzf_branch_actions = {
       \   'confirm': v:false,
       \ },
       \}
+" chadtree TODO
+let g:chadtree_settings = {'toggle_follow': ['Q']}
+
+" neoterm
+let g:neoterm_size = 15
+let g:neoterm_default_mod = 'botright'
+let g:neoterm_autoinsert = 1
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
 lua <<EOF
@@ -834,11 +759,70 @@ function! _nvim_treesitter()
 endfunction
 end " If has nvim
 
-" Put these lines at the very end of your vimrc file.
+"VISUALS
+let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_invert_selection=0
+set termguicolors
 
-" Load all plugins now.
-" Plugins need to be added to runtimepath before helptags can be generated.
-packloadall
-" Load all of the helptags now, after plugins have been loaded.
-" All messages and errors will be ignored.
-" " TextEdit might fail if hidden is not set.
+colorscheme gruvbox
+set guifont=FiraCode\ Nerd\ Font\ Mono\
+augroup my_colours
+  autocmd!
+  autocmd ColorScheme hi SpellBad cterm=reverse
+  autocmd ColorScheme *
+    \ highlight SpellBad
+    \   cterm=Underline
+    \   ctermfg=NONE
+    \   ctermbg=NONE
+    \   term=Reverse
+    \   gui=Undercurl
+    \   guisp=Red
+  autocmd ColorScheme *
+    \ highlight SpellCap
+    \   cterm=Underline
+    \   ctermfg=NONE
+    \   ctermbg=NONE
+    \   term=Reverse
+    \   gui=Undercurl
+    \   guisp=Red
+  autocmd ColorScheme *
+    \ highlight SpellLocal
+    \   cterm=Underline
+    \   ctermfg=NONE
+    \   ctermbg=NONE
+    \   term=Reverse
+    \   gui=Undercurl
+    \   guisp=Red
+  autocmd ColorScheme *
+    \ highlight SpellRare
+    \   cterm=Underline
+    \   ctermfg=NONE
+    \   ctermbg=NONE
+    \   term=Reverse
+    \   gui=Undercurl
+    \   guisp=Red
+  " ALE
+  highlight ALEErrorSign ctermbg=NONE ctermfg=red guifg=red
+  highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
+  highlight ALEError ctermbg=none cterm=underline gui=undercurl
+  highlight ALEWarning ctermbg=none cterm=underline gui=undercurl
+  highlight ALEErrorLine ctermbg=none cterm=None
+  highlight ALEWarningLine ctermbg=none cterm=None
+  " COC
+  hi CocHighlightText ctermbg=241 guibg=#665c54
+  hi! link CocHoverRange CocHighlightText
+  " Gitgutter
+  highlight GitGutterAdd    ctermfg=40 guifg=#00d700
+  highlight GitGutterChange ctermfg=93 guifg=#8700ff
+  highlight GitGutterDelete ctermfg=1 guifg=#f70000
+  hi clear SignColumn
+  " quick-scope
+  highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
+  highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
+  " startify
+  hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
+augroup END
+" nvim-colorizer
+if has ('nvim')
+  lua require'colorizer'.setup()
+endif
