@@ -93,14 +93,13 @@ augroup MyTerm
     if has('nvim')
       autocmd TermOpen * setlocal nobuflisted
       " (https://github.com/akinsho/nvim-toggleterm.lua/blob/master/lua/toggleterm/colors.lua)
-      hi DarkenedPanel guibg=#1c1c1c
-      autocmd TermOpen * setlocal winhighlight=Normal:DarkenedPanel
+      hi DarkenedPanel guibg=Black
+      autocmd TermOpen * setlocal winhighlight=Normal:Black
       " autocmd TermOpen * resize -10 <bar> <C-W>J
     else
       autocmd TerminalOpen * setlocal nobuflisted
       " (https://github.com/akinsho/nvim-toggleterm.lua/blob/master/lua/toggleterm/colors.lua)
-      hi DarkenedPanel guibg=#1c1c1c
-      autocmd TerminalOpen * setlocal winhighlight=Normal:DarkenedPanel
+      autocmd TerminalOpen * setlocal
     endif
 augroup END
 
@@ -111,8 +110,7 @@ augroup CursorLine
 augroup END
 
 call plug#begin('~/.vim/plugged')
-  " Plug 'KenN7/vim-arsync'
-  Plug 'GGCristo/vim-arsync'
+  Plug 'KenN7/vim-arsync'
   Plug 'liuchengxu/vista.vim'
   Plug 'kassio/neoterm'
   Plug 'GGCristo/crear.vim'
@@ -121,8 +119,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf.vim'
   Plug 'neoclide/coc.nvim'
   if has ('nvim')
-    Plug 'nvim-treesitter/nvim-treesitter'
-    Plug 'akinsho/nvim-toggleterm.lua'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'nvim-treesitter/playground'
+    " Plug 'akinsho/nvim-toggleterm.lua'
     Plug 'norcalli/nvim-colorizer.lua'
   end
   Plug 'ryanoasis/vim-devicons'
@@ -134,13 +133,14 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-commentary'
 
   Plug 'rbong/vim-crystalline'
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   Plug 'mhinz/vim-startify'
-  Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-c'}
+  Plug 'puremourning/vimspector'
   Plug 'airblade/vim-gitgutter'
-  Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': ':UpdateRemotePlugins'}
+  Plug 'preservim/nerdtree'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
@@ -152,10 +152,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'Yggdroot/indentLine'
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
-  Plug 'wincent/terminus'
+  " Plug 'wincent/terminus'
   Plug 'rhysd/git-messenger.vim'
-  Plug 'tpope/vim-commentary'
-  Plug 'metakirby5/codi.vim'
   Plug 'psliwka/vim-smoothie'
   Plug 'machakann/vim-highlightedyank'
   Plug 'gruvbox-community/gruvbox'
@@ -251,6 +249,7 @@ let mapleader= " "
 "F10 Step Over
 "F11 Step Into
 "S-F11 Step out of current function scope
+" nmap <F2> <Plug>(grammarous-move-to-info-window)
 noremap <silent><F3> :call asyncrun#quickfix_toggle(13)<cr>
 aug QFClose
   au!
@@ -273,7 +272,8 @@ else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
 
-nnoremap <silent><F12> :CHADopen<cr>
+" nnoremap <silent><F12> :CHADopen<cr>
+nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 nnoremap <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -359,7 +359,8 @@ let g:ale_cpp_clangtidy_checks = [
       \'bugprone-*']
 let g:ale_open_list = 0
 let g:ale_sign_error = '✘'
-let g:ale_sign_warning = ''
+let g:ale_sign_warning = '🛆'
+" -let g:ale_sign_warning = ''
 
 let g:ale_pattern_options = {
       \   'test.cpp': {'ale_enabled': 0},
@@ -504,6 +505,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " FZF
+" imap <C-X><C-L> <plug>(fzf-complete-line)
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 let g:fzf_action = {
@@ -517,9 +519,9 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 let g:fzf_buffers_jump=1
-
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+let g:vimspector_install_gadgets = [ 'vscode-cpptools' ]
 "packadd! vimspector
 
 "Gitgutter
@@ -724,8 +726,6 @@ let g:fzf_branch_actions = {
       \   'confirm': v:false,
       \ },
       \}
-" chadtree TODO
-let g:chadtree_settings = {'toggle_follow': ['Q']}
 
 " neoterm
 let g:neoterm_size = 15
@@ -734,14 +734,6 @@ let g:neoterm_autoinsert = 1
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
 lua <<EOF
-require"toggleterm".setup{
-  size = 15,
-  open_mapping = [[<c-\>]],
-  shade_filetypes = {},
-  shade_terminals = true,
-  persist_size = true,
-  direction = 'horizontal'
-}
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
@@ -758,6 +750,19 @@ function! _nvim_treesitter()
   hi TSProperty ctermfg=Magenta guifg=#bd93f9
 endfunction
 end " If has nvim
+
+"NERDTree
+let NERDTreeQuitOnOpen = 1
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let NERDTreeAutoDeleteBuffer = 1
+let NERDTreeMinimalUI = 1
+function MyNerdToggle()
+    if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
+      :NERDTreeToggle
+    else
+      :NERDTreeFind
+    endif
+endfunction
 
 "VISUALS
 let g:gruvbox_contrast_dark='medium'
@@ -803,7 +808,8 @@ augroup my_colours
     \   guisp=Red
   " ALE
   highlight ALEErrorSign ctermbg=NONE ctermfg=red guifg=red
-  highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
+  " highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
+  highlight ALEWarningSign ctermbg=NONE ctermfg=214 guifg=#fabd2f
   highlight ALEError ctermbg=none cterm=underline gui=undercurl
   highlight ALEWarning ctermbg=none cterm=underline gui=undercurl
   highlight ALEErrorLine ctermbg=none cterm=None

@@ -108,7 +108,6 @@ autoload -Uz compinit && compinit
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind ctrl-y:preview-up,ctrl-e:preview-down'
 if [ -x "$(command -v rg)" ]; then
@@ -238,3 +237,8 @@ getdiff()
   fi;
 }
 . "/home/cristo/.local/share/lscolors.sh"
+export PATH=$PATH:/usr/local/go/bin
+export GEM_HOME="$HOME/.gem"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
