@@ -140,7 +140,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'mhinz/vim-startify'
   Plug 'puremourning/vimspector'
   Plug 'airblade/vim-gitgutter'
-  Plug 'preservim/nerdtree'
+  " Plug 'preservim/nerdtree'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
@@ -156,16 +156,25 @@ call plug#begin('~/.vim/plugged')
   Plug 'rhysd/git-messenger.vim'
   Plug 'psliwka/vim-smoothie'
   Plug 'machakann/vim-highlightedyank'
+  Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
   Plug 'gruvbox-community/gruvbox'
 call plug#end()
 
 " Functions
 function! Building(modo)
   :ALEDisable
-if (a:modo)
+if (a:modo != "Debug")
   :AsyncTask project-build
 else
   :AsyncTask project-build-debug
+endif
+endfunction
+
+function! Running(modo)
+if (a:modo != "test")
+  :AsyncTask project-run
+else
+  :AsyncTask project-run-myTest
 endif
 endfunction
 
@@ -256,13 +265,16 @@ aug QFClose
   au WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
 aug END
 
-let modo = 1
-nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
-      \   ':AsyncTask project-generate-debug')."\<cr>"
+let modo = "build"
+" nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
+      " \   ':AsyncTask project-generate-debug')."\<cr>"
 nnoremap <silent><F4> :call Building(modo)<cr>
-nnoremap <expr><leader><F4> ':AsyncTask project-run<cr>'
+nnoremap <silent><leader><F4> :call Running(modo)<cr>
 nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
-nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
+" nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
+nnoremap <silent><leader>csb :let modo="build"<cr> :AsyncTask project-generate<cr>
+nnoremap <silent><leader>csd :let modo="Debug"<cr> :AsyncTask project-generate-debug<cr>
+nnoremap <silent><leader>cst :let modo="test"<cr> :AsyncTask project-generate-test<cr>
 
 nnoremap <silent><F7> :MundoToggle<CR>
 
@@ -272,8 +284,8 @@ else
   nnoremap <silent><F8> :echo "Instala cppcheck"<CR>
 endif
 
-" nnoremap <silent><F12> :CHADopen<cr>
-nnoremap <silent><F12> :call MyNerdToggle()<cr>
+nnoremap <silent><F12> :CHADopen<cr>
+" nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 nnoremap <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
@@ -299,7 +311,7 @@ nnoremap <silent><leader>gc :Commits<cr>
 nnoremap <silent><leader>gb :GBranches<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
-nnoremap <silent><leader>gp :Git push origin HEAD<CR>
+nnoremap <silent><leader>gp :Gpush<CR>
 nnoremap <silent><leader>gh :!hub browse<CR>
 "map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
@@ -522,7 +534,11 @@ let g:fzf_buffers_jump=1
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 let g:vimspector_install_gadgets = [ 'vscode-cpptools' ]
-"packadd! vimspector
+
+" for normal mode - the word under the cursor
+nmap <Leader>di <Plug>VimspectorBalloonEval
+" for visual mode, the visually selected text
+xmap <Leader>di <Plug>VimspectorBalloonEval
 
 "Gitgutter
 if (executable("rg"))
@@ -619,6 +635,9 @@ let g:easy_align_delimiters = {
       \   }
       \ }
 
+"vim-peekaboo
+let g:peekaboo_delay = 600
+
 ""vim-crystalline
 
 function! StatusLine(current, width)
@@ -639,7 +658,7 @@ function! StatusLine(current, width)
 
   if a:current
     let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{coc#status()}'
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo ?"build":"Debug"}'
+    let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo}'
     let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
     let l:s .= crystalline#left_mode_sep('')
   endif
@@ -695,6 +714,14 @@ let g:asyncrun_rootmarks = ['src']
 let g:asynctasks_term_pos = 'external'
 let g:asynctasks_term_pos = 'tab'
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+command! -bang -bar -nargs=* Gpush execute 'AsyncRun<bang> -cwd=' .
+          \ fnameescape(FugitiveGitDir()) 'git push' <q-args>
+command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
+          \ fnameescape(FugitiveGitDir()) 'git fetch' <q-args>
+" command! -bang -bar -nargs=* Gpush execute 'AsyncRun<bang> -cwd=' .
+"           \ fnameescape(FugitiveGitDir()) 'git push' <q-args>
+" command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
+"           \ fnameescape(FugitiveGitDir()) 'git fetch' <q-args>
 au User AsyncRunStop call DontTouchMyTerminal()
 func DontTouchMyTerminal()
 if (g:asyncrun_status=="success")

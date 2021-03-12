@@ -211,12 +211,14 @@ alias gstb="git stash branch"
 alias gstd="git stash drop"
 alias gstl="git stash list"
 alias gstp="git stash pop"
-alias gh='cd "$(git rev-parse --show-toplevel)"'
+# alias gh='cd "$(git rev-parse --show-toplevel)"'
 # Show untracked files
 alias gu='git ls-files . --exclude-standard --others'
 
 alias gbrow="hub browse"
 alias nvide="$HOME/neovide/target/release/neovide"
+
+alias icat="kitty kitten icat"
 # Thefuck
 eval $(thefuck --alias)
 stty -ixon
@@ -242,3 +244,8 @@ export GEM_HOME="$HOME/.gem"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+alias buildPVS="pvs-studio-analyzer analyze -l ~/.config/PVS-Studio/PVS-Studio.lic -o ./project.log -e build && plog-converter -a GA:1,2 -t tasklist -o report.tasks project.log"
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
