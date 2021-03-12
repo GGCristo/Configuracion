@@ -2,19 +2,15 @@
 ## Archivos personales de configuracion
 ### Herramientas generales:
 -FZF\
--Catch2\
 -Cppcheck\
 -clang-tidy\
--thefuck\
--hub\
 -colorls\
 -bat\
--Albert\
--Travis CI\
 -Ripgrep\
 -zsh(oh-my-zsh)
  - zsh-you-should-use
  - zsh-autosuggestion
+-Kitty
 ### Vim Plugins:
 -Vim-plug\
 -ALE\
