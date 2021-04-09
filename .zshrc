@@ -4,14 +4,15 @@ source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
 
 # Path to your oh-my-zsh installation.
 export ZSH="/home/cristo/.oh-my-zsh"
-export PATH="/home/cristo/.gem/ruby/2.7.0/bin:$PATH"
+# export PATH="/home/cristo/.gem/ruby/2.7.0/bin:$PATH"
 export VISUAL=vim
 export EDITOR="$VISUAL"
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ ZSH_THEME="spaceship"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -249,3 +250,9 @@ alias buildPVS="pvs-studio-analyzer analyze -l ~/.config/PVS-Studio/PVS-Studio.l
 
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+# Install Ruby Gems to ~/gems
+export GEM_HOME="$HOME/gems"
+export PATH="$HOME/gems/bin:$PATH"

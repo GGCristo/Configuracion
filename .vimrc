@@ -266,11 +266,12 @@ aug QFClose
 aug END
 
 let modo = "build"
+autocmd VimEnter cpp call Building(modo)
 " nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
       " \   ':AsyncTask project-generate-debug')."\<cr>"
 nnoremap <silent><F4> :call Building(modo)<cr>
 nnoremap <silent><leader><F4> :call Running(modo)<cr>
-nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🌬 Se usó clean 🌬"<cr>
+nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🚿Se usó clean🚿"<cr>
 " nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
 nnoremap <silent><leader>csb :let modo="build"<cr> :AsyncTask project-generate<cr>
 nnoremap <silent><leader>csd :let modo="Debug"<cr> :AsyncTask project-generate-debug<cr>
@@ -710,7 +711,7 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 let g:highlightedyank_highlight_duration = 500
 
 "asyncrun
-let g:asyncrun_rootmarks = ['src']
+let g:asyncrun_rootmarks = ['src', '.git']
 let g:asynctasks_term_pos = 'external'
 let g:asynctasks_term_pos = 'tab'
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
