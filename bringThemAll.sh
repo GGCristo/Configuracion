@@ -7,3 +7,4 @@ cp /usr/bin/exportar scripts/
 cp ~/.zshrc .
 cp ~/.vim/coc-settings.json .
 cp -r ~/.config/kitty/ .config/kitty/
+cp -r ~/.config/nvim/init.vim .config/nvim/

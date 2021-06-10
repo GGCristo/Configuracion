@@ -1,3 +1,5 @@
+set runtimepath^=~/.vim runtimepath+=~/.vim/after
+let &packpath = &runtimepath
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "    _____  .__        .__
 "   /     \ |__| ___  _|__| ____________   ____
@@ -45,14 +47,10 @@ set updatetime=100
 " Abbrevation
 iabbrev Vector vector
 
-" terminal
+" Terminal
 au TermOpen * tnoremap <Esc> <c-\><c-n>
-" tnoremap <Esc> <C-\><C-N>
 au FileType fzf tunmap <Esc>
 tnoremap <C-K> <C-\><C-N><C-W>k
-
-set tags=./tags;/ "This will look in the current directory for "tags", and work up the tree towards root until one is found.
-                  "IOW, you can be anywhere in your source tree instead of just the root of it.
 
 set laststatus=2
 " Persist undo history between file editing sessions.
@@ -118,13 +116,14 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'junegunn/fzf.vim'
-  " Plug 'dyng/ctrlsf.vim'
+  Plug 'dyng/ctrlsf.vim'
   Plug 'jiangmiao/auto-pairs'
   " LSP
   Plug 'neovim/nvim-lspconfig'
   Plug 'hrsh7th/nvim-compe'
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
+  Plug 'folke/trouble.nvim'
   if has ('nvim')
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'norcalli/nvim-colorizer.lua'
@@ -159,6 +158,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'haya14busa/incsearch.vim'
   Plug 'easymotion/vim-easymotion', {'on': '<Plug>(easymotion-overwin-f2)'}
   Plug 'dstein64/vim-startuptime'
+  " Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'stsewd/fzf-checkout.vim'
   Plug 'junegunn/vim-peekaboo'
@@ -166,7 +166,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'psliwka/vim-smoothie'
-  Plug 'machakann/vim-highlightedyank'
+  " Plug 'machakann/vim-highlightedyank'
   Plug 'gruvbox-community/gruvbox'
   Plug 'vim-test/vim-test'
 call plug#end()
@@ -187,11 +187,6 @@ if (a:modo != "test")
 else
   :AsyncTask project-run-myTest
 endif
-endfunction
-
-function! ExecuteMacroOverVisualRange()
-  echo "@".getcmdline()
-  execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
 function! Preserve(command)
@@ -215,48 +210,6 @@ function! SaveSession()
   execute ':Obsession ~/.vim/session/' . expand(root_project)
 endfunction
 
-" function! Tab()
-"   if &ft == "qf"
-"     execute "cnewer"
-"   elseif tabpagenr('$') > 1
-"     execute "tabnext"
-"   else
-"     let start_buffer = bufnr('%')
-"     execute "bn"
-"     while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
-"       execute "bn"
-"     endwhile
-"   endif
-" endfunction
-
-" function! STab()
-"   if &ft == "qf"
-"     execute "colder"
-"   elseif tabpagenr('$') > 1
-"     execute "tabprevious"
-"   else
-"     let start_buffer = bufnr('%')
-"     execute "bp"
-"     while &buftype ==# 'quickfix' && bufnr('%') != start_buffer
-"       execute "bp"
-"     endwhile
-"   endif
-" endfunction
-
-"auto close {
-"(https://www.reddit.com/r/vim/comments/6h0dy7/which_autoclosing_plugin_do_you_use/)
-function! s:CloseBracket()
-    let line = getline('.')
-    if line =~# '^\s*\(struct\|class\|enum\) '
-        return "{\<Enter>};\<Esc>O"
-    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
-        " Probably inside a function call. Close it off.
-        return "{\<Enter>});\<Esc>O"
-    else
-        return "{\<Enter>}\<Esc>O"
-    endif
-endfunction
-
 " Maps
 let mapleader= " "
 " F5 para empezar para debugear/continuar
@@ -276,9 +229,9 @@ aug QFClose
 aug END
 
 let modo = "build"
+
 autocmd VimEnter cpp call Building(modo)
-" nnoremap <silent><expr>cg ((modo) ? ':AsyncTask project-generate' :
-      " \   ':AsyncTask project-generate-debug')."\<cr>"
+nnoremap <silent><F2> :TroubleToggle<cr>
 nnoremap <silent><F4> :call Building(modo)<cr>
 nnoremap <silent><leader><F4> :call Running(modo)<cr>
 nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🚿Se usó clean🚿"<cr>
@@ -296,15 +249,12 @@ else
 endif
 
 nnoremap <silent><F12> :Fern . -drawer -toggle<cr>
-" nnoremap <silent><F12> :call MyNerdToggle()<cr>
 
 nnoremap <silent><leader><leader> :call CurtineIncSw()<cr>
 nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
 "nnoremap ,,  mtA;<Esc>`t
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
-nnoremap <silent><C-Q> :wa<cr>:echo 'Todos los buffer guardados'<cr>
-inoremap <silent><C-Q> <esc>:wa<cr>:echo 'Todos los buffer guardados'<cr>
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -340,74 +290,23 @@ nnoremap <leader>t :<C-U>exe v:count . 'Ttoggle'<cr>
 
 nnoremap <silent><Tab> :bn<CR>
 nnoremap <silent><S-Tab> :bp<CR>
-" nnoremap <silent> <tab> :call Tab()<cr>
-" nnoremap <silent> <S-tab> :call STab()<cr>
 
-inoremap {;<CR> {<CR>};<ESC>O
-" I use Allman indentation style
-noremap [[ [[k
-
-xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
-map <silent><leader>r :source $MYVIMRC<CR>
 map <silent><leader>bd :call Preserve("%bd<bar>e#<bar>bd#")<CR>
 nnoremap <leader>x *``cgn
 nnoremap <leader>X #``cgn
 map Y y$
 nnoremap n nzz
 nnoremap N nzz
-nnoremap <silent><leader>v :vsp $MYVIMRC<CR> <C-W>H
+
 " Easy paste above/below
 nnoremap <silent><leader>p :put<CR>
 nnoremap <silent><leader><S-p> :put!<CR>
 
-" Easy new lines
-nnoremap <silent> [<space> :call append(line('.')-1, '')<CR>
-nnoremap <silent> ]<space> :call append(line('.'), '')<CR>
-
-inoremap <expr> {<Enter> <SID>CloseBracket()
 " Spelling
 command! WQ wq
 command! Wq wq
 command! W w
 command! Q q
-
-"" ALE
-"let g:ale_fixers = {'cpp': ['remove_trailing_lines', 'trim_whitespace'], '*': ['remove_trailing_lines', 'trim_whitespace']}
-"let g:ale_linters = {'cpp': ['g++','ccls'], 'javascript' : ['eslint']}
-"let g:ale_cpp_cc_options = '-std=c++17 -Wall'
-"" let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
-"let g:ale_cpp_clangtidy_checks = [
-"      \'-clang-analyzer-*',
-"      \'performance-*',
-"      \'readability-*','-readability-implicit-bool-conversion',
-"      \ '-readability-magic-numbers',
-"      \'modernize-*','-modernize-use-trailing-return-type',
-"      \'bugprone-*']
-"let g:ale_open_list = 0
-"let g:ale_sign_error = '✘'
-"let g:ale_sign_warning = '🛆'
-"" -let g:ale_sign_warning = ''
-
-"" let g:ale_pattern_options = {
-"      " \   'test.cpp': {'ale_enabled': 0},
-"      " \}
-
-"" Keep the sign gutter open at all times
-"let g:ale_sign_column_always = 1
-"" Set this variable to 1 to fix files when you save them.
-"let g:ale_fix_on_save = 1
-"let g:ale_lint_on_enter = 1
-"let g:ale_lint_on_save = 1
-"let g:ale_lint_on_text_changed = 1
-""let g:ale_pattern_options_enabled = 1
-""let g:ale_set_balloons=1
-"let g:ale_set_loclist = 1
-"let g:ale_set_quickfix = 0
-"let g:alex_disable_lsp = 1
-
-"let g:ale_lint_delay = 1000
-"nmap <silent> [g <Plug>(ale_previous_wrap)
-"nmap <silent> ]g <Plug>(ale_next_wrap)
 
 " LSP
 lua << EOF
@@ -459,7 +358,14 @@ local on_attach = function(client, bufnr)
       augroup END
     ]], false)
   end
-  require 'trouble'.setup {}
+vim.fn.sign_define("LspDiagnosticsSignError",
+    {text = "", texthl = "GruvboxRed"})
+vim.fn.sign_define("LspDiagnosticsSignWarning",
+    {text = "", texthl = "GruvboxYellow"})
+vim.fn.sign_define("LspDiagnosticsSignInformation",
+    {text = "", texthl = "GruvboxBlue"})
+vim.fn.sign_define("LspDiagnosticsSignHint",
+    {text = "", texthl = "GruvboxAqua"})
   cfg = {
     floating_window = false, -- show hint in a floating window, set to false for virtual text only mode
     hint_enable = true, -- virtual hint enable
@@ -586,128 +492,8 @@ EOF
 
 " Trouble
 lua << EOF
+require("trouble").setup {}
 EOF
-
-"" COC
-
-"" Give more space for displaying messages.
-""set cmdheight=2
-
-"" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-"" delays and poor user experience.
-"set updatetime=100
-
-"" Don't pass messages to |ins-completion-menu|.
-"set shortmess+=c
-
-"" Always show the signcolumn, otherwise it would shift the text each time
-"" diagnostics appear/become resolved.
-"set signcolumn=yes
-
-"" Use tab for trigger completion with characters ahead and navigate.
-"" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-"" other plugin before putting this into your config.
-"inoremap <silent><expr> <TAB>
-"      \ pumvisible() ? "\<C-n>" :
-"      \ <SID>check_back_space() ? "\<TAB>" :
-"      \ coc#refresh()
-"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-"function! s:check_back_space() abort
-"  let col = col('.') - 1
-"  return !col || getline('.')[col - 1]  =~# '\s'
-"endfunction
-
-"" Use <C-j> for select text for visual placeholder of snippet.
-"vmap <C-j> <Plug>(coc-snippets-select)
-
-"" Use <c-space> to trigger completion.
-"if has('nvim')
-"  inoremap <silent><expr> <c-space> coc#refresh()
-"else
-"  inoremap <silent><expr> <NUL> coc#refresh()
-"endif
-
-"" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-"" position. Coc only does snippet and additional edit on confirm.
-"if has('patch8.1.1068')
-"  " Use `complete_info` if your (Neo)Vim version supports it.
-"  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-"else
-"  imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-"endif
-
-"" GoTo code navigation.
-"nmap <silent> gd <Plug>(coc-definition)
-"nmap <silent> gy <Plug>(coc-type-definition)
-"nmap <silent> gi <Plug>(coc-implementation)
-"nmap <silent> gr <Plug>(coc-references)
-
-"" Use K to show documentation in preview window.
-"nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-"function! s:show_documentation()
-"  if (index(['vim','help'], &filetype) >= 0)
-"    execute 'h '.expand('<cword>')
-"  else
-"    call CocAction('doHover')
-"  endif
-"endfunction
-
-"" Highlight the symbol and its references when holding the cursor.
-"autocmd CursorHold * silent call CocActionAsync('highlight')
-
-"" Symbol renaming.
-"nmap <leader>rn <Plug>(coc-rename)
-
-"" Formatting selected code.
-"xmap <leader>f  <Plug>(coc-format-selected)
-"nmap <leader>f  <Plug>(coc-format-selected)
-
-"augroup mygroup
-"  autocmd!
-"  " Setup formatexpr specified filetype(s).
-"  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-"  " Update signature help on jump placeholder.
-"  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-"augroup end
-
-"" Applying codeAction to the selected region.
-"" Example: `<leader>aap` for current paragraph
-"xmap <leader>a  <Plug>(coc-codeaction-selected)
-"nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-"" Remap keys for applying codeAction to the current line.
-"nmap <leader>ac  <Plug>(coc-codeaction)
-"" Apply AutoFix to problem on the current line.
-"nmap <leader>qf  <Plug>(coc-fix-current)
-
-"" Introduce function text object
-"" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-"xmap if <Plug>(coc-funcobj-i)
-"xmap af <Plug>(coc-funcobj-a)
-"omap if <Plug>(coc-funcobj-i)
-"omap af <Plug>(coc-funcobj-a)
-
-"" Use <TAB> for selections ranges.
-"" NOTE: Requires 'textDocument/selectionRange' support from the language server.
-"" coc-tsserver, coc-python are the examples of servers that support it.
-""nmap <silent> <TAB> <Plug>(coc-range-select)
-""xmap <silent> <TAB> <Plug>(coc-range-select)
-
-"" Add `:Format` command to format current buffer.
-"command! -nargs=0 Format :call CocAction('format')
-
-"" Add `:Fold` command to fold current buffer.
-"command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-"" Add `:OR` command for organize imports of the current buffer.
-"command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-"" Add (Neo)Vim's native statusline support.
-"" NOTE: Please see `:h coc-status` for integrations with external plugins that
-"" provide custom statusline: lightline.vim, vim-airline.
-"" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " FZF
 " imap <C-X><C-L> <plug>(fzf-complete-line)
@@ -831,8 +617,7 @@ let g:easy_align_delimiters = {
 "vim-peekaboo
 let g:peekaboo_delay = 600
 
-""vim-crystalline
-
+"vim-crystalline
 function! LinterStatus() abort
   let l:counts = ale#statusline#Count(bufnr(''))
 
@@ -915,7 +700,7 @@ let g:indentLine_fileTypeExclude = ['help', 'startify']
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " highlightedyank
-let g:highlightedyank_highlight_duration = 500
+au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=250, on_visual=true}
 
 "asyncrun
 let g:asyncrun_rootmarks = ['src', '.git']
@@ -928,46 +713,15 @@ command! -bang -bar -nargs=* Gpush execute 'AsyncRun<bang> -cwd=' .
       \ fnameescape(FugitiveGitDir()) 'git push' <q-args>
 command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
       \ fnameescape(FugitiveGitDir()) 'git fetch' <q-args>
-" command! -bang -bar -nargs=* Gpush execute 'AsyncRun<bang> -cwd=' .
-"           \ fnameescape(FugitiveGitDir()) 'git push' <q-args>
-" command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
-"           \ fnameescape(FugitiveGitDir()) 'git fetch' <q-args>
-" au User AsyncRunStop call DontTouchMyTerminal()
-" func DontTouchMyTerminal()
-" if (g:asyncrun_status=="success")
-" :ALEEnable
-" endif
-" endfunction
-"let g:asyncrun_exit = "silent call system('aplay ~/.vim/notify.wav &')"
-"let g:ayncrun_bell = 1
 
 " vim-doge
 let g:doge_comment_jump_modes = ['n', 's']
-
-" fzf-checkout.vim TODO
-let g:fzf_branch_actions = {
-      \ 'pull': {
-        \   'prompt': 'Pull> ',
-        \   'execute': 'Git pull {branch}',
-        \   'multiple': v:false,
-        \   'keymap': 'ctrl-p',
-        \   'required': ['branch'],
-        \   'confirm': v:false,
-        \ },
-        \ 'diff': {
-          \   'prompt': 'Diff> ',
-          \   'execute': 'Git diff {branch}',
-          \   'multiple': v:false,
-          \   'keymap': 'ctrl-f',
-          \   'required': ['branch'],
-          \   'confirm': v:false,
-          \ },
-          \}
 
 " neoterm
 let g:neoterm_size = 15
 let g:neoterm_default_mod = 'botright'
 " let g:neoterm_autoinsert = 1
+
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
   lua <<EOF
@@ -989,11 +743,16 @@ require "bufferline".setup {
   enforce_regular_tabs = true,
   view = "multiwindow",
   show_buffer_close_icons = true,
-  separator_style = "thin"
-  },
+  separator_style = "thin",
+  diagnostics = "nvim_lsp",
+  diagnostics_indicator = function(count, level, diagnostics_dict, context)
+  local icon = level:match("error") and " " or " "
+  return " " .. icon .. count
+end
+},
 highlights = {
   background = {
-    guifg = comment_fg,
+    guifg = "Normal",
     guibg = "Normal"
     },
   fill = {
@@ -1006,20 +765,20 @@ highlights = {
     gui = "bold"
     },
   separator_visible = {
-    guifg = "#282c34",
-    guibg = "#282c34"
+    guifg = "#282828",
+    guibg = "#282828"
     },
   separator_selected = {
-    guifg = "#282c34",
-    guibg = "#282c34"
+    guifg = "#282828",
+    guibg = "#282828"
     },
   separator = {
-    guifg = "#282c34",
-    guibg = "#282c34"
+    guifg = "#282828",
+    guibg = "#282828"
     },
   indicator_selected = {
-    guifg = "#282c34",
-    guibg = "#282c34"
+    guifg = "#282828",
+    guibg = "#282828"
     },
   modified_selected = {
     guifg = string_fg,
@@ -1039,20 +798,6 @@ function! _nvim_treesitter()
   hi TSProperty ctermfg=Magenta guifg=#bd93f9
 endfunction
 end " If has nvim
-
-"NERDTree
-"let NERDTreeQuitOnOpen = 1
-"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-"let NERDTreeAutoDeleteBuffer = 1
-"let NERDTreeMinimalUI = 1
-"function MyNerdToggle()
-"    if &filetype == 'nerdtree' || exists("g:NERDTree") && g:NERDTree.IsOpen()
-"      :NERDTreeToggle
-"    else
-"      :NERDTreeFind
-"    endif
-"endfunction
-
 
 " Fern
 augroup fern-custom
@@ -1124,17 +869,6 @@ augroup my_colours
         \   term=Reverse
         \   gui=Undercurl
         \   guisp=Red
-  " ALE
-  highlight ALEErrorSign ctermbg=NONE ctermfg=red guifg=red
-  " highlight ALEWarningSign ctermbg=NONE ctermfg=yellow guifg=#ffff00
-  highlight ALEWarningSign ctermbg=NONE ctermfg=214 guifg=#fabd2f
-  highlight ALEError ctermbg=none cterm=underline gui=undercurl
-  highlight ALEWarning ctermbg=none cterm=underline gui=undercurl
-  highlight ALEErrorLine ctermbg=none cterm=None
-  highlight ALEWarningLine ctermbg=none cterm=None
-  " COC
-  hi CocHighlightText ctermbg=241 guibg=#665c54
-  hi! link CocHoverRange CocHighlightText
   " Gitgutter
   highlight GitGutterAdd    ctermfg=40 guifg=#00d700
   highlight GitGutterChange ctermfg=93 guifg=#8700ff

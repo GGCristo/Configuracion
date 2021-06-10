@@ -1,23 +1,31 @@
 [project-generate]
-command=mkdir -p build && cd build && cmake ..
+command=mkdir -p build && cd build && cmake .. -DENABLE_TESTS=OFF
+cwd=$(VIM_ROOT)
+
+[project-generate-test]
+command=mkdir -p build && cd build && cmake .. -DENABLE_TESTS=ON
+cwd=$(VIM_ROOT)
+
+[project-generate-debug]
+command=mkdir -p Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
 cwd=$(VIM_ROOT)
 
 [project-build]
 command=make
 cwd=$(VIM_ROOT)/build
 
-[project-generate-debug]
-command=mkdir -p Debug && cd Debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
-cwd=$(VIM_ROOT)
-
 [project-build-debug]
 command=make
 cwd=$(VIM_ROOT)/Debug
 
 [project-run]
-command=./bin/main
+command=./bin/main test/test2.ram input_tape.in output_tape.out 1
+output=terminal
+
+[project-run-myTest]
+command=./bin/my_test
 output=terminal
 
 [project-clean]
-command=rm -rf build && rm -rf Debug && rm bin/main
+command=rm -rf build && rm -rf Debug && rm bin/*
 cwd=$(VIM_ROOT)

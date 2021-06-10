@@ -2,17 +2,24 @@ source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+export PATH=/home/cristo/.local/lib/python3.8/site-packages:$PATH
+
+# GO
+# export GOROOT=/usr/lib/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
 # Path to your oh-my-zsh installation.
 export ZSH="/home/cristo/.oh-my-zsh"
 # export PATH="/home/cristo/.gem/ruby/2.7.0/bin:$PATH"
-export VISUAL=vim
+export VISUAL="/usr/local/bin/nvim"
 export EDITOR="$VISUAL"
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 # ZSH_THEME="robbyrussell"
- ZSH_THEME="spaceship"
+ZSH_THEME="spaceship"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -119,9 +126,6 @@ export FZF_ALT_C_COMMAND="ls -d .*/* */*"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
 
 alias update='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
-
-#colorls
-alias lc='colorls -lA --sd'
 
 #alias for git
 alias gcl='git clone'
@@ -256,3 +260,18 @@ export PATH="$PATH:$HOME/.rvm/bin"
 # Install Ruby Gems to ~/gems
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/cristo/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/cristo/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/cristo/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/cristo/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
