@@ -713,7 +713,17 @@ EOF
 " imap <C-X><C-L> <plug>(fzf-complete-line)
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
+
+" CTRL-A CTRL-Q to select all and build quickfix list
+
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
 let g:fzf_action = {
+      \ 'ctrl-q': function('s:build_quickfix_list'),
       \ 'enter': 'drop',
       \ 'ctrl-t': 'tab drop',
       \ 'ctrl-x': 'split',
@@ -724,6 +734,9 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 let g:fzf_buffers_jump=1
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 let g:vimspector_install_gadgets = [ 'vscode-cpptools' ]

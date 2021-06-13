@@ -80,6 +80,11 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', 
 endfor
 
 " augroup
+augroup qf
+  autocmd!
+  autocmd FileType qf set nobuflisted 
+augroup END
+
 augroup TipoFile
   au!
   " I dont want autocomments
@@ -158,7 +163,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'haya14busa/incsearch.vim'
   Plug 'easymotion/vim-easymotion', {'on': '<Plug>(easymotion-overwin-f2)'}
   Plug 'dstein64/vim-startuptime'
-  " Plug 'tweekmonster/startuptime.vim'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'stsewd/fzf-checkout.vim'
   Plug 'junegunn/vim-peekaboo'
@@ -166,7 +170,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'psliwka/vim-smoothie'
-  " Plug 'machakann/vim-highlightedyank'
   Plug 'gruvbox-community/gruvbox'
   Plug 'vim-test/vim-test'
 call plug#end()
@@ -297,6 +300,7 @@ nnoremap <leader>X #``cgn
 map Y y$
 nnoremap n nzz
 nnoremap N nzz
+nnoremap [[ ][%_
 
 " Easy paste above/below
 nnoremap <silent><leader>p :put<CR>
@@ -428,15 +432,15 @@ inoremap <silent><expr> <CR>      compe#confirm('<CR>')
 inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+set completeopt=menuone,noselect
 lua << EOF
 -- Compe setup
-vim.o.completeopt = "menuone,noselect"
 require'compe'.setup {
 enabled = true;
 autocomplete = true;
 debug = false;
 min_length = 1;
-preselect = 'enable';
+preselect = 'disable';
 throttle_time = 80;
 source_timeout = 200;
 incomplete_delay = 400;
@@ -499,7 +503,17 @@ EOF
 " imap <C-X><C-L> <plug>(fzf-complete-line)
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
+
+" CTRL-A CTRL-Q to select all and build quickfix list
+
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
 let g:fzf_action = {
+      \ 'ctrl-q': function('s:build_quickfix_list'),
       \ 'enter': 'drop',
       \ 'ctrl-t': 'tab drop',
       \ 'ctrl-x': 'split',
@@ -510,6 +524,9 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%'), <bang>0)
 let g:fzf_buffers_jump=1
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 let g:vimspector_install_gadgets = [ 'vscode-cpptools' ]
@@ -542,6 +559,11 @@ function! s:filter_header(lines) abort
   return centered_lines
 endfunction
 
+let g:startify_lists = [
+      \ { 'type': 'files',     'header': ['   MRU']            },
+      \ { 'type': 'sessions',  'header': ['   Sessions']       },
+      \ ]
+
 let g:startify_custom_header = s:filter_header([
       \'  ##############..... ##############  ',
       \'  ##############......##############  ',
@@ -566,7 +588,6 @@ let g:startify_custom_header = s:filter_header([
 let g:startify_fortune_use_unicode = 1
 
 let g:startify_custom_footer = startify#fortune#boxed()
-      "\ startify#pad(split(system('fortune | cowsay -f tux'), '\n'))
 
 " INCSEARCH
 map /  <Plug>(incsearch-forward)
@@ -720,7 +741,7 @@ let g:doge_comment_jump_modes = ['n', 's']
 " neoterm
 let g:neoterm_size = 15
 let g:neoterm_default_mod = 'botright'
-" let g:neoterm_autoinsert = 1
+let g:neoterm_autoinsert = 1
 
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')

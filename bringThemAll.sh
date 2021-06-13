@@ -8,3 +8,4 @@ cp ~/.zshrc .
 cp ~/.vim/coc-settings.json .
 cp -r ~/.config/kitty/ .config/kitty/
 cp -r ~/.config/nvim/init.vim .config/nvim/
+cp -r ~/.config/nvim/tasks.ini .config/nvim/
