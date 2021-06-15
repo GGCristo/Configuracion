@@ -120,6 +120,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'kassio/neoterm'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
+  Plug 'ggandor/lightspeed.nvim'
   Plug 'junegunn/fzf.vim'
   Plug 'dyng/ctrlsf.vim'
   Plug 'jiangmiao/auto-pairs'
@@ -161,7 +162,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
   Plug 'haya14busa/incsearch.vim'
-  Plug 'easymotion/vim-easymotion', {'on': '<Plug>(easymotion-overwin-f2)'}
   Plug 'dstein64/vim-startuptime'
   Plug 'ericcurtin/CurtineIncSw.vim'
   Plug 'stsewd/fzf-checkout.vim'
@@ -451,6 +451,8 @@ documentation = true;
 
 source = {
   path = true;
+  buffer = true;
+  calc = true;
   nvim_lsp = true;
   };
 }
@@ -497,6 +499,19 @@ EOF
 " Trouble
 lua << EOF
 require("trouble").setup {}
+EOF
+
+" lightspeed
+lua << EOF
+require'lightspeed'.setup {
+   jump_to_first_match = true,
+   jump_on_partial_input_safety_timeout = 400,
+   highlight_unique_chars = false,
+   grey_out_search_area = true,
+   match_only_the_start_of_same_char_seqs = true,
+   limit_ft_matches = 5,
+   full_inclusive_prefix_key = '<c-x>',
+}
 EOF
 
 " FZF
@@ -601,12 +616,6 @@ map *  <Plug>(incsearch-nohl-*)zz
 map #  <Plug>(incsearch-nohl-#)zz
 map g* <Plug>(incsearch-nohl-g*)zz
 map g# <Plug>(incsearch-nohl-g#)zz
-
-
-"" EASYMOTION
-let g:EasyMotion_do_mapping = 0
-nmap s <Plug>(easymotion-overwin-f2)
-let g:EasyMotion_smartcase = 1
 
 "" Vim-Easy-Align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -725,7 +734,7 @@ au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeou
 
 "asyncrun
 let g:asyncrun_rootmarks = ['src', '.git']
-let g:asynctasks_term_pos = 'tab'
+" let g:asynctasks_term_pos = 'tab'
 " let g:asynctasks_term_pos = 'bottom'
 let g:asynctasks_term_rows = 15    " set height for the horizontal terminal split
 let g:asynctasks_term_reuse = 1
@@ -739,9 +748,9 @@ command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
 let g:doge_comment_jump_modes = ['n', 's']
 
 " neoterm
-let g:neoterm_size = 15
-let g:neoterm_default_mod = 'botright'
-let g:neoterm_autoinsert = 1
+" let g:neoterm_size = 15
+" let g:neoterm_default_mod = 'botright'
+" let g:neoterm_autoinsert = 1
 
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
