@@ -30,7 +30,8 @@ main(){
 		python-dev ruby-dev \
     python2-dev \
     python3-dev \
-		git
+		git \
+    xsel
 
 	cd ~
 	git clone https://github.com/vim/vim.git
@@ -39,7 +40,7 @@ main(){
 		--enable-multibyte \
 		--enable-rubyinterp=yes \
     --enable-python3interp=yes \
-    --with-python3-config-dir=/usr/lib/python3.8/config-3.8-x86_64-linux-gnu \
+    --with-python3-config-dir=/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu \
 		--enable-perlinterp=yes \
 		--enable-luainterp=yes \
 		--enable-cscope \

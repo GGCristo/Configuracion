@@ -9,6 +9,7 @@ export PATH=/home/cristo/.local/lib/python3.8/site-packages:$PATH
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
+eval "$(starship init zsh)"
 # Path to your oh-my-zsh installation.
 export ZSH="/home/cristo/.oh-my-zsh"
 # export PATH="/home/cristo/.gem/ruby/2.7.0/bin:$PATH"
@@ -19,7 +20,7 @@ export EDITOR="$VISUAL"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 # ZSH_THEME="robbyrussell"
-ZSH_THEME="spaceship"
+# ZSH_THEME="spaceship"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
