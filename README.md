@@ -15,3 +15,5 @@ wget http://ftp.vim.org/vim/runtime/spell/es.utf-8.spl
 wget http://ftp.vim.org/vim/runtime/spell/es.utf-8.sug
 ```
 Algun font de Nerdfonts
+
+Instalar pynvim para el plugin Mundo
