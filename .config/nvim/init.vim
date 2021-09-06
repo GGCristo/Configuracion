@@ -122,8 +122,7 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'ggandor/lightspeed.nvim'
   Plug 'junegunn/fzf.vim'
-  Plug 'dyng/ctrlsf.vim'
-  Plug 'jiangmiao/auto-pairs'
+  Plug 'windwp/nvim-autopairs'
   " LSP
   Plug 'neovim/nvim-lspconfig'
   Plug 'hrsh7th/nvim-compe'
@@ -152,12 +151,13 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-repeat'
+  " Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-sleuth'
 
   Plug 'rbong/vim-crystalline'
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   Plug 'mhinz/vim-startify'
-  Plug 'puremourning/vimspector', {'on': '<Plug>VimspectorContinue'}
+  Plug 'puremourning/vimspector'
   Plug 'airblade/vim-gitgutter'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
@@ -276,7 +276,7 @@ nnoremap <silent><leader>gb :GBranches<cr>
 nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Gpush<CR>
-nnoremap <silent><leader>gh :!hub browse<CR>
+nnoremap <silent><leader>gh :!gh repo view -w<CR>
 "map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
 inoremap jj <Esc>lmtA;<Esc>`t
@@ -287,9 +287,6 @@ inoremap <C-K> <Right>
 inoremap <C-L> <Right>
 vnoremap <silent><Up> :m '<-2<CR>gv=gv
 vnoremap <silent><Down> :m '>+1<CR>gv=gv
-
-" (https://superuser.com/questions/410847/how-do-you-create-a-vim-key-mapping-that-requires-numbers-before-the-hotkey-lik)
-nnoremap <leader>t :<C-U>exe v:count . 'Ttoggle'<cr>
 
 nnoremap <silent><Tab> :bn<CR>
 nnoremap <silent><S-Tab> :bp<CR>
@@ -316,6 +313,7 @@ command! Q q
 lua << EOF
 require'lspconfig'.ccls.setup{}
 require'lspconfig'.gopls.setup{}
+require'lspconfig'.tsserver.setup{}
 local nvim_lsp = require('lspconfig')
 
 -- Use an on_attach function to only map the following keys
@@ -381,7 +379,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = {"ccls", "gopls"}
+local servers = {"ccls", "gopls", "tsserver"}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -428,7 +426,8 @@ EOF
 
 " COMP
 inoremap <silent><expr> <C-Space> compe#complete()
-inoremap <silent><expr> <CR>      compe#confirm('<CR>')
+inoremap <silent><expr> <CR>      compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))
+" inoremap <silent><expr> <CR>      compe#confirm('<CR>')
 inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
 inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
@@ -496,6 +495,12 @@ vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 EOF
 
+
+" windwp/nvim-autopairs
+lua << EOF
+require('nvim-autopairs').setup{}
+EOF
+
 " Trouble
 lua << EOF
 require("trouble").setup {}
@@ -544,7 +549,7 @@ let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
 
 "Vimspector
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
-let g:vimspector_install_gadgets = [ 'vscode-cpptools' ]
+let g:vimspector_install_gadgets = [ 'vscode-cpptools', 'vscode-go' ]
 
 " for normal mode - the word under the cursor
 nmap <Leader>di <Plug>VimspectorBalloonEval
@@ -748,9 +753,12 @@ command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
 let g:doge_comment_jump_modes = ['n', 's']
 
 " neoterm
-" let g:neoterm_size = 15
-" let g:neoterm_default_mod = 'botright'
-" let g:neoterm_autoinsert = 1
+" (https://superuser.com/questions/410847/how-do-you-create-a-vim-key-mapping-that-requires-numbers-before-the-hotkey-lik)
+nnoremap <leader>t :<C-U>exe v:count . 'Ttoggle'<cr>
+
+let g:neoterm_size = 15
+let g:neoterm_default_mod = 'botright'
+let g:neoterm_autoinsert = 1
 
 "----- NEOVIM ------------------------------------------------------------------
 if has ('nvim')
