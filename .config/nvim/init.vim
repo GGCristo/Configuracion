@@ -125,24 +125,24 @@ call plug#begin('~/.vim/plugged')
   Plug 'windwp/nvim-autopairs'
   " LSP
   Plug 'neovim/nvim-lspconfig'
-  Plug 'hrsh7th/nvim-compe'
+  Plug 'hrsh7th/nvim-cmp'
+  Plug 'hrsh7th/cmp-nvim-lsp'
+  Plug 'hrsh7th/cmp-buffer'
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
   Plug 'folke/trouble.nvim'
-  if has ('nvim')
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'norcalli/nvim-colorizer.lua'
-    Plug 'akinsho/nvim-bufferline.lua'
-    Plug 'kyazdani42/nvim-web-devicons'
-    Plug 'antoinemadec/FixCursorHold.nvim'
-  end
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+  Plug 'norcalli/nvim-colorizer.lua'
+  Plug 'akinsho/nvim-bufferline.lua'
+  Plug 'kyazdani42/nvim-web-devicons'
+  Plug 'antoinemadec/FixCursorHold.nvim'
+
   Plug 'lambdalisue/fern.vim'
   Plug 'lambdalisue/fern-renderer-nerdfont.vim'
   Plug 'lambdalisue/fern-git-status.vim'
   Plug 'lambdalisue/nerdfont.vim'
   Plug 'lambdalisue/glyph-palette.vim'
   Plug 'lambdalisue/fern-hijack.vim'
-  " Plug 'dense-analysis/ale'
   Plug 'skywind3000/asynctasks.vim'
   Plug 'skywind3000/asyncrun.vim'
   Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
@@ -151,7 +151,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-commentary'
-  " Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-sleuth'
 
   Plug 'rbong/vim-crystalline'
@@ -424,77 +423,64 @@ symbol_map = {
 })
 EOF
 
-" COMP
-inoremap <silent><expr> <C-Space> compe#complete()
-inoremap <silent><expr> <CR>      compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))
-" inoremap <silent><expr> <CR>      compe#confirm('<CR>')
-inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+" nvim-cmp
 set completeopt=menuone,noselect
-lua << EOF
--- Compe setup
-require'compe'.setup {
-enabled = true;
-autocomplete = true;
-debug = false;
-min_length = 1;
-preselect = 'disable';
-throttle_time = 80;
-source_timeout = 200;
-incomplete_delay = 400;
-max_abbr_width = 100;
-max_kind_width = 100;
-max_menu_width = 100;
-documentation = true;
+lua <<EOF
+local cmp = require 'cmp'
+cmp.setup {
+  mapping = {
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+      },
+    ['<Tab>'] = function(fallback)
+    if vim.fn.pumvisible() == 1 then
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
+    else
+      fallback()
+    end
+  end,
+  ['<S-Tab>'] = function(fallback)
+  if vim.fn.pumvisible() == 1 then
+    vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
+  else
+    fallback()
+  end
+end,
+},
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'buffer' },
+    },
+  formatting = {
+    format = function(entry, vim_item)
+    -- fancy icons and a name of kind
+    vim_item.kind = require("lspkind").presets.default[vim_item.kind] .. " " .. vim_item.kind
 
-source = {
-  path = true;
-  buffer = true;
-  calc = true;
-  nvim_lsp = true;
-  };
+    -- set a name for each source
+    vim_item.menu = ({
+    buffer = "[Buffer]",
+    nvim_lsp = "[LSP]",
+    luasnip = "[LuaSnip]",
+    nvim_lua = "[Lua]",
+    latex_symbols = "[Latex]",
+    })[entry.source.name]
+  return vim_item
+end,
+},
 }
-
-local t = function(str)
-return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-local col = vim.fn.col('.') - 1
-if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-  return true
-else
-  return false
-end
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-_G.tab_complete = function()
-if vim.fn.pumvisible() == 1 then
-  return t "<C-n>"
-elseif check_back_space() then
-  return t "<Tab>"
-else
-  return vim.fn['compe#complete']()
-end
-end
-_G.s_tab_complete = function()
-if vim.fn.pumvisible() == 1 then
-  return t "<C-p>"
-else
-  return t "<S-Tab>"
-end
-end
-
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+-- you need setup cmp first put this after cmp.setup()
+require("nvim-autopairs.completion.cmp").setup({
+  map_cr = true, --  map <CR> on insert mode
+  map_complete = true, -- it will auto insert `(` after select function or method item
+})
 EOF
-
 
 " windwp/nvim-autopairs
 lua << EOF
@@ -520,7 +506,6 @@ require'lightspeed'.setup {
 EOF
 
 " FZF
-" imap <C-X><C-L> <plug>(fzf-complete-line)
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 
