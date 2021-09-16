@@ -107,6 +107,7 @@ augroup MyTerm
       " (https://github.com/akinsho/nvim-toggleterm.lua/blob/master/lua/toggleterm/colors.lua)
       autocmd TerminalOpen * setlocal
     endif
+    autocmd BufEnter term://* startinsert
 augroup END
 
 augroup CursorLine
@@ -123,6 +124,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'ggandor/lightspeed.nvim'
   Plug 'junegunn/fzf.vim'
   Plug 'windwp/nvim-autopairs'
+  Plug 'nvim-neorg/neorg' | Plug 'nvim-lua/plenary.nvim'
+  " Debugger
+  Plug 'mfussenegger/nvim-dap'
+  Plug 'theHamsta/nvim-dap-virtual-text'
+  Plug 'rcarriga/nvim-dap-ui' 
   " LSP
   Plug 'neovim/nvim-lspconfig'
   Plug 'hrsh7th/nvim-cmp'
@@ -149,14 +155,15 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
-  Plug 'tpope/vim-surround'
+  " Plug 'tpope/vim-surround'
+  Plug 'machakann/vim-sandwich'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-sleuth'
 
   Plug 'rbong/vim-crystalline'
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   Plug 'mhinz/vim-startify'
-  Plug 'puremourning/vimspector'
+  " Plug 'puremourning/vimspector'
   Plug 'airblade/vim-gitgutter'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
@@ -166,7 +173,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'stsewd/fzf-checkout.vim'
   Plug 'junegunn/vim-peekaboo'
   Plug 'Yggdroot/indentLine'
-  Plug 'unblevable/quick-scope'
   Plug 'markonm/traces.vim'
   Plug 'psliwka/vim-smoothie'
   Plug 'gruvbox-community/gruvbox'
@@ -175,7 +181,6 @@ call plug#end()
 
 " Functions
 function! Building(modo)
-  " :ALEDisable
 if (a:modo != "Debug")
   :AsyncTask project-build
 else
@@ -237,7 +242,6 @@ nnoremap <silent><F2> :TroubleToggle<cr>
 nnoremap <silent><F4> :call Building(modo)<cr>
 nnoremap <silent><leader><F4> :call Running(modo)<cr>
 nnoremap <silent><leader>cl :AsyncTask project-clean<cr>:echo "🚿Se usó clean🚿"<cr>
-" nnoremap <expr><silent><leader>cs ((modo) ? ':let modo=0' : ':let modo=1')."\<cr>"
 nnoremap <silent><leader>csb :let modo="build"<cr> :AsyncTask project-generate<cr>
 nnoremap <silent><leader>csd :let modo="Debug"<cr> :AsyncTask project-generate-debug<cr>
 nnoremap <silent><leader>cst :let modo="test"<cr> :AsyncTask project-generate-test<cr>
@@ -253,8 +257,6 @@ endif
 nnoremap <silent><F12> :Fern . -drawer -toggle<cr>
 
 nnoremap <silent><leader><leader> :call CurtineIncSw()<cr>
-nnoremap <silent><leader>bk :call vimspector#ToggleBreakpoint()<cr>
-"nnoremap ,,  mtA;<Esc>`t
 nnoremap <silent><C-S> :update<cr>:echo 'Buffer actual guardado🖪'<cr>
 inoremap <silent><C-S> <esc>:update<cr>:echo 'Buffer actual guardado'<cr>
 nnoremap <C-H> <C-W>h
@@ -276,9 +278,7 @@ nnoremap <silent><leader>gr :Gread<CR>
 nnoremap <silent><leader>gs :G<CR>
 nnoremap <silent><leader>gp :Gpush<CR>
 nnoremap <silent><leader>gh :!gh repo view -w<CR>
-"map <silent><Leader>gb :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
 
-inoremap jj <Esc>lmtA;<Esc>`t
 inoremap jk <Esc>
 inoremap <C-H> <Left>
 inoremap <C-J> <Left>
@@ -313,6 +313,7 @@ lua << EOF
 require'lspconfig'.ccls.setup{}
 require'lspconfig'.gopls.setup{}
 require'lspconfig'.tsserver.setup{}
+require'lspconfig'.pyright.setup{}
 local nvim_lsp = require('lspconfig')
 
 -- Use an on_attach function to only map the following keys
@@ -378,7 +379,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = {"ccls", "gopls", "tsserver"}
+local servers = {"ccls", "gopls", "tsserver", "pyright"}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -457,6 +458,7 @@ end,
   sources = {
     { name = 'nvim_lsp' },
     { name = 'buffer' },
+    { name = "neorg" },
     },
   formatting = {
     format = function(entry, vim_item)
@@ -480,6 +482,132 @@ require("nvim-autopairs.completion.cmp").setup({
   map_cr = true, --  map <CR> on insert mode
   map_complete = true, -- it will auto insert `(` after select function or method item
 })
+EOF
+
+" nvim-dap
+lua << EOF
+local dap = require "dap"
+ dap.adapters.go = function(callback, config)
+    local stdout = vim.loop.new_pipe(false)
+    local handle
+    local pid_or_err
+    local port = 38697
+    local opts = {
+      stdio = {nil, stdout},
+      args = {"dap", "-l", "127.0.0.1:" .. port},
+      detached = true
+    }
+    handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
+      stdout:close()
+      handle:close()
+      if code ~= 0 then
+        print('dlv exited with code', code)
+      end
+    end)
+    assert(handle, 'Error running dlv: ' .. tostring(pid_or_err))
+    stdout:read_start(function(err, chunk)
+      assert(not err, err)
+      if chunk then
+        vim.schedule(function()
+          require('dap.repl').append(chunk)
+        end)
+      end
+    end)
+    -- Wait for delve to start
+    vim.defer_fn(
+      function()
+        callback({type = "server", host = "127.0.0.1", port = port})
+      end,
+      100)
+  end
+  -- https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
+  dap.configurations.go = {
+    {
+      type = "go",
+      name = "Debug",
+      request = "launch",
+      program = "${file}"
+    },
+    {
+      type = "go",
+      name = "Debug test", -- configuration for debugging test files
+      request = "launch",
+      mode = "test",
+      program = "${file}"
+    },
+    -- works with go.mod packages and sub packages 
+    {
+      type = "go",
+      name = "Debug test (go.mod)",
+      request = "launch",
+      mode = "test",
+      program = "./${relativeFileDirname}"
+    } 
+}
+vim.fn.sign_define('DapBreakpoint', {text='🟥', texthl='', linehl='', numhl=''})
+vim.fn.sign_define('DapBreakpointRejected', {text='🟦', texthl='', linehl='', numhl=''})
+vim.fn.sign_define('DapStopped', {text='⭐️', texthl='', linehl='', numhl=''})
+-- map('n', '<leader>dh', ':lua require"dap".toggle_breakpoint()<CR>')
+-- map('n', '<leader>dH', ":lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
+-- map('n', '<c-k>', ':lua require"dap".step_out()<CR>')
+-- map('n', '<c-l>', ':lua require"dap".step_into()<CR>')
+-- map('n', '<c-j>', ':lua require"dap".step_over()<CR>')
+-- map('n', '<c-h>', ':lua require"dap".continue()<CR>')
+-- map('n', '<leader>dk', ':lua require"dap".up()<CR>')
+-- map('n', '<leader>dj', ':lua require"dap".down()<CR>')
+-- map('n', '<leader>dc', ':lua require"dap".disconnect({ terminateDebuggee = true });require"dap".close()<CR>')
+-- map('n', '<leader>dr', ':lua require"dap".repl.open({}, "vsplit")<CR><C-w>l')
+-- map('n', '<leader>di', ':lua require"dap.ui.variables".hover()<CR>')
+-- map('n', '<leader>di', ':lua require"dap.ui.variables".visual_hover()<CR>')
+-- map('n', '<leader>d?', ':lua require"dap.ui.variables".scopes()<CR>')
+-- map('n', '<leader>de', ':lua require"dap".set_exception_breakpoints({"all"})<CR>')
+-- map('n', '<leader>da', ':lua require"debugHelper".attach()<CR>')
+-- map('n', '<leader>dA', ':lua require"debugHelper".attachToRemote()<CR>')
+-- map('n', '<leader>di', ':lua require"dap.ui.widgets".hover()<CR>')
+-- map('n', '<leader>d?', ':lua local widgets=require"dap.ui.widgets";widgets.centered_float(widgets.scopes)<CR>')
+EOF
+nnoremap <silent><leader>bk :lua require"dap".toggle_breakpoint()<CR>
+nnoremap <silent><F5> :lua require"dap".continue()<CR>
+
+" nvim-dap-virtual-text
+let g:dap_virtual_text = v:true
+
+" nvim-dap-ui
+lua << EOF
+require("dapui").setup()
+EOF
+
+" neorg
+lua << EOF
+    require('neorg').setup {
+        -- Tell Neorg what modules to load
+        load = {
+            ["core.defaults"] = {}, -- Load all the default modules
+            ["core.norg.concealer"] = {}, -- Allows for use of icons
+            ["core.norg.dirman"] = { -- Manage your directories with Neorg
+                config = {
+                    workspaces = {
+                        my_workspace = "~/neorg"
+                    }
+                }
+            },
+          ["core.norg.completion"] = {
+            config = {
+            engine = "nvim-cmp" -- We current support nvim-compe and nvim-cmp only
+            }
+          }
+        },
+    }
+-- This has to be before require('nvim-treesitter.configs').setup()
+local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+
+parser_configs.norg = {
+    install_info = {
+        url = "https://github.com/nvim-neorg/tree-sitter-norg",
+        files = { "src/parser.c", "src/scanner.cc" },
+        branch = "main"
+    },
+}
 EOF
 
 " windwp/nvim-autopairs
@@ -509,16 +637,7 @@ EOF
 set rtp+=~/.fzf
 let g:fzf_buffers_jump = 1
 
-" CTRL-A CTRL-Q to select all and build quickfix list
-
-function! s:build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
-endfunction
-
 let g:fzf_action = {
-      \ 'ctrl-q': function('s:build_quickfix_list'),
       \ 'enter': 'drop',
       \ 'ctrl-t': 'tab drop',
       \ 'ctrl-x': 'split',
@@ -533,13 +652,16 @@ let g:fzf_buffers_jump=1
 let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
 
 "Vimspector
-let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
-let g:vimspector_install_gadgets = [ 'vscode-cpptools', 'vscode-go' ]
+" let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+" let g:vimspector_install_gadgets = [ 'vscode-cpptools', 'vscode-go' ]
 
 " for normal mode - the word under the cursor
-nmap <Leader>di <Plug>VimspectorBalloonEval
+" nmap <Leader>di <Plug>VimspectorBalloonEval
 " for visual mode, the visually selected text
-xmap <Leader>di <Plug>VimspectorBalloonEval
+" xmap <Leader>di <Plug>VimspectorBalloonEval
+
+" vim-sandwich
+runtime macros/sandwich/keymap/surround.vim
 
 "Gitgutter
 if (executable("rg"))
@@ -715,9 +837,6 @@ set laststatus=2
 
 "" indentLine
 let g:indentLine_fileTypeExclude = ['help', 'startify']
-
-"" quick-scope
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " highlightedyank
 au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=250, on_visual=true}
