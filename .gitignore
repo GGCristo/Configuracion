@@ -3,6 +3,7 @@
 .vscode/
 bin/
 .DS_Store
+.config/nvim/_init.vim
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
