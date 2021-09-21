@@ -1,5 +1,3 @@
-set runtimepath^=~/.vim runtimepath+=~/.vim/after
-let &packpath = &runtimepath
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "    _____  .__        .__
 "   /     \ |__| ___  _|__| ____________   ____
@@ -17,25 +15,21 @@ set noswapfile
 set nobackup
 set nowritebackup
 
-set autoindent
 set complete=.,w,b,u,t,i,kspell
 set background=dark
-filetype plugin indent on
-syntax on
-set encoding=utf-8
 set mouse=a
 set number
 set relativenumber
 set clipboard^=unnamedplus
 set hidden
 set cc=81
-set autoread
+" set autoread " default
 set splitright
 set noequalalways
 "au CursorHold * checktime
 set wildmenu
 set backspace=indent,eol,start
-set incsearch
+" set incsearch " default
 set list listchars=tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 "set showbreak=↪\
 set switchbuf+=useopen,usetab
@@ -116,15 +110,14 @@ augroup CursorLine
     au WinLeave * setlocal nocursorline
 augroup END
 
-call plug#begin('~/.vim/plugged')
-  Plug 'liuchengxu/vista.vim'
+call plug#begin()
+  Plug 'liuchengxu/vista.vim' ", { 'on': 'Vista' }
   Plug 'kassio/neoterm'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
   Plug 'ggandor/lightspeed.nvim'
   Plug 'junegunn/fzf.vim'
   Plug 'windwp/nvim-autopairs'
-  Plug 'nvim-neorg/neorg' | Plug 'nvim-lua/plenary.nvim'
   " Debugger
   Plug 'mfussenegger/nvim-dap'
   Plug 'theHamsta/nvim-dap-virtual-text'
@@ -155,15 +148,15 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'tpope/vim-obsession'
   Plug 'tpope/vim-fugitive'
-  " Plug 'tpope/vim-surround'
   Plug 'machakann/vim-sandwich'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-sleuth'
 
-  Plug 'rbong/vim-crystalline'
-  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+  Plug 'hoob3rt/lualine.nvim'
+  Plug 'SmiteshP/nvim-gps'
+  Plug 'kevinhwang91/nvim-bqf'
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'], 'on': 'MarkdownPreview'}
   Plug 'mhinz/vim-startify'
-  " Plug 'puremourning/vimspector'
   Plug 'airblade/vim-gitgutter'
   Plug 'junegunn/vim-easy-align'
   Plug 'simnalamburt/vim-mundo'
@@ -173,7 +166,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'stsewd/fzf-checkout.vim'
   Plug 'junegunn/vim-peekaboo'
   Plug 'Yggdroot/indentLine'
-  Plug 'markonm/traces.vim'
   Plug 'psliwka/vim-smoothie'
   Plug 'gruvbox-community/gruvbox'
   Plug 'vim-test/vim-test'
@@ -360,13 +352,13 @@ local on_attach = function(client, bufnr)
       augroup END
     ]], false)
   end
-vim.fn.sign_define("LspDiagnosticsSignError",
+vim.fn.sign_define("DiagnosticsSignError",
     {text = "", texthl = "GruvboxRed"})
-vim.fn.sign_define("LspDiagnosticsSignWarning",
+vim.fn.sign_define("DiagnosticsSignWarning",
     {text = "", texthl = "GruvboxYellow"})
-vim.fn.sign_define("LspDiagnosticsSignInformation",
+vim.fn.sign_define("DiagnosticsSignInformation",
     {text = "", texthl = "GruvboxBlue"})
-vim.fn.sign_define("LspDiagnosticsSignHint",
+vim.fn.sign_define("DiagnosticsSignHint",
     {text = "", texthl = "GruvboxAqua"})
   cfg = {
     floating_window = false, -- show hint in a floating window, set to false for virtual text only mode
@@ -458,7 +450,6 @@ end,
   sources = {
     { name = 'nvim_lsp' },
     { name = 'buffer' },
-    { name = "neorg" },
     },
   formatting = {
     format = function(entry, vim_item)
@@ -577,36 +568,24 @@ lua << EOF
 require("dapui").setup()
 EOF
 
-" neorg
+" lualine && nvim-gps
 lua << EOF
-    require('neorg').setup {
-        -- Tell Neorg what modules to load
-        load = {
-            ["core.defaults"] = {}, -- Load all the default modules
-            ["core.norg.concealer"] = {}, -- Allows for use of icons
-            ["core.norg.dirman"] = { -- Manage your directories with Neorg
-                config = {
-                    workspaces = {
-                        my_workspace = "~/neorg"
-                    }
-                }
-            },
-          ["core.norg.completion"] = {
-            config = {
-            engine = "nvim-cmp" -- We current support nvim-compe and nvim-cmp only
-            }
-          }
-        },
-    }
--- This has to be before require('nvim-treesitter.configs').setup()
-local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
-
-parser_configs.norg = {
-    install_info = {
-        url = "https://github.com/nvim-neorg/tree-sitter-norg",
-        files = { "src/parser.c", "src/scanner.cc" },
-        branch = "main"
-    },
+require("nvim-gps").setup({
+	icons = {
+		["class-name"] = ' ',      -- Classes and class-like objects
+		["function-name"] = ' ',   -- Functions
+		["method-name"] = ' '      -- Methods (functions inside class-like objects)
+	},
+	separator = ' > ',
+})
+local gps = require("nvim-gps")
+require('lualine').setup{
+ options = {theme  = 'codedark'},
+ sections = {
+			lualine_c = {
+				{ gps.get_location, condition = gps.is_available },
+			}
+	}
 }
 EOF
 
@@ -720,7 +699,6 @@ let g:startify_custom_footer = startify#fortune#boxed()
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
-set hlsearch
 let g:incsearch#auto_nohlsearch = 1
 map n  <Plug>(incsearch-nohl-n)zz
 map N  <Plug>(incsearch-nohl-N)zz
@@ -759,82 +737,6 @@ let g:easy_align_delimiters = {
 "vim-peekaboo
 let g:peekaboo_delay = 600
 
-"vim-crystalline
-function! LinterStatus() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-
-  return l:counts.total == 0 ? 'OK' : printf(
-        \   '%d✘ %dE',
-        \   all_non_errors,
-        \   all_errors
-        \)
-endfunction
-
-function! StatusLine(current, width)
-  let l:s = ''
-
-  if a:current
-    let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
-  else
-    let l:s .= '%#CrystallineInactive#'
-  endif
-  let l:s .= ' %f%h%w%m%r '
-  if a:current
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()} '
-    let l:s .= crystalline#right_sep('Fill', 'Fill') . ' %{g:asyncrun_status}'
-    " let l:s .= crystalline#right_sep('Fill', 'Fill') . ' %{LinterStatus()}'
-  endif
-
-  let l:s .= '%='
-
-  if a:current
-    " let l:s .= crystalline#left_sep('Fill', 'Fill') . '%{coc#status()}'
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{modo}'
-    let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
-    let l:s .= crystalline#left_mode_sep('')
-  endif
-  if a:width > 80
-    let l:s .= '%{&ft} %l/%L %c %P '
-  else
-    let l:s .= ' '
-  endif
-
-  return l:s
-endfunction
-
-if filereadable(expand('~/.vim/plugged/vim-devicons/plugin/webdevicons.vim'))
-
-  function! TabLabel(buf, max_width) abort
-    let [l:left, l:name, l:short_name, l:right] = crystalline#default_tablabel_parts(a:buf, a:max_width)
-    " return l:left . l:short_name . ' ' . WebDevIconsGetFileTypeSymbol(l:name) . (l:right ==# ' ' ? '' : ' ') . l:right
-    return l:left . l:short_name . ' ' . nerdfont#find(l:name) . (l:right ==# ' ' ? '' : ' ') . l:right
-  endfunction
-
-  function! TabLine() abort
-    return crystalline#bufferline(0, 0, 1, 1, 'TabLabel', crystalline#default_tabwidth() + 3)
-  endfunction
-
-else
-
-  function! TabLine()
-    let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
-    return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
-  endfunction
-
-endif
-
-" let g:crystalline_tabline_fn = 'TabLine'
-let g:crystalline_enable_sep = 1
-let g:crystalline_statusline_fn = 'StatusLine'
-let g:crystalline_theme = 'badwolf'
-
-set showtabline=2
-set guioptions-=e
-set laststatus=2
-
 "" indentLine
 let g:indentLine_fileTypeExclude = ['help', 'startify']
 
@@ -848,10 +750,6 @@ let g:asyncrun_rootmarks = ['src', '.git']
 let g:asynctasks_term_rows = 15    " set height for the horizontal terminal split
 let g:asynctasks_term_reuse = 1
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
-command! -bang -bar -nargs=* Gpush execute 'AsyncRun<bang> -cwd=' .
-      \ fnameescape(FugitiveGitDir()) 'git push' <q-args>
-command! -bang -bar -nargs=* Gfetch execute 'AsyncRun<bang> -cwd=' .
-      \ fnameescape(FugitiveGitDir()) 'git fetch' <q-args>
 
 " vim-doge
 let g:doge_comment_jump_modes = ['n', 's']
@@ -973,9 +871,9 @@ set termguicolors
 
 colorscheme gruvbox
 set guifont=FiraCode\ Nerd\ Font\ Mono\
-hi PmenuSel guibg=#98c379"
-hi PmenuSbar guibg =#353b45"
-hi PmenuThumb guibg =#81A1C1"
+hi PmenuSel guibg=#98c379
+hi PmenuSbar guibg =#353b4
+hi PmenuThumb guibg =#81A1C
 augroup my_colours
   autocmd!
   autocmd ColorScheme hi SpellBad cterm=reverse
@@ -1016,9 +914,6 @@ augroup my_colours
   highlight GitGutterChange ctermfg=93 guifg=#8700ff
   highlight GitGutterDelete ctermfg=1 guifg=#f70000
   hi clear SignColumn
-  " quick-scope
-  highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline
-  highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline
   " startify
   hi StartifyFooter        guifg=NONE guibg=NONE gui=NONE
 augroup END
