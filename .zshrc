@@ -8,6 +8,7 @@ export PATH=/home/cristo/.local/lib/python3.8/site-packages:$PATH
 # export GOROOT=/usr/lib/go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$HOME/.local/bin
 
 eval "$(starship init zsh)"
 # Path to your oh-my-zsh installation.
@@ -276,3 +277,5 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+alias luamake=/home/cristo/.config/nvim/lua-language-server/3rd/luamake/luamake

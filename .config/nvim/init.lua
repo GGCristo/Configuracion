@@ -22,12 +22,13 @@ vim.o.clipboard = 'unnamedplus'
 vim.o.colorcolumn = '81'
 vim.o.splitright = true
 vim.opt.formatoptions:remove('cro') -- TODO No autocomments in new line
--- vim.o.spelllang = 'es, en_us'
 vim.o.dictionary = '/usr/share/dict/words,/usr/share/dict/spanish'
 vim.o.signcolumn = 'yes'
 vim.o.updatetime = 100
 vim.o.undofile = true
 vim.o.undolevels = 5000
+vim.bo.spelllang = 'es,en_us'
+vim.o.spelllang = 'es,en_us'
 -- The width of a TAB is set to 2.
 -- Still it is a \t. It is just that
 -- Vim will interpret it to be having

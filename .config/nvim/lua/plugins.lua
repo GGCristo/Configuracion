@@ -33,12 +33,16 @@ require('packer').startup(function()
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-buffer'
+  use 'hrsh7th/cmp-path' 
   use 'onsails/lspkind-nvim'
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
-    cmd = 'NvimTreeToggle',
-    config = vim.api.nvim_set_keymap('n', '<F12>', ':NvimTreeToggle<cr>', { silent = true })
+    cmd = "NvimTreeToggle",
+    config = function() 
+      require'nvim-tree'.setup {}
+    end,
+    vim.api.nvim_set_keymap('n', '<F12>', ':NvimTreeToggle<cr>', { silent = true })
   }
   use 'ray-x/lsp_signature.nvim'
   use {
@@ -67,8 +71,8 @@ require('packer').startup(function()
     requires = {'kyazdani42/nvim-web-devicons'}
   }
   use 'antoinemadec/FixCursorHold.nvim'
-  -- use 'skywind3000/asynctasks.vim'
-  -- use 'skywind3000/asyncrun.vim'
+  use 'skywind3000/asynctasks.vim'
+  use 'skywind3000/asyncrun.vim'
   use {'kkoomen/vim-doge', run = 'call doge#install()' }
   use 'tpope/vim-fugitive'
   use {
@@ -97,10 +101,10 @@ require('packer').startup(function()
   use {
     'goolord/alpha-nvim',
     config = function ()
+      require'alpha.themes.dashboard'.section.footer.val = require'alpha.fortune'()
       require'alpha'.setup(require'alpha.themes.dashboard'.opts)
     end
   }
-  -- use 'mhinz/vim-startify'
   use {
     'lewis6991/gitsigns.nvim',
     requires = {
@@ -115,8 +119,13 @@ require('packer').startup(function()
     'nvim-telescope/telescope.nvim',
     requires = { {'nvim-lua/plenary.nvim'} }
   }
+  use {
+    'GustavoKatel/telescope-asynctasks.nvim',
+    config = vim.api.nvim_set_keymap('n', '<F4>', ':lua require(\'telescope\').extensions.asynctasks.all()<cr>', { silent = true })
+  }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-  use {'simnalamburt/vim-mundo',
+  use {
+    'simnalamburt/vim-mundo',
     cmd = 'MundoToggle',
     config = vim.api.nvim_set_keymap('n', '<F7>', ':MundoToggle<cr>', { silent = true })
   }
@@ -124,6 +133,7 @@ require('packer').startup(function()
   use 'dstein64/vim-startuptime'
   use 'junegunn/vim-peekaboo' -- TODO Change with whick-key
   use 'psliwka/vim-smoothie'
+  -- use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
   -- use 'gruvbox-community/gruvbox' -- Until https://github.com/gruvbox-community/gruvbox/pull/172 is merged
   use '~/Escritorio/gruvbox'
 end
