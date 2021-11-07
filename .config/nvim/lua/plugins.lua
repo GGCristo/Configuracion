@@ -96,7 +96,7 @@ require('packer').startup(function()
   use {
     'iamcco/markdown-preview.nvim',
     run = 'call mkdp#util#install()',
-    cmd = 'MarkdownPreview'
+    ft = "markdown",
   }
   use {
     'goolord/alpha-nvim',
@@ -134,8 +134,7 @@ require('packer').startup(function()
   use 'junegunn/vim-peekaboo' -- TODO Change with whick-key
   use 'psliwka/vim-smoothie'
   -- use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
-  -- use 'gruvbox-community/gruvbox' -- Until https://github.com/gruvbox-community/gruvbox/pull/172 is merged
-  use '~/Escritorio/gruvbox'
+  use 'gruvbox-community/gruvbox'
 end
 )
 
