@@ -129,14 +129,14 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       -- select = true,
     },
-    ['<TAB>'] = function(fallback)
+    ['<Tab>'] = function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
       else
         fallback()
       end
     end,
-    ['<S-TAB>'] = function(fallback)
+    ['<S-Tab>'] = function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       else
