@@ -18,3 +18,6 @@ hi TSField ctermfg=Magenta guifg=#bd93f9
 hi TSProperty ctermfg=Magenta guifg=#bd93f9
 endfunction
 ]])
+vim.wo.foldmethod = 'expr'
+vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.wo.foldenable = false

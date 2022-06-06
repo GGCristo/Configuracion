@@ -3,18 +3,14 @@ require('packer').startup(function()
   use {
     'lewis6991/impatient.nvim', -- Until https://github.com/neovim/neovim/pull/15436 is merged
   }
-  use 'kassio/neoterm'
+  use 'akinsho/toggleterm.nvim'
   use {
     'ggandor/lightspeed.nvim',
     config = function ()
       require'lightspeed'.setup {
-        jump_to_first_match = true,
-        jump_on_partial_input_safety_timeout = 400,
-        highlight_unique_chars = false,
-        grey_out_search_area = true,
+        jump_to_unique_chars = { safety_timeout = 400 },
         match_only_the_start_of_same_char_seqs = true,
         limit_ft_matches = 5,
-        full_inclusive_prefix_key = '<c-x>',
       }
     end
   }
@@ -33,18 +29,15 @@ require('packer').startup(function()
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-buffer'
-  use 'hrsh7th/cmp-path' 
+  use 'hrsh7th/cmp-path'
   use 'onsails/lspkind-nvim'
-  use {
-    'kyazdani42/nvim-tree.lua',
-    requires = 'kyazdani42/nvim-web-devicons',
-    cmd = "NvimTreeToggle",
-    config = function() 
-      require'nvim-tree'.setup {}
-    end,
-    vim.api.nvim_set_keymap('n', '<F12>', ':NvimTreeToggle<cr>', { silent = true })
-  }
   use 'ray-x/lsp_signature.nvim'
+  use {
+     "rcarriga/nvim-notify",
+    config = function()
+      vim.notify = require("notify")
+    end
+  }
   use {
     'folke/trouble.nvim',
     cmd = 'TroubleToggle',
@@ -71,8 +64,8 @@ require('packer').startup(function()
     requires = {'kyazdani42/nvim-web-devicons'}
   }
   use 'antoinemadec/FixCursorHold.nvim'
-  use 'skywind3000/asynctasks.vim'
-  use 'skywind3000/asyncrun.vim'
+  -- use 'skywind3000/asynctasks.vim'
+  -- use 'skywind3000/asyncrun.vim'
   use {'kkoomen/vim-doge', run = 'call doge#install()' }
   use 'tpope/vim-fugitive'
   use {
@@ -82,22 +75,17 @@ require('packer').startup(function()
     end
   }
   use {
-    "terrortylor/nvim-comment",
-    event = "BufRead",
+    'numToStr/Comment.nvim',
     config = function()
-      require('nvim_comment').setup {
-        comment_empty = true
-      }
-    end,
+      require('Comment').setup()
+    end
   }
+  use 'hrsh7th/vim-vsnip'
+  use 'hrsh7th/vim-vsnip-integ'
   use 'hoob3rt/lualine.nvim'
   use 'SmiteshP/nvim-gps'
   use 'kevinhwang91/nvim-bqf'
-  use {
-    'iamcco/markdown-preview.nvim',
-    run = 'call mkdp#util#install()',
-    ft = "markdown",
-  }
+  use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
   use {
     'goolord/alpha-nvim',
     config = function ()
@@ -111,7 +99,37 @@ require('packer').startup(function()
       'nvim-lua/plenary.nvim'
     },
     config = function()
-      require('gitsigns').setup()
+      require('gitsigns').setup {
+        on_attach = function(bufnr)
+          local gs = package.loaded.gitsigns
+
+          local function map(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+          end
+
+          -- Navigation
+          map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
+          map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
+
+          -- Actions
+          map({'n', 'v'}, '<leader>hs', gs.stage_hunk)
+          map({'n', 'v'}, '<leader>hr', gs.reset_hunk)
+          map('n', '<leader>hS', gs.stage_buffer)
+          map('n', '<leader>hu', gs.undo_stage_hunk)
+          map('n', '<leader>hR', gs.reset_buffer)
+          map('n', '<leader>hp', gs.preview_hunk)
+          map('n', '<leader>hb', function() gs.blame_line{full=true} end)
+          -- map('n', '<leader>tb', gs.toggle_current_line_blame)
+          map('n', '<leader>hd', gs.diffthis)
+          map('n', '<leader>hD', function() gs.diffthis('~') end)
+          -- map('n', '<leader>td', gs.toggle_deleted)
+
+          -- Text object
+          map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+        end
+      }
     end
   }
   use 'junegunn/vim-easy-align'
@@ -129,12 +147,29 @@ require('packer').startup(function()
     cmd = 'MundoToggle',
     config = vim.api.nvim_set_keymap('n', '<F7>', ':MundoToggle<cr>', { silent = true })
   }
+  use 'zah/nim.vim'
   use 'haya14busa/incsearch.vim'
   use 'dstein64/vim-startuptime'
   use 'junegunn/vim-peekaboo' -- TODO Change with whick-key
   use 'psliwka/vim-smoothie'
   -- use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
   use 'gruvbox-community/gruvbox'
+  use { 'bennypowers/nvim-regexplainer',
+    config = function() require'regexplainer'.setup()  end,
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+    }
+  }
+  use {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim"
+    },
+  }
 end
 )
 
@@ -148,6 +183,7 @@ require('statusline')
 require('start-screen')
 require('finder')
 require('tabline')
+require('explorer')
 
 -- incsearch
 vim.g['incsearch#auto_nohlsearch'] = 1

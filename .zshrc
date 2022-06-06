@@ -3,12 +3,16 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 export PATH=/home/cristo/.local/lib/python3.8/site-packages:$PATH
+export PATH=$PATH:$HOME/.local/share/applications
+export PATH=$PATH:$HOME/.local/bin
+export PATH=/home/cristo/.nimble/bin:$PATH
+# Java LSP
+export JDTLS_HOME=~/java-language-server/jdt-language-server-1.10.0-202203040350
 
 # GO
 # export GOROOT=/usr/lib/go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$HOME/.local/bin
 
 eval "$(starship init zsh)"
 # Path to your oh-my-zsh installation.
@@ -117,7 +121,11 @@ autoload -Uz compinit && compinit
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# kitty
 alias ssh="kitty +kitten ssh"
+alias icat="kitty +kitten icat"
+alias ls="ls --hyperlink=auto --color=auto"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind ctrl-y:preview-up,ctrl-e:preview-down'
@@ -127,8 +135,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 export FZF_ALT_C_COMMAND="ls -d .*/* */*"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :100 {}' --bind='F2:toggle-preview'"
-
-alias update='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
 
 #alias for git
 alias gcl='git clone'
@@ -226,7 +232,6 @@ alias gu='git ls-files . --exclude-standard --others'
 alias gbrow="hub browse"
 alias nvide="$HOME/neovide/target/release/neovide"
 
-alias icat="kitty kitten icat"
 # Thefuck
 eval $(thefuck --alias)
 stty -ixon
@@ -246,7 +251,6 @@ getdiff()
     echo "It's not a git repository"
   fi;
 }
-. "/home/cristo/.local/share/lscolors.sh"
 export PATH=$PATH:/usr/local/go/bin
 export GEM_HOME="$HOME/.gem"
 
@@ -280,3 +284,7 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 alias luamake=/home/cristo/.config/nvim/lua-language-server/3rd/luamake/luamake
+export PATH=$PATH:$HOME/.config/composer/vendor/bin
+# deno
+export DENO_INSTALL="/home/cristo/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"

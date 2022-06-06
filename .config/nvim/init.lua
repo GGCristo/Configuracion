@@ -44,7 +44,7 @@ vim.o.softtabstop = 2
 -- Expand TABs to spaces
 vim.bo.expandtab = true
 vim.o.expandtab = true
-
+vim.o.laststatus = 3
 -- Visual
 vim.wo.list = true
 vim.o.listchars='tab:⍿·,nbsp:␣,trail:•,extends:⟩,precedes:⟨'
@@ -53,10 +53,16 @@ vim.g.gruvbox_contrast_dark = 'medium'
 vim.g.gruvbox_invert_selection = 0
 vim.o.termguicolors = true
 vim.cmd('colorscheme gruvbox')
-vim.o.guifont = 'FiraCode\\ Nerd\\ Font\\ Mono\\'
+-- vim.o.guifont = 'FiraCode\\ Nerd\\ Font\\ Mono\\'
+-- vim.o.guifont = "ComicCodeLigatures-SemiBold"
+vim.o.guifont = 'Comic\\ Code\\ Ligatures\\ SemiBold\\'
 vim.cmd('hi clear SignColumn')
 
+vim.g.python3_host_prog = "/usr/bin/python"
 -- augroup
+-- vim.api.nvim_create_augroup("CursorLine", {})
+-- vim.api.nvim_create_autocmd({ "VimEnter,WinEnter,BufWinEnter" }, { command = "setlocal cursorline", group = "CursorLine"})
+-- vim.api.nvim_create_autocmd("WinLeave", { command = "setlocal nocursorline", group = "CursorLine"})
 vim.cmd([[
 augroup CursorLine
     au!
@@ -76,7 +82,7 @@ augroup END
 vim.cmd([[
 augroup Files
 au!
-au FileType gitcommit setlocal spell
+au FileType gitcommit,markdown setlocal spell
 au FileType c,cpp,cs,java setlocal commentstring=//\ %s
 augroup END
 ]])
